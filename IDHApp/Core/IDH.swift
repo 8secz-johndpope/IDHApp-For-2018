@@ -177,8 +177,8 @@ class IDH{
                                     
                                     
                                     print("----\(model.area_id)---\(model.parent_id)---\(model.idh_id)-----\(model.area_name)-----\(model.parent_name)")
-                                    
-                                    DispatchQueue.global().async {
+                                    //
+                                    queue.async {
                                         let realm = try! Realm()
                                         realm.beginWrite()
                                         if realm.objects(heatModel.self).filter("area_name = '\(model.area_name)' AND parent_name = '\(model.parent_name)'").isEmpty{
