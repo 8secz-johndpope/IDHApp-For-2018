@@ -177,7 +177,7 @@ class IDH{
                                     
                                     
                                     print("----\(model.area_id)---\(model.parent_id)---\(model.idh_id)-----\(model.area_name)-----\(model.parent_name)")
-                                    //
+                                    //queue
                                     queue.async {
                                         let realm = try! Realm()
                                         realm.beginWrite()
