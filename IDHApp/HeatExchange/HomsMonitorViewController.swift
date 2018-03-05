@@ -42,8 +42,14 @@ class HomsMonitorViewController: UIViewController {
     
     @IBOutlet weak var monitorImageView: UIImageView!
     
+    
+    var pointValue = CGPoint.zero
+    var scaleValue: CGFloat = 1.0
     //发送的post串
     var postXml = ""
+    
+    var update = false
+    
     
     var isData = false
     var currentElementValue:String = ""
@@ -60,13 +66,11 @@ class HomsMonitorViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         appDelegate.landscape = true
         let value = UIInterfaceOrientation.landscapeRight.rawValue
         UIDevice.current.setValue(value, forKey: "orientation")
-        
         setNavgationTitleAndButton()
-        
+        update = true
     }
     
     //页面即将要消失时设置回竖屏
@@ -80,6 +84,7 @@ class HomsMonitorViewController: UIViewController {
         if timer != nil{
             timer.invalidate()
         }
+        update = false
     }
     
     //设置换热站监控画面上要显示的参数
@@ -103,10 +108,31 @@ class HomsMonitorViewController: UIViewController {
             guard let value = response.result.value else{
                 return
             }
-            DispatchQueue.global().sync {
-                let json = JSON(value)
-                var labelShowArr:[UILabel] = []
+            let json = JSON(value)
+            let activityIndicatr = UIActivityIndicatorView(activityIndicatorStyle:.gray)
+            activityIndicatr.center = CGPoint(x: landScapeHeight/2, y: landScapeWidth/2)
+            activityIndicatr.color = UIColor.red
+            self.monitorView.addSubview(activityIndicatr)
+            self.monitorView.bringSubview(toFront: activityIndicatr)
+            //启动
+            activityIndicatr.startAnimating()
+            
+            //设置背景图
+            let imgUrl = "Http://" + idh_ip_port + "/" + json["img"].stringValue
+            let myUrl = URL(string: imgUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
+            self.monitorImageView.kf.setImage(with: myUrl, placeholder: nil, options: nil, progressBlock: nil, completionHandler: { (image, error, cacheType, imageUrl) in
+                activityIndicatr.stopAnimating()
+
+                let pinchGesture = UIPinchGestureRecognizer.init(target: self, action: #selector(self.zoomImage(_:)))
+                let move = UIPanGestureRecognizer.init(target: self, action: #selector(self.move(_:)))
                 
+                self.monitorImageView.addGestureRecognizer(pinchGesture)
+                self.monitorImageView.addGestureRecognizer(move)
+//                self.monitorImageView.addGestureRecognizer(pressGesture)
+            })
+            
+            DispatchQueue.global().sync {
+                var labelShowArr:[UILabel] = []
                 //将耗时操作放在全局队列中去执行
                 let postXmlBegin = "<?xml version=\"1.0\" encoding=\"GB2312\"?><homsdata xmlns=\"http://www.shuoren.com\">"
                 let postXmlEnd = "</homsdata>"
@@ -114,15 +140,23 @@ class HomsMonitorViewController: UIViewController {
                 
                 //设置显示的参数
                 let tagArr = json["data"].arrayValue
-                let originalAspect: CGFloat = 1.7628866
+                var originalAspect: CGFloat
+                
+                if let image = self.monitorImageView.image{
+                    originalAspect = image.size.width/image.size.height
+                }else{
+                    originalAspect = 1700/815
+                }
                 let height = CGFloat((landScapeHeight - 96))/originalAspect
+                
+                print("\(landScapeHeight)------\(landScapeWidth)")
                 
                 for item in tagArr{
                     //计算距离原点的上、下偏移量
                     let postx = (item["postx"].stringValue).replacingOccurrences(of: "%", with: "")
                     let posty = (item["posty"].stringValue).replacingOccurrences(of: "%", with: "")
                     let posX = CGFloat((postx as NSString).floatValue/100) * self.monitorImageView.frame.width
-                    let posY = CGFloat((posty as NSString).floatValue/100) * height
+                    let posY = CGFloat((posty as NSString).floatValue/100) * height + (landScapeWidth - height)/2
                     
                     //根据显示文本多少及字体大小动态计算Label的宽度与高度
                     let lblShow = UILabel(frame: CGRect(x: posX, y: posY, width: 0, height: 0))
@@ -130,6 +164,13 @@ class HomsMonitorViewController: UIViewController {
                     lblShow.font = UIFont.systemFont(ofSize: 9)
                     
                     let options : NSStringDrawingOptions = .usesLineFragmentOrigin
+                    let lblData1 = DataLabel()
+                    lblData1.font = UIFont.systemFont(ofSize: 9)
+                    
+                    if UIScreen.main.bounds.width < 569{
+                        lblData1.font = UIFont.systemFont(ofSize: 7)
+                        lblShow.font = UIFont.systemFont(ofSize: 7)
+                    }
                     let boundingRect = (lblShow.text! as NSString).boundingRect(with: CGSize.init(width: 0, height: 0), options: options, attributes: [NSAttributedStringKey.font:lblShow.font], context: nil).size
                     let actualWidth = boundingRect.width
                     let actualHeight = boundingRect.height
@@ -143,47 +184,45 @@ class HomsMonitorViewController: UIViewController {
                     postXmlContent += "<data><cno>\(commno)</cno><id>\(tagno)</id></data>"
                     
                     //放置一个显示实时数据的Label,与显示文本相距10个点
-                    let lblData = UILabel(frame: CGRect(x: posX+actualWidth+5, y: posY, width: 30, height: 10))
+                    let lblData = UILabel(frame: CGRect(x: posX+actualWidth, y: posY, width: 30, height: 10))
+                    
+                    lblData1.frame = CGRect(x: posX+actualWidth, y: posY, width: 30, height: 10)
+                    lblData1.textColor = UIColor.blue
+                    
                     
                     lblData.font = UIFont.systemFont(ofSize: 9)
                     lblData.textColor = UIColor.blue
-                    lblData.tag = Int(commno)!*100000 + Int(tagno)!
+                    //istrans为1时， 需要在valuetrans里面选择数据 例如  停电报警---"正常|1;停电|0;"
+                    if item["istrans"].stringValue == "1"{
+                        lblData1.tag = Int(commno)!*200000 + Int(tagno)!
+//                        lblData1.text = item["valuetrans"].stringValue
+                        lblData1.modelText = item["valuetrans"].stringValue
+                        
+//                        lblData.tag = Int(commno)!*200000 + Int(tagno)!
+//                        lblData.text = item["valuetrans"].stringValue
+                    }else{
+//                        lblData.tag = Int(commno)!*100000 + Int(tagno)!
+                        lblData1.tag = Int(commno)!*100000 + Int(tagno)!
+                    }
                     
                     labelShowArr.append(lblShow)
-                    labelShowArr.append(lblData)
+                    labelShowArr.append(lblData1)
                 }
                 
                 self.postXml = postXmlBegin + postXmlContent + postXmlEnd
-                
+                print("\(self.self.postXml)")
                 DispatchQueue.main.async(){
-                    let activityIndicatr = UIActivityIndicatorView(activityIndicatorStyle:.gray)
-                    activityIndicatr.center = CGPoint(x: landScapeHeight/2, y: landScapeWidth/2)
-                    activityIndicatr.color = UIColor.red
-                    self.monitorView.addSubview(activityIndicatr)
-                    self.monitorView.bringSubview(toFront: activityIndicatr)
-                    
-                    //启动
-                    activityIndicatr.startAnimating()
-                    
-                    //设置背景图
-                    let imgUrl = "Http://" + idh_ip_port + "/" + json["img"].stringValue
-                    let myUrl = URL(string: imgUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
-                    self.monitorImageView.kf.setImage(with: myUrl, placeholder: nil, options: nil, progressBlock: nil, completionHandler: { (image, error, cacheType, imageUrl) in
-                        activityIndicatr.stopAnimating()
-                        
-                        //添加一个长按手势
-                        let pressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handlePressGesture(_:)))
-                        self.monitorImageView.addGestureRecognizer(pressGesture)
-                    })
                     
                     //设置系统当前时间
                     let currentDate = Date()
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
                     
-                    let lblCurrentDate = UILabel(frame: CGRect(x:0,y:0,width:160,height:10))
+                    let lblCurrentDate = UILabel.init(frame: CGRect.init(x: self.monitorView.bounds.width/2 - 160 + 48, y: (landScapeWidth - height)/2 + 5, width: 160, height: 10))
+                    
+                    
                     lblCurrentDate.textAlignment = .center
-                    lblCurrentDate.center = CGPoint(x: self.monitorView.center.x - 80 + 48, y: (landScapeWidth - height)/2 + 5)
+//                  lblCurrentDate.center = CGPoint(x: self.monitorView.center.x - 80 + 48, y: (landScapeWidth - height)/2 + 5)
                     
                     lblCurrentDate.text = "当前时间：" + dateFormatter.string(from: currentDate)
                     lblCurrentDate.font = UIFont.systemFont(ofSize: 10)
@@ -193,6 +232,7 @@ class HomsMonitorViewController: UIViewController {
                     
                     //设置显示的文本标签
                     for item in labelShowArr{
+//                        item.adjustsFontSizeToFitWidth = true
                         self.monitorImageView.addSubview(item)
                     }
                     
@@ -200,10 +240,59 @@ class HomsMonitorViewController: UIViewController {
                     self.showRecentData()
                     
                     //启用定时器，每30秒执行一次showRecentData方法
-                    self.timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(self.showRecentData), userInfo: nil, repeats: true)
+                    if #available(iOS 10.0, *) {
+                        self.timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true, block: { (timer) in
+                            self.showRecentData()
+                        })
+                    } else {
+                        // Fallback on earlier versions
+                    }
                 }
             }
         }
+    }
+    
+    
+    @objc func zoomImage(_ sender: UIPinchGestureRecognizer) {
+        
+        adjustAnchorPoint(for: sender)
+        if sender.state == .began {
+            scaleValue = sender.scale
+        }
+        
+        if sender.state == .began || sender.state == .changed {
+            
+            let currentScale: CGFloat = sender.view!.layer.value(forKeyPath: "transform.scale") as! CGFloat
+            let kMaxScale: CGFloat = 1.5
+            let kMinScale: CGFloat = 1.0
+            var newScale = 1 - (scaleValue - sender.scale)
+            newScale = min(newScale, kMaxScale / currentScale)
+            newScale = max(newScale, kMinScale / currentScale)
+            sender.view?.transform = sender.view!.transform.scaledBy(x: newScale, y: newScale)
+            scaleValue = sender.scale
+        }
+        
+    }
+    
+    private func adjustAnchorPoint(for gestureRecognizer: UIGestureRecognizer) {
+        if gestureRecognizer.state == .began {
+            let piece = gestureRecognizer.view!
+            let locationInView = gestureRecognizer.location(in: piece)
+            let locationInSuperview = gestureRecognizer.location(in: piece.superview!)
+            piece.layer.anchorPoint = CGPoint(x: CGFloat(locationInView.x / piece.bounds.size.width), y: CGFloat(locationInView.y / piece.bounds.size.height))
+            piece.center = locationInSuperview
+        }
+    }
+    
+    @objc func move(_ sender: UIPanGestureRecognizer) {
+        let translation = sender.translation(in:self.view)
+        let cropViewPosition: CGPoint? = monitorImageView.center
+        var recognizerFrame = monitorImageView.frame
+        recognizerFrame.origin.x += translation.x
+        recognizerFrame.origin.y += translation.y
+        monitorImageView.center = cropViewPosition!
+        sender.view!.center = CGPoint(x: sender.view!.center.x + translation.x, y: sender.view!.center.y + translation.y)
+        sender.setTranslation(CGPoint(x: CGFloat(0), y: CGFloat(0)), in: self.view)
     }
     
     //长按屏幕出现放大镜框
@@ -211,10 +300,8 @@ class HomsMonitorViewController: UIViewController {
         //截取区域的长、宽
         let rectWidth:CGFloat = 100
         let rectHeight:CGFloat = 100
-        
         //放大倍数
         let scale:CGFloat = 1.5
-        
         //长按开始
         if sender.state == .began{
             let scaleView = UIImageView()
@@ -266,10 +353,6 @@ class HomsMonitorViewController: UIViewController {
                 moveView.frame = CGRect(x: 0, y: monitorImageView.center.y - 75, width: (rectWidth * scale), height: (rectHeight * scale))
             }
             
-            //先截取全屏图片
-            //            let window = UIApplication.shared.keyWindow
-            //            UIGraphicsBeginImageContextWithOptions(window!.bounds.size, false, 0.0)
-            
             UIGraphicsBeginImageContextWithOptions(self.monitorImageView.bounds.size, false, 0.0)
             self.monitorImageView.layer.render(in: UIGraphicsGetCurrentContext()!)
             let screenImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -311,13 +394,19 @@ class HomsMonitorViewController: UIViewController {
             name.append(char)
             name.append("\n")
         }
+        titleLabel.textAlignment = .center
         titleLabel.text = name
         //重新显示数据
+        monitorImageView.transform = CGAffineTransform.identity
+        monitorImageView.layer.anchorPoint = CGPoint.init(x: 0.5, y: 0.5)
         showBackgroundAndTags()
     }
     
     //获取实时数据并更新到画面上
     @objc func showRecentData(){
+        if update {
+            Toast.shareInstance().showView(self.view, title: "数据更新中...")
+        }
         //先更新系统时间
         let currentDate = Date()
         let dateFormatter = DateFormatter()
@@ -353,6 +442,13 @@ class HomsMonitorViewController: UIViewController {
         
         //执行任务
         dataTask.resume()
+        if #available(iOS 10.0, *) {
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { (time) in
+                Toast.shareInstance().hideView()
+            }
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     
@@ -405,9 +501,10 @@ extension HomsMonitorViewController:XMLParserDelegate{
                     return
                 }
                 let tag = Int(tagCno)!*100000 + Int(tagId)!
-                
+                let tag2 = Int(tagCno)!*200000 + Int(tagId)!
                 if monitorImageView.viewWithTag(tag) != nil{
                     let lblData = monitorImageView.viewWithTag(tag) as! UILabel
+                    
                     lblData.text = String(format:"%.2f",(tagValue as NSString).doubleValue)
                     
                     let posX = lblData.frame.origin.x
@@ -418,11 +515,50 @@ extension HomsMonitorViewController:XMLParserDelegate{
                     let actualHeight = boundingRect.height
                     
                     lblData.frame = CGRect(x: posX, y: posY, width: actualWidth, height: actualHeight)
-                    //进入到下一个元素
-                    isData = false
+//                    //进入到下一个元素
+//                    isData = false
                 }
+                if monitorImageView.viewWithTag(tag2) != nil{
+                    
+                    let lblData = monitorImageView.viewWithTag(tag2) as! DataLabel
+                    lblData.text = getTransValue(lblData.modelText!, tagValue)
+                    let posX = lblData.frame.origin.x
+                    let posY = lblData.frame.origin.y
+                    let options : NSStringDrawingOptions = .usesLineFragmentOrigin
+                    let boundingRect = (lblData.text! as NSString).boundingRect(with: CGSize(width: 0, height: 0), options: options, attributes: [NSAttributedStringKey.font:lblData.font], context: nil).size
+                    let actualWidth = boundingRect.width
+                    let actualHeight = boundingRect.height
+                    
+                    lblData.frame = CGRect(x: posX, y: posY, width: actualWidth, height: actualHeight)
+                }
+                //进入到下一个元素
+                isData = false
             }
         }
     }
+    
+    
+    func getTransValue(_ string: String, _ value: String) -> String? {
+        
+        let arr = string.components(separatedBy: ";")
+        for temp in arr {
+            if temp.contains(value){
+                return temp.components(separatedBy: "|").first
+            }
+        }
+        return ""
+    }
+}
+
+class DataLabel: UILabel {
+    var modelText: String?
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
 
