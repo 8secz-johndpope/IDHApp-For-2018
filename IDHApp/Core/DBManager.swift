@@ -82,13 +82,17 @@ class LabelModel: NSObject {
     var station_id = ""
     var tag_id = ""
     var unit = ""
+    var format = ""
+    var specialunit = ""
+    
+    
     
     override init() {
         super.init()
     }
     
     
-    init(_ text:String, value:String, x:Float,y:Float, width:Float, height:Float,foreColor:UIColor, dataColor: UIColor, valueTrans: String, station: String, tag: String, unit: String) {
+    init(_ text:String, value:String, x:Float,y:Float, width:Float, height:Float,foreColor:UIColor, dataColor: UIColor, valueTrans: String, station: String, tag: String, unit: String, format: String, specialunit: String) {
         self.text = text
         self.x = x
         self.y = y
@@ -101,6 +105,8 @@ class LabelModel: NSObject {
         self.station_id = station
         self.tag_id = tag
         self.unit = unit
+        self.specialunit = specialunit
+        self.format = format
     }
     
     

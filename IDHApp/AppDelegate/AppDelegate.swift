@@ -10,7 +10,7 @@ import UIKit
 import Alamofire
 import RealmSwift
 import KissXML
-
+import SwiftyJSON
 
 enum themeMode:Int {
     case day = 0
@@ -30,19 +30,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var nightMode:themeMode = .day
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        //        registWX()
+//        checkVersion()
         RealmUtil.configurRealm()
-        //        openDB()
         setupAppearance()
-                if let user = Defaults.instance.getForKey(key: "userInfo") {
+        if let user = Defaults.instance.getForKey(key: "userInfo") {
         IDH.setupCore(user)
         provider.setVersion()
-        
+//        checkVersion()
         if UserDefaults.standard.value(forKey: "roleID") != nil {
             let str = provider.providerLogin()
             role_id = UserDefaults.standard.value(forKey: "roleID") as! String
             if provider.appVersion == .homs03 || provider.appVersion == .homsOther{
-                //初始加载
                 let nav = UINavigationController.init(rootViewController: IDH.getVCFromStr(str))
                 self.window?.rootViewController = nav
             }else{
@@ -54,6 +52,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
         return true
     }
+    
+    //版本监测
+    func checkVersion() {
+            let currentVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+        Alamofire.request("http://182.50.123.37:8080/hsn/version/is_updateApp", method: .get, parameters: ["version": currentVersion, "type": "ios"]).responseJSON { reponse in
+            if reponse.result.isSuccess{
+//                print(reponse.result.value)
+                let result = reponse.result.value as? NSDictionary
+                if let update = result!["is_update"], let url = result!["url"]{
+                    let updated = update as! Bool
+                    if updated{
+                        self.alertNewVersion(url: url as! String)
+                    }
+                }
+            }else{
+//                print(reponse.error)
+            }
+        }
+    }
+    
+    func alertNewVersion(url:String){
+        let alertController = UIAlertController(title: "提示",
+                                                message: "发现需要升级的版本，现在去更新?", preferredStyle: .alert)
+        let cancle = UIAlertAction(title: "暂不更新", style: .cancel, handler: nil)
+        
+        let okAction = UIAlertAction(title: "立即更新", style: .default, handler: {
+            action in
+            if let u = URL(string: url){
+                if #available(iOS 10.0, *) {
+                    UIApplication.shared.open(u, options: [:], completionHandler: nil)
+                } else {
+                    // Fallback on earlier versions
+                }
+            }
+        })
+        alertController.addAction(cancle)
+        alertController.addAction(okAction)
+        self.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+    }
+    
     
     func toHome() {
         let main = UIStoryboard.init(name: "Home", bundle: nil)

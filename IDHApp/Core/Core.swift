@@ -21,6 +21,8 @@ var weatherid = ""
 var role_id = ""
 var currentVersion = ""
 var idh_monitor_ip_port = ""
+var group_name = ""
+
 
 
 var heatFactoryID = "0"
@@ -34,7 +36,8 @@ var heatExchangerModelArr:[(heatFactory:HeatFactoryModel, heatExchangerList:[Hea
 
 //AES
 let key = "1101121191221200"
-
+//APP ID
+let appID = ""
 
 let MonitorURL = "http://\(homs_ip_port)/DataCenter/Config/HobConfig.aspx"
 let MappingURL = "http://\(homs_mapping_ip_port)/mapping.xml"

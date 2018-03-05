@@ -23,17 +23,54 @@ class IDH{
         
 //         {"idh_ip_port":"http://221.2.85.190:6099","homs_ip_port":"http://221.2.85.190:8000","homs_mapping_ip_port":"http://221.2.85.190:8010","group_id":"1","weather_id":"101110101","city":"西安","version":"1","group_name":"西安市热力"}
 //         http://192.168.2.134:6099/Analyze.svc
+//        西安高新热力（idh）
+//            {"idh_ip_port":"113.140.66.34:6099","homs_ip_port":"","homs_mapping_ip_port":"","idh_monitor_ip_port":"113.140.66.34:8000","group_id":"2","weather_id":"101110101","city":"西安","version":"1","group_name":"西安高新热力"}
         
-        /*
-        homs_mapping_ip_port = "219.145.102.165:8010"
-        homs_ip_port = "219.145.102.165:8000"
-        idh_ip_port = "219.145.102.165:6099"
-        groupid = "1"
-        city = "西安"
-        weatherid = "101110101"
-        currentVersion = "1"
-        version = "3"
-        */
+
+
+        
+//        homs_mapping_ip_port = "219.145.102.165:8010"
+//        homs_ip_port = "222.169.194.218:9000"
+//        idh_ip_port = "222.169.194.218:6099"
+//        groupid = "1"
+//        city = "西安"
+//        weatherid = "101110101"
+//        currentVersion = "0"
+//        idh_monitor_ip_port = ""
+//        group_name = "轻轨热力"
+        
+//        homs_mapping_ip_port = "219.145.102.165:8010"
+//        homs_ip_port = "222.170.8.174:8000"
+//        idh_ip_port = "222.170.8.174:6099"
+//        groupid = ""
+//        city = "西安"
+//        weatherid = ""
+//        currentVersion = "2"
+//        idh_monitor_ip_port = ""
+//        group_name = "东琰热力"
+        
+//        homs_mapping_ip_port = ""
+//        homs_ip_port = ""
+//        idh_ip_port = "113.140.66.34:6099"
+//        groupid = "2"
+//        city = "西安"
+//        weatherid = ""
+//        currentVersion = "1"
+//        idh_monitor_ip_port = "113.140.66.34:8000"
+//        group_name = "高新热力"
+        
+        //        {"idh_ip_port":"124.114.131.38:6099","homs_ip_port":"124.114.131.38:8000","homs_mapping_ip_port":"124.114.131.38:8010","idh_monitor_ip_port":"","group_id":"1","weather_id":"101110101","city":"西安","version":"3","group_name":"西安市热力"}
+        
+//        homs_mapping_ip_port = "124.114.131.38:8010"
+//        homs_ip_port = "124.114.131.38:8000"
+//        idh_ip_port = "124.114.131.38:6099"
+//        groupid = "1"
+//        city = "西安"
+//        weatherid = "101110101"
+//        currentVersion = "3"
+//        idh_monitor_ip_port = ""
+//        group_name = "西安市热力"
+        
         
         
          let myDic = user as! [String:Any]
@@ -47,6 +84,8 @@ class IDH{
          weatherid = myDic["weather_id"]! as! String
          currentVersion = myDic["version"]! as! String
          idh_monitor_ip_port = myDic["idh_monitor_ip_port"]! as! String
+         group_name = myDic["group_name"]! as! String
+ 
     }
     
     class func getVCFromStr(_ str: String) -> UIViewController {
@@ -173,8 +212,6 @@ class IDH{
                                     
                                     model.area_id = parentID * 100 + i
                                     model.parent_id = parentID
-                                    
-                                    
                                     
                                     print("----\(model.area_id)---\(model.parent_id)---\(model.idh_id)-----\(model.area_name)-----\(model.parent_name)")
                                     //queue

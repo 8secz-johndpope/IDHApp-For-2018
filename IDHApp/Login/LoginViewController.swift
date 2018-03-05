@@ -22,19 +22,12 @@ class LoginViewController: UIViewController {
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.isTranslucent = true
-//        isNeedScan()
+        askNet()
     }
     
-//    func isNeedScan() {
-//        if let user = Defaults.instance.getForKey(key: "userInfo"){
-//        }else{
-//            let alert = UIAlertController.init(title: "去扫码", message: "", preferredStyle: .alert)
-//            alert.addAction(UIAlertAction.init(title: "scan code", style: .default, handler: { (action) in
-//                self.present(AlertViewController(), animated: true, completion: nil)
-//            }))
-//            self.present(alert, animated: true, completion: nil)
-//        }
-//    }
+    func askNet() {
+        Alamofire.request("http://www.baidu.com")
+    }
 
     func setUp() {
         pwdTF.delegate = self
@@ -47,21 +40,36 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginBtn(_ sender: UIButton) {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 10.0
+        let alomo = Alamofire.SessionManager.default
+        alomo.session.configuration.timeoutIntervalForRequest = 5.0
+        
         AppProvider.instance.setVersion()
-        if AppProvider.instance.appVersion == .homs03 {
-            let str = AppProvider.instance.providerLogin()
-            let vc = UINavigationController.init(rootViewController: IDH.getVCFromStr(str))
-            self.present(vc, animated: true, completion: nil)
-        }else{
-
+            if !(accountTF.text?.isEmpty)! && !(pwdTF.text?.isEmpty)!{
         if let user = accountTF.text, let pwd = pwdTF.text {
+            //homs03直接登录
+            AppProvider.instance.setVersion()
+            if AppProvider.instance.appVersion == .homs03 {
+                UserDefaults.standard.set("homs03", forKey: "roleID")
+                UserDefaults.standard.synchronize()
+                let str = AppProvider.instance.providerLogin()
+                let vc = UINavigationController.init(rootViewController: IDH.getVCFromStr(str))
+                self.present(vc, animated: true, completion: nil)
+                
+            }else{
             let match = MyRegex("^[^\\u4e00-\\u9fa5]{0,}$")
             if(match.match(user)){
                 let url = "http://\(idh_ip_port)/Analyze.svc/GetRole/\(user)/\(pwd.MD5()!)"
                 print("\(url)")
                 var roleID = ""
-                
-                Alamofire.request(url, method: .get).responseJSON(completionHandler: { reponse in
+                alomo.request(url, method: .get).responseJSON(completionHandler: { reponse in
+                    
+//                    switch reponse.result{
+//                    case  .success:
+//                    case .failure(let error):
+////                        error.localizedDescription.e
+//                    }
                     if reponse.result.isSuccess{
                         let result = reponse.result.value as? NSDictionary
                         if let role = result!["RoleID"]{
@@ -69,7 +77,7 @@ class LoginViewController: UIViewController {
                         }
                         if roleID.isEmpty{
                             //弹出页面
-                    Toast.shareInstance().showView(self.view, title: "用户名和密码有误")
+                    Toast.shareInstance().showView(self.view, title: "账号或密码有误!")
                     Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
                         }else{
                                 UserDefaults.standard.set(roleID, forKey: "roleID")
@@ -92,18 +100,26 @@ class LoginViewController: UIViewController {
                                 })
                         }
                     }else{
-                        print("\(reponse)")
-                        Toast.shareInstance().showView(self.view, title:"登录失败")
-                        Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+                        print("\(reponse.error)")
+                        Toast.shareInstance().showView(self.view, title:"该服务暂未开通，不支持登录")
+ Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
                     }
                     })
             }
-        }else{
-            Toast.shareInstance().showView(self.view, title: "请输入用户名和密码！")
+            }
+                }
+        }else if (accountTF.text?.isEmpty)! && !(pwdTF.text?.isEmpty)!{
+            Toast.shareInstance().showView(self.view, title: "请输入账号!")
             Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
-        }
+        }else if (pwdTF.text?.isEmpty)! && (accountTF.text?.isEmpty)!{
+            Toast.shareInstance().showView(self.view, title: "请输入账号和密码!")
+            Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+        }else{
+            Toast.shareInstance().showView(self.view, title: "请输入密码!")
+            Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+            }
             
-        }
+        
         
     }
     

@@ -14,6 +14,8 @@ struct YMSingleton{
     static var instance:Toast? = nil
 }
 
+
+
 class Toast: UIView {
     private static var __once: () = {
         YMSingleton.instance = Toast(frame: CGRect.zero)
@@ -50,7 +52,7 @@ class Toast: UIView {
         self.addSubview(loadingLab)
         
         //添加超时定时器
-        timer = Timer(timeInterval: 30, target: self, selector: #selector(timerDeadLine), userInfo: nil, repeats: false)
+        timer = Timer(timeInterval: 2, target: self, selector: #selector(timerDeadLine), userInfo: nil, repeats: false)
     }
     
     class func shareInstance() -> Toast{
@@ -60,7 +62,7 @@ class Toast: UIView {
         return YMSingleton.instance!
     }
     
-    func showView(_ view:UIView , title:String) {
+    func showView(_ view:UIView , title:String, landscape:Bool = false) {
         loadingLab.text = title
         
         if masks==nil {
@@ -68,9 +70,13 @@ class Toast: UIView {
             masks.backgroundColor = UIColor.clear
             masks.addSubview(self)
             UIApplication.shared.keyWindow?.addSubview(masks)
-            self.center = view.center
             masks.alpha = 1
         }
+        self.center = view.center
+        if landscape{
+            self.center = CGPoint.init(x: view.center.y, y: view.center.x)
+        }
+        UIApplication.shared.keyWindow?.bringSubview(toFront: masks)
         
         masks.isHidden = false
         
