@@ -41,6 +41,20 @@ class resultCollectionViewController: UICollectionViewController {
         }else{
             NotificationCenter.default.addObserver(self, selector: #selector(update(_:)), name: NSNotification.Name(rawValue: "exchanger-result"), object: nil)
         }
+        
+
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if models.isEmpty {
+            Toast.shareInstance().showView(self.view, title: "未搜索到匹配项")
+            Thread.detachNewThreadSelector(#selector(self.hiddenThreadView), toTarget: self, with: nil)
+        }
+    }
+    
+    @objc func hiddenThreadView(){
+        Thread.sleep(forTimeInterval: 1.5)
+        Toast.shareInstance().hideView()
     }
     
     @objc func back() {
@@ -129,9 +143,13 @@ class resultCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if models.isEmpty {
+            return UIView() as! UICollectionReusableView
+        }else{
         let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Identify.header, for: indexPath) as! CollectionReusableView
         view.model = models[indexPath.section].heatFactory
         return view
+        }
     }
 
     // MARK: UICollectionViewDelegate

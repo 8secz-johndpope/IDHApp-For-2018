@@ -33,23 +33,43 @@ class TreeStructureViewController: UIViewController {
     }
     
     func setupNav() {
-        self.navigationItem.title = "监控画面列表"
-//        self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "back").withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(scan))
+        if group_name.isEmpty {
+            self.navigationItem.title = "监控画面列表"
+        }else{
+            self.navigationItem.title = group_name
+        }
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "退出", style: .done, target: self, action: #selector(logionut))
     }
     
-    @objc func scan() {
-        Defaults.instance.removeValue(key: "userInfo")
-        try! realm?.write {
-            realm?.deleteAll()
-        }
-        self.present(AlertViewController(), animated: true, completion: nil)
+    @objc func logionut() {
+        let alert = UIAlertController.init(title: "退出登录", message: "是否确认退出", preferredStyle: .alert)
+        alert.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction.init(title: "退出", style: .destructive, handler: { alert  in
+            let login = UIStoryboard.init(name: "Login", bundle: nil)
+            let logonVC = login.instantiateViewController(withIdentifier: "login")
+            self.present(logonVC, animated: true) {
+                UserDefaults.standard.removeObject(forKey: "roleID")
+            }
+        }))
+        self.present(alert, animated: true, completion: nil)
     }
     
     func setupTable() {
-        treeTable.frame = CGRect.init(x: 0, y: 48+5, width: self.view.bounds.width, height: self.view.bounds.height-48)
+        treeTable.frame = CGRect.init(x: 0, y: 64, width: self.view.bounds.width, height: self.view.bounds.height-48)
         treeTable.delegate = self
         treeTable.dataSource = self
         treeTable.register(HomsTreeTableViewCell.self, forCellReuseIdentifier: "treeCell")
+        treeTable.separatorStyle = .singleLine
+        self.treeTable.tableFooterView = UIView()
+        
+        
+        //解决分割线不全的问题
+        if treeTable.responds(to: #selector(setter: UITableViewCell.separatorInset)){
+            treeTable.separatorInset = UIEdgeInsets.zero
+        }
+        if treeTable.responds(to: #selector(setter: UIView.layoutMargins)){
+            treeTable.layoutMargins = UIEdgeInsets.zero
+        }
         self.view.addSubview(treeTable)
     }
     
@@ -83,16 +103,28 @@ extension TreeStructureViewController:UITableViewDelegate, UITableViewDataSource
         return datas.count
     }
     
+//    //解决分割线不全的问题
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if cell.responds(to: #selector(setter: UIView.layoutMargins)){
+            cell.layoutMargins = UIEdgeInsets.zero
+        }
+        if cell.responds(to: #selector(setter: UITableViewCell.separatorInset)){
+            cell.separatorInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10)
+        }
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "treeCell", for: indexPath) as! HomsTreeTableViewCell
         cell.isOpen = isopen[indexPath.row]
         cell.data = datas[indexPath.row]
         cell.delegate = self
         cell.selectionStyle = .none
+        cell.separatorInset = UIEdgeInsetsMake(1, 0, 1, 0)
+        
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 45
+        return 50
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -103,7 +103,7 @@ class HomsTreeTableViewCell: UITableViewCell {
     }
     
     override func layoutSubviews() {
-        editor.frame = CGRect.init(x: CGFloat(level)*offset, y: 10, width: 220, height: self.contentView.frame.height)
+        editor.frame = CGRect.init(x: CGFloat(level)*offset, y: 0, width: 220, height: self.contentView.frame.height-2)
         button.frame = CGRect.init(x: self.contentView.frame.width - 60, y: 15, width: 50, height: 25)
     }
     

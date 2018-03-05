@@ -41,10 +41,17 @@ class CollectionViewCell: UICollectionViewCell {
         detailView.layout = WeightsLayout(horizontal: false)
         detailView.layout?.weights = [1,1,1,1]
         itemOne.textColor = UIColor.gray
-        itemOne.font = UIFont.systemFont(ofSize: 12)
-        itemTwo.font = UIFont.systemFont(ofSize: 12)
-        itemThree.font = UIFont.systemFont(ofSize: 12)
-        itemFour.font = UIFont.systemFont(ofSize: 12)
+        var font:CGFloat = 0
+        
+        if UIScreen.main.bounds.height < 569 {
+            font = 10
+        }else{
+            font = 12
+        }
+        itemOne.font = UIFont.systemFont(ofSize: font)
+        itemTwo.font = UIFont.systemFont(ofSize: font)
+        itemThree.font = UIFont.systemFont(ofSize: font)
+        itemFour.font = UIFont.systemFont(ofSize: font)
         detailView.addSubview(itemOne)
         detailView.addSubview(itemTwo)
         detailView.addSubview(itemThree)
@@ -59,6 +66,7 @@ class CollectionViewCell: UICollectionViewCell {
     }
     
     func setUpDatas() {
+        clearTextContent()
         titleLabel.text = exchangerModel?.Name
         if let flag = exchangerModel?.flag {
             if flag == "0"{
@@ -82,8 +90,6 @@ class CollectionViewCell: UICollectionViewCell {
                 let textUnit = NSMutableAttributedString.init(string: model[i]["TagUnit"]!, attributes: attributeValue)
                 textName.append(textVValue)
                 textName.append(textUnit)
-                
-                
                 switch i{
                 case 0:
                     itemOne.attributedText = textName
@@ -100,10 +106,17 @@ class CollectionViewCell: UICollectionViewCell {
         }
     }
     
+    func clearTextContent() {
+        itemOne.text = ""
+        itemTwo.text = ""
+        itemThree.text = ""
+        itemFour.text = ""
+    }
+    
     override func layoutSubviews() {
-        titleLabel.frame = CGRect.init(x: 5, y: 5, width: self.frame.width, height: 20)
-        datatimeLabel.frame = CGRect.init(x: 5, y: 25, width: self.frame.width, height: 20)
-        detailView.frame = CGRect.init(x: 5, y: 45, width: self.frame.width, height: 80)
+        titleLabel.frame = CGRect.init(x: 5, y: 5, width: self.frame.width-5, height: 20)
+        datatimeLabel.frame = CGRect.init(x: 5, y: 25, width: self.frame.width-5, height: 20)
+        detailView.frame = CGRect.init(x: 5, y: 45, width: self.frame.width - 5, height: 80)
     }
     
     

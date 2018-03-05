@@ -26,6 +26,9 @@ class ExchangerCollectionViewController: UICollectionViewController{
     
     var current: Int = 0
     
+    var delegate = UIApplication.shared.delegate as! AppDelegate
+    
+    
 //    var delegate: refreshManager?
 //
 //    var changeDelegate: ChangeFactory?
@@ -39,6 +42,13 @@ class ExchangerCollectionViewController: UICollectionViewController{
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        delegate.landscape = false
+        let value = UIInterfaceOrientation.portrait.rawValue
+        UIDevice.current.setValue(value, forKey: "orientation")
     }
     
     override func viewDidLoad() {
@@ -64,6 +74,14 @@ class ExchangerCollectionViewController: UICollectionViewController{
         NotificationCenter.default.addObserver(self, selector: #selector(sendData(_:)), name: NSNotification.Name(rawValue: "changeData"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeFactor(_:)), name: NSNotification.Name(rawValue: "changeFactory"), object: nil)
+        
+        self.collectionView?.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.collectionView?.setNeedsLayout()
+        self.collectionView?.setNeedsDisplay()
     }
     
     @objc func changeFactor(_ sender: Notification) {
@@ -145,7 +163,11 @@ class ExchangerCollectionViewController: UICollectionViewController{
                         exchangers.append(temp)
                     }
                 }
-                result.append((facModel!,exchangers))
+                if exchangers.isEmpty{
+                    result = []
+                }else{
+                    result.append((facModel!,exchangers))
+                }
             }
         }
     }
@@ -206,6 +228,7 @@ class ExchangerCollectionViewController: UICollectionViewController{
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        AppProvider.instance.setVersion()
         if AppProvider.instance.appVersion == .idh {
             
             let storyBoard = UIStoryboard.init(name: "HomsExchanger", bundle: nil)
@@ -235,7 +258,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
             let id = exchangerList.ID
             print("\(id)")
             let model = realm?.objects(heatModel.self).filter("idh_id = '\(id)' AND type = '换热站'").first
-            
             return model
         }
         return nil
@@ -320,6 +342,7 @@ extension ExchangerCollectionViewController: UICollectionViewDelegateFlowLayout{
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize.init(width: collectionView.bounds.width/3 - 10, height: 130)
+        let width = UIScreen.main.bounds.width > UIScreen.main.bounds.height ? UIScreen.main.bounds.height : UIScreen.main.bounds.width
+        return CGSize.init(width: width/3 - 10, height: 130)
     }
 }

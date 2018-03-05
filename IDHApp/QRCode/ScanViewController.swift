@@ -30,12 +30,33 @@ UIAlertViewDelegate{
     var scanImageView: UIImageView? = nil
     override func viewDidLoad() {
         super.viewDidLoad()
+//        checkCamera()
         self.setupMaskView() //设置遮罩
         self.setupScanView() //设置扫描框
         self.scaning()
         
         NotificationCenter.default.addObserver(self, selector: #selector(resetAnimatinon), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
 
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        checkCamera()
+    }
+    
+    func checkCamera() {
+        let media = AVMediaType.video
+        
+        let state = AVCaptureDevice.authorizationStatus(for: media)
+        if state == .denied || state == .restricted {
+            let alert = UIAlertController.init(title: "提示", message: "请在iPhone的\"设置-隐私-相机\"选项中,允许本程序访问您的相机", preferredStyle: .alert)
+            alert.addAction(UIAlertAction.init(title: "确定", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            print("okokok")
+        }else{
+            print("sadasd")
+        }
+        
     }
     
     deinit {
@@ -169,7 +190,6 @@ UIAlertViewDelegate{
             self.preview.frame = UIScreen.main.bounds
             self.view.layer.insertSublayer(self.preview, at:0)
             
-            
             //开始捕获
             self.session.startRunning()
         }catch _ {
@@ -221,7 +241,8 @@ UIAlertViewDelegate{
                 if dic.contain(["version"]){
                     Defaults.instance.setValue(forKey: "userInfo", forValue: dic)
                     IDH.setupCore(Defaults.instance.getForKey(key: "userInfo") as Any)
-                    
+                    Toast.shareInstance().showView(self.view, title: "激活成功")
+                    Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
                     let storyboard = UIStoryboard.init(name: "Login", bundle: nil)
                     let login = storyboard.instantiateViewController(withIdentifier: "login")
                     self.present(login, animated: true, completion: nil)
@@ -260,6 +281,12 @@ UIAlertViewDelegate{
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    @objc func hidenThreadView(){
+        Thread.sleep(forTimeInterval: 1.5)
+        Toast.shareInstance().hideView()
+    }
+    
 }
 
 

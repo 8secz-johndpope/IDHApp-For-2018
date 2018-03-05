@@ -41,7 +41,7 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
+
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -51,9 +51,9 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
         super.viewDidLoad()
         activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:.gray)
         activityIndicator.center = self.view.center
-        activityIndicator.color = UIColor.red
+        activityIndicator.color = UIColor.gray
         self.view.addSubview(activityIndicator)
-//        getFactoryGroup()
+        self.view.bringSubview(toFront: activityIndicator)
         //网络加载提示条
         setUpNav()
         self.search.returnKeyType = .done
@@ -64,12 +64,16 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
         self.factoryTable.keyboardDismissMode = .onDrag
         let tap = UITapGestureRecognizer.init(target: self, action: #selector(hideKeyboard))
         self.factoryTable.addGestureRecognizer(tap)
-        self.factoryTable.reloadData()
+        if heatExchangeArr.isEmpty {
+            activityIndicator.startAnimating()
+        }
         tap.cancelsTouchesInView = false
         NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: NSNotification.Name(rawValue: "update"), object: nil)
+        self.factoryTable.tableFooterView = UIView()
     }
     
     @objc func updateData(){
+        activityIndicator.stopAnimating()
         self.factoryTable.reloadData()
         self.getSearchRunningData()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "factory-result"), object: self, userInfo: ["datas": self.resultHeatExchangeArr])
@@ -278,6 +282,7 @@ extension WorkingViewController: UITableViewDelegate, UITableViewDataSource {
 //        reveal?.rightViewRevealDisplacement = 100
         reveal?.rightViewRevealOverdraw = 0
         reveal?.delegate = self
+        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
         
         self.present(reveal!, animated: true, completion: nil)
     }

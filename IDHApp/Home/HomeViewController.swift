@@ -120,10 +120,6 @@ class HomeViewController: UIViewController {
         }) { (finished: Bool) in
             
             if finished{
-//                let rootTabBarController = RootTabBarController()
-//                rootTabBarController.selectedIndex = currentViewControllerIndex
-//                self.present(rootTabBarController, animated: true, completion: nil)
-                
                 let story = UIStoryboard.init(name: "Storyboard", bundle: nil)
                 let factor = story.instantiateViewController(withIdentifier: "mainNav")
                 self.present(factor, animated: true, completion: nil)
@@ -132,7 +128,6 @@ class HomeViewController: UIViewController {
     }
     
     @objc func getFactoryGroup() {
-        
         Alamofire.request(workingURL, method: .get).responseJSON { reponse in
             if reponse.result.isSuccess{
                 if let value = reponse.result.value{
@@ -332,20 +327,19 @@ class HomeViewController: UIViewController {
         if globalTimer != nil {
             globalTimer.invalidate()
         }
-        let realm = try! Realm()
-        try! realm.write {
-            realm.deleteAll()
-        }
+//        let realm = try! Realm()
+//        try! realm.write {
+//            realm.deleteAll()
+//        }
 
         let login = UIStoryboard.init(name: "Login", bundle: nil)
         let logonVC = login.instantiateViewController(withIdentifier: "login")
         //
         
         
-        self.present(AlertViewController(), animated: true) {
-            Defaults.instance.removeValue(key: "userInfo")
+        self.present(logonVC, animated: true) {
+//            Defaults.instance.removeValue(key: "userInfo")
             UserDefaults.standard.removeObject(forKey: "roleID")
-        
         }
     }
     override func didReceiveMemoryWarning() {
