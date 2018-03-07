@@ -31,6 +31,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 //        checkVersion()
+//        let manager = NetworkReachabilityManager.init(host: "www.baidu.com")
+//        manager?.listener = { status in
+//            if status == NetworkReachabilityManager.NetworkReachabilityStatus.reachable(.wwan) {
+//
+//            }
+//        }
+        
         RealmUtil.configurRealm()
         setupAppearance()
         if let user = Defaults.instance.getForKey(key: "userInfo") {

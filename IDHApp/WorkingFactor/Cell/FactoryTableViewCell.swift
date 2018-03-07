@@ -32,18 +32,13 @@ class FactoryTableViewCell: UITableViewCell {
         }
     }
     
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func setUpViews() {
         labelArr = []
-        titleLabel.frame = CGRect.init(x: 10, y: 10, width: self.contentView.bounds.width/2, height: 20)
-        textLabel?.font = UIFont.systemFont(ofSize: 14)
         titleLabel.text = factoryModel?.Name
-        titleLabel.adjustsFontSizeToFitWidth = true
-        datatime.frame = CGRect(x: self.contentView.bounds.width/2, y: 10, width: self.contentView.bounds.width/2, height: 20)
         datatime.text = factoryModel?.datatime
         if let facModel = factoryModel {
         if facModel.tagArr.count > 0 {
@@ -66,6 +61,14 @@ class FactoryTableViewCell: UITableViewCell {
             
         }
         setLabels()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        titleLabel.frame = CGRect.init(x: 10, y: 10, width: self.contentView.bounds.width/2, height: 20)
+        textLabel?.font = UIFont.systemFont(ofSize: 14)
+        titleLabel.adjustsFontSizeToFitWidth = true
+        datatime.frame = CGRect(x: self.contentView.bounds.width/2, y: 10, width: self.contentView.bounds.width/2, height: 20)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

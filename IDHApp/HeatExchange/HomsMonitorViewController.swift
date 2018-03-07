@@ -161,11 +161,11 @@ class HomsMonitorViewController: UIViewController {
                     //根据显示文本多少及字体大小动态计算Label的宽度与高度
                     let lblShow = UILabel(frame: CGRect(x: posX, y: posY, width: 0, height: 0))
                     lblShow.text = item["showname"].stringValue
-                    lblShow.font = UIFont.systemFont(ofSize: 9)
+                    lblShow.font = UIFont.systemFont(ofSize: 7)
                     
                     let options : NSStringDrawingOptions = .usesLineFragmentOrigin
                     let lblData1 = DataLabel()
-                    lblData1.font = UIFont.systemFont(ofSize: 9)
+                    lblData1.font = UIFont.systemFont(ofSize: 7)
                     
                     if UIScreen.main.bounds.width < 569{
                         lblData1.font = UIFont.systemFont(ofSize: 7)

@@ -41,8 +41,15 @@ class MonitorViewController: BaseViewController {
     var originalRatio:CGFloat = 0
     var activityIndicator = UIActivityIndicatorView()
     
+    //deprecated
     var textArr: [UILabel] = []
+    
     var delegate = UIApplication.shared.delegate as! AppDelegate
+    
+    var imageActivity = UIActivityIndicatorView()
+    
+    var testLabel = UILabel()
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
@@ -79,6 +86,7 @@ class MonitorViewController: BaseViewController {
         let home = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 48, height: 48))
         home.setImage(#imageLiteral(resourceName: "quality_ico_home"), for: .normal)
         home.addTarget(self, action: #selector(toHome), for: .touchUpInside)
+        
         if AppProvider.instance.appVersion == .homs03 || AppProvider.instance.appVersion == .homsOther {
             home.isHidden = true
         }
@@ -94,9 +102,7 @@ class MonitorViewController: BaseViewController {
         nextButton = UIButton(frame: CGRect.init(x: 0, y: 0, width: 48, height: 48))
         nextButton?.setImage(#imageLiteral(resourceName: "pre"), for: .normal)
         nextButton?.tag = 200
-        
         nextButton?.addTarget(self, action: #selector(changeModel(_:)), for: .touchUpInside)
-        
         
         titleName.numberOfLines = 0
         titleName.lineBreakMode = .byCharWrapping
@@ -148,10 +154,20 @@ class MonitorViewController: BaseViewController {
         activityIndicator.center.y = self.view.center.x
         activityIndicator.color = UIColor.gray
         
+        imageActivity = UIActivityIndicatorView.init(activityIndicatorStyle: .gray)
+        imageActivity.center.x = self.view.center.y
+        imageActivity.center.y = self.view.center.x
+        
+        
+//        testLabel = UILabel.init(frame: CGRect.init(x: 48, y: 0, width: 200, height: 20))
+        
         self.view.addSubview(imageView)
         self.view.addSubview(editorView)
         self.view.addSubview(activityIndicator)
+        self.view.addSubview(imageActivity)
         self.view.bringSubview(toFront: activityIndicator)
+//        self.view.addSubview(testLabel)
+//        self.view.bringSubview(toFront: testLabel)
     }
     
     func changeExchanger() {
@@ -295,16 +311,25 @@ class MonitorViewController: BaseViewController {
     }
     
     func requestImage(_ path: String) {
+        imageActivity.startAnimating()
         let str = MonitorURL+"?action=get&path=\(path)"
         let url = URL(string: str.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
-        imageView.kf.setImage(with: url)
+        imageView.kf.setImage(with: url, placeholder: nil, options: nil, progressBlock: nil) { (image, error, cache, url) in
+            self.imageActivity.stopAnimating()
+        }
     }
     @objc func loadDatas() {
         if let heat = model {
+            self.testLabel = UILabel.init(frame: CGRect.init(x: 48, y: 0, width: 300, height: 20))
+            self.testLabel.text = heat.path
+            self.view.addSubview(testLabel)
+            self.view.bringSubview(toFront: testLabel)
+//            testLabel.text = heat.path
             let realm = try! Realm()
             if !realm.objects(heatModel.self).filter("parent_id == \(heat.area_id)").isEmpty{
                 Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": heat.path]).responseData(completionHandler: { reponse in
                     if reponse.result.isSuccess{
+                        
                         let doc = try! DDXMLDocument.init(data: reponse.value!, options: 0)
                         if let back = doc.rootElement()?.elements(forName: "background").first{
                         if let image = back.attribute(forName: "filename")?.stringValue{
@@ -341,6 +366,7 @@ class MonitorViewController: BaseViewController {
             }else{
             activityIndicator.startAnimating()
             print("\(heat.path)-----")
+
             Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": heat.path]).responseData(completionHandler: { reponse in
                 if reponse.result.isSuccess{
                     let doc = try! DDXMLDocument.init(data: reponse.value!, options: 0)
@@ -365,7 +391,9 @@ class MonitorViewController: BaseViewController {
                                 self.activityIndicator.stopAnimating()
                             }
                         }
+                        
                     let dataStrs = doc.rootElement()?.elements(forName: "datastr")
+                        
                     if let dataW = doc.rootElement()?.attribute(forName: "width")?.stringValue, let dataH = doc.rootElement()?.attribute(forName: "height")?.stringValue{
                         let H = (dataH as NSString).floatValue
                         let W = (dataW as NSString).floatValue
@@ -416,7 +444,7 @@ class MonitorViewController: BaseViewController {
                             model.tag_id = tagid!
                             model.unit = unit!
                         }
-//                        存起来所有的ID
+//                      存起来所有的ID
                         self.stationIDArr.append(model.station_id)
                         self.labelArr.append(model)
                         }
@@ -435,6 +463,7 @@ class MonitorViewController: BaseViewController {
     
     
     func loadDataFor03(_ path: String) {
+        testLabel.text = path
         Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": path]).responseData { reponse in
             if reponse.result.isSuccess{
                 let doc = try! DDXMLDocument.init(data: reponse.value!, options: 0)
@@ -473,21 +502,26 @@ class MonitorViewController: BaseViewController {
                             model.height = (height! as NSString).floatValue * 0.01
                         }
                         if let object = data.elements(forName: "object").first{
-//                            let text = try! object.nodes(forXPath: "text").first?.stringValue
+                            let text = try! object.nodes(forXPath: "text").first?.stringValue
                             if let objs = object.elements(forName: "text").first{
                                 let foreColor = objs.attribute(forName: "forecolor")?.stringValue
                                 let valueColor = objs.attribute(forName: "datacolor")?.stringValue
                                 let valuetrans = objs.attribute(forName: "valuetrans")?.stringValue
-                                model.text = objs.stringValue!
+                                let specialUnit = objs.attribute(forName: "specialunit")?.stringValue
+                                model.specialunit = specialUnit!
+                                model.text = text!
                                 model.foreColor = self.strToColor(foreColor!)
                                 model.dataColor = self.strToColor(valueColor!)
                                 model.valueTrans = valuetrans!
+                            }
+                            if let values = object.elements(forName: "values").first{
+                                let format = values.attribute(forName: "format")?.stringValue
+                                model.format = format!
                             }
                         }
                         if let dataSource = data.elements(forName: "datasource").first{
                             
                             if let stationid = dataSource.attribute(forName: "stationid")?.stringValue{
-//                                staID = stationid
                                 model.station_id = stationid
                             }
                             let tagid = dataSource.attribute(forName: "datatagid")?.stringValue
@@ -495,20 +529,10 @@ class MonitorViewController: BaseViewController {
                             model.tag_id = tagid!
                             model.unit = unit!
                         }
-                        //根据stationID归类
-//                        var stationidarr:[(statID:String,arr:[LabelModel])] = []
-                        
-//                        for temp in stationidarr{
-//                            if model.station_id == temp.statID{
-//                              temp.arr.append(model)
-//                            }else{
-//                            }
-//                        }
+                        self.stationIDArr.append(model.station_id)
                         self.labelArr.append(model)
                     }
-//                for temp in self.labelArr{
-//                    temp.station_id = staID
-//                }
+                    self.archiverModels(self.labelArr)
                     self.requestValues()
             }else{
                 print("\(path)---error")
@@ -536,23 +560,21 @@ class MonitorViewController: BaseViewController {
                 if reponse.result.isSuccess{
                     let doc = try! DDXMLDocument.init(data: reponse.result.value!, options: 0)
                     let data = doc.rootElement()?.elements(forName: "data")
-                    for temp in self.labelArr {
-                        print("\(temp.tag_id)--\(temp.station_id)----\(temp.text)")
-                        for tem in data!{
-                            if let tag = tem.elements(forName: "id").first?.stringValue{
-                                if tag == temp.tag_id{
-                                    print("tag:::\(tag)")
-                                    temp.value = (tem.elements(forName: "value").first?.stringValue)!
-                                }
+                    for tem in data!{
+                        if let tag = tem.elements(forName: "id").first?.stringValue{
+                            for model in temp.modles{
+                            if tag == model.tag_id{
+                                model.value = (tem.elements(forName: "value").first?.stringValue)!
+                            }
                             }
                         }
                     }
                     if update{
-                        if #available(iOS 10.0, *) {
-                            Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { (time) in
-                                Toast.shareInstance().hideView()
-                            })
-                        }
+                        //                        if #available(iOS 10.0, *) {
+                        //                            Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { (time) in
+                        //                                Toast.shareInstance().hideView()
+                        //                            })
+                        //                        }
                         self.reWriteData()
                     }else{
                         self.drawLabels()
@@ -565,11 +587,22 @@ class MonitorViewController: BaseViewController {
         }
     }
     
+    //更新实时数据
     func reWriteData() {
-        for label in textArr {
+//        if #available(iOS 10.0, *) {
+//            Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { (time) in
+                Toast.shareInstance().hideView()
+//            })
+//        }
+//        for label in textArr {
+//            let label = imageView.viewWithTag(<#T##tag: Int##Int#>)
+            
             for temp in labelArr{
-                if label.tag == (temp.tag_id as NSString).integerValue + ((temp.station_id as NSString).integerValue * 100){
+                let label = imageView.viewWithTag((temp.tag_id as NSString).integerValue + ((temp.station_id as NSString).integerValue * 1000)) as! UILabel
+                
+//                if label.tag == (temp.tag_id as NSString).integerValue + ((temp.station_id as NSString).integerValue * 1000){
 //                    if !temp.text.isEmpty{
+                    
                         let textAttribute = [NSAttributedStringKey.foregroundColor: temp.foreColor]
                         let valueAttribute = [NSAttributedStringKey.foregroundColor: temp.dataColor]
                         let text = NSMutableAttributedString.init(string: temp.text, attributes: textAttribute)
@@ -591,12 +624,13 @@ class MonitorViewController: BaseViewController {
                             text.append(unitAttribute)
                             label.attributedText = text
                         }
+                    
 //                        let size2 = (label.text! as NSString).boundingRect(with: CGSize.init(width: 0, height: 0), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: label.font], context: nil).size
 //                        label.frame.size = size2
 //                }
-            }
+//            }
         }
-    }
+//    }
         let formatt = DateFormatter()
         formatt.dateFormat = "yyyy-MM-dd HH:mm:ss"
         dateView.text = "数据时间:" + formatt.string(from: Date())
@@ -614,6 +648,7 @@ class MonitorViewController: BaseViewController {
         var w = h/CGFloat(originalRatio)
         var x = (imageView.bounds.width - w)/2
         var y:CGFloat = 0
+        
         if 1/originalRatio > imageView.bounds.width/imageView.bounds.height {
             w = imageView.bounds.width
             h = w*CGFloat(originalRatio)
@@ -621,8 +656,71 @@ class MonitorViewController: BaseViewController {
             y = (imageView.bounds.height - h)/2
         }
         
-        print("\(x)-----\(imageView.bounds.width)----\(w)")
         if last {
+            //labelArr is been deprecated Use stationLabelArr instead
+            
+//            for temp in stationLabelArr{
+//                for model in temp.modles{
+//                    if last{
+//                        let label = UILabel()
+//                        label.font = UIFont.systemFont(ofSize: 9)
+//                        label.frame = CGRect(x: CGFloat(model.x) * w + x, y: CGFloat(model.y) * h + y, width: CGFloat(model.width)*w, height: CGFloat(model.height)*h)
+//                        label.text = model.text
+//                        let size2 = (label.text! as NSString).boundingRect(with: CGSize.init(width: 0, height: 0), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: label.font], context: nil).size
+//                        label.frame.size = size2
+//                        imageView.addSubview(label)
+//                    }else{
+//                        let label = UILabel()
+//                        label.font = UIFont.systemFont(ofSize: 9)
+//                        label.tag = (model.tag_id as NSString).integerValue + ((model.station_id as NSString).integerValue * 100)
+//                        //            if !temp.text.isEmpty{
+//                        label.frame = CGRect(x: CGFloat(model.x) * w + x, y: CGFloat(model.y) * imageView.bounds.height, width: CGFloat(model.width)*w, height: CGFloat(model.height)*imageView.bounds.height)
+//                        let textAttribute = [NSAttributedStringKey.foregroundColor: model.foreColor]
+//                        let valueAttribute = [NSAttributedStringKey.foregroundColor: model.dataColor]
+//                        let text = NSMutableAttributedString.init(string: model.text, attributes: textAttribute)
+//
+//                        var unitAttribute = NSAttributedString.init(string: model.unit)
+//                        if !model.specialunit.isEmpty{
+//                            unitAttribute = NSAttributedString.init(string: model.specialunit)
+//                        }
+//                        if model.valueTrans.isEmpty{
+//                            let num = (model.value as NSString).floatValue
+//
+//                            let format = self.valueLength(model.format)
+//                            let value = NSAttributedString.init(string: String(format: "%.\(format)f", num), attributes: valueAttribute)
+//                            text.append(value)
+//                            text.append(unitAttribute)
+//                            label.attributedText = text
+//                        }else{
+//                            let value = NSAttributedString.init(string: getTransValue(model.valueTrans, model.value)!, attributes: valueAttribute)
+//                            text.append(value)
+//                            text.append(unitAttribute)
+//                            label.attributedText = text
+//                        }
+//
+//                        //                let size = CGSize.init(width: CGFloat(MAXFLOAT), height: CGFloat(temp.height)*imageView.bounds.height)
+//                        //
+//                        //                if UIScreen.main.bounds.width < 569{
+//                        //                    label.font = UIFont.systemFont(ofSize: 7)
+//                        //                }else{
+//                        //                    label.font = UIFont.systemFont(ofSize: 9)
+//                        //                }
+//                        //
+//                        //                let size2 = (label.text! as NSString).boundingRect(with: CGSize.init(width: 0, height: 0), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: label.font], context: nil).size
+//                        //
+//                        //                label.frame.size = size2
+//
+//                        label.adjustsFontSizeToFitWidth = true
+//
+//                        //                label.autoresizingMask = [.flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleWidth, .flexibleHeight]
+//                        print("\(label.frame)---\(imageView.frame)")
+//                        self.imageView.addSubview(label)
+//                        textArr.append(label)
+//                    }
+//                }
+//
+//            }
+            
             for temp in labelArr {
                 if !temp.text.isEmpty{
                     let label = UILabel()
@@ -638,7 +736,7 @@ class MonitorViewController: BaseViewController {
         for temp in labelArr {
         let label = UILabel()
             label.font = UIFont.systemFont(ofSize: 9)
-            label.tag = (temp.tag_id as NSString).integerValue + ((temp.station_id as NSString).integerValue * 100)
+            label.tag = (temp.tag_id as NSString).integerValue + ((temp.station_id as NSString).integerValue * 1000)
 //            if !temp.text.isEmpty{
                 label.frame = CGRect(x: CGFloat(temp.x) * w + x, y: CGFloat(temp.y) * imageView.bounds.height, width: CGFloat(temp.width)*w, height: CGFloat(temp.height)*imageView.bounds.height)
                 let textAttribute = [NSAttributedStringKey.foregroundColor: temp.foreColor]
@@ -679,12 +777,12 @@ class MonitorViewController: BaseViewController {
                 label.adjustsFontSizeToFitWidth = true
                 
 //                label.autoresizingMask = [.flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleWidth, .flexibleHeight]
-                print("\(label.frame)---\(imageView.frame)")
                 self.imageView.addSubview(label)
                 textArr.append(label)
 //            }else{
 //            }
         }
+            
         }
         let formatt = DateFormatter()
         formatt.dateFormat = "yyyy-MM-dd HH:mm:ss"

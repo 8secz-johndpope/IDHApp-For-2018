@@ -109,7 +109,7 @@ extension TreeStructureViewController:UITableViewDelegate, UITableViewDataSource
             cell.layoutMargins = UIEdgeInsets.zero
         }
         if cell.responds(to: #selector(setter: UITableViewCell.separatorInset)){
-            cell.separatorInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10)
+            cell.separatorInset = UIEdgeInsets.zero
         }
     }
     
@@ -119,12 +119,11 @@ extension TreeStructureViewController:UITableViewDelegate, UITableViewDataSource
         cell.data = datas[indexPath.row]
         cell.delegate = self
         cell.selectionStyle = .none
-        cell.separatorInset = UIEdgeInsetsMake(1, 0, 1, 0)
         
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        return 45
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

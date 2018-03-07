@@ -34,8 +34,8 @@ class MenuViewController: UIViewController {
         self.view.addSubview(table)
         self.view.backgroundColor = UIColor.gray
         self.table.backgroundColor = UIColor.gray
-        self.table.separatorStyle = .none
         self.table.register(MenuTableViewCell.self, forCellReuseIdentifier: "menuCell")
+        self.table.tableFooterView = UIView()
     }
 
     override func didReceiveMemoryWarning() {

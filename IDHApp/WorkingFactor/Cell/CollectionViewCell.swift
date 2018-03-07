@@ -114,6 +114,7 @@ class CollectionViewCell: UICollectionViewCell {
     }
     
     override func layoutSubviews() {
+        super.layoutSubviews()
         titleLabel.frame = CGRect.init(x: 5, y: 5, width: self.frame.width-5, height: 20)
         datatimeLabel.frame = CGRect.init(x: 5, y: 25, width: self.frame.width-5, height: 20)
         detailView.frame = CGRect.init(x: 5, y: 45, width: self.frame.width - 5, height: 80)

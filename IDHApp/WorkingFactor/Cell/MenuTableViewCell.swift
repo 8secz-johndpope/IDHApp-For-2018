@@ -31,7 +31,8 @@ class MenuTableViewCell: UITableViewCell {
     }
     
     override func layoutSubviews() {
-        titleLabel.frame = CGRect.init(x: 5, y: 0, width: self.contentView.bounds.width - 5, height: self.contentView.bounds.height)
+        super.layoutSubviews()
+        titleLabel.frame = CGRect.init(x: 5, y: 5, width: self.contentView.bounds.width - 5, height: self.contentView.bounds.height-10)
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
