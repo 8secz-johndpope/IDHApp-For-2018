@@ -40,6 +40,18 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginBtn(_ sender: UIButton) {
+//            let manager = NetworkReachabilityManager.init(host: "www.baidu.com")
+//            manager?.listener = { status in
+//                if status == NetworkReachabilityManager.NetworkReachabilityStatus.notReachable {
+//                    let alert = UIAlertController.init(title: "提示", message: "请在iPhone的设置中,允许本程序访问数据", preferredStyle: .alert)
+//                    alert.addAction(UIAlertAction.init(title: "确定", style: .default, handler: { (action) in
+//                    }))
+//                    self.present(alert, animated: true, completion: nil)
+//                }else{
+//
+//                }
+//                }
+        
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 10.0
         let alomo = Alamofire.SessionManager.default

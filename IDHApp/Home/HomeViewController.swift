@@ -139,9 +139,7 @@ class HomeViewController: UIViewController {
                         let facFlag = facJson["Flag"].stringValue
                         let facDataTime = facJson["DataTime"].stringValue
                         let facItems = facJson["ItemList"].arrayValue
-                        
                         var facTagArr:[[String: String]] = []
-                        
                         for tagItem in facItems{
                             let facTagName = tagItem["TagName"].stringValue
                             let facTagUnit = tagItem["TagUnit"].stringValue

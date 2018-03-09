@@ -38,6 +38,10 @@ var heatExchangerModelArr:[(heatFactory:HeatFactoryModel, heatExchangerList:[Hea
 let key = "1101121191221200"
 //APP ID
 let appID = ""
+let ChecekUpdateURL = "http://192.168.31.240:8080/version/is_updateApp"
+let UpdateAPPUrl = "https://itunes.apple.com/cn/app/id1339095288?mt=8"
+
+
 
 let MonitorURL = "http://\(homs_ip_port)/DataCenter/Config/HobConfig.aspx"
 let MappingURL = "http://\(homs_mapping_ip_port)/mapping.xml"

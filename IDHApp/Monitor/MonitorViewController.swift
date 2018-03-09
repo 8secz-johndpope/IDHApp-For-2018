@@ -19,7 +19,6 @@ class MonitorViewController: BaseViewController {
     var stationLabelArr: [(station: String, modles:[LabelModel])] = []
     var stationIDArr: [String] = []
     
-    
     var current: Int = 0{
         didSet{
             changeExchanger()
@@ -58,9 +57,6 @@ class MonitorViewController: BaseViewController {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
         setUpViews()
-
-        //启用定时器，每30秒执行一次showRecentData方法
-        self.timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(startUpdate), userInfo: nil, repeats: true)
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -72,7 +68,7 @@ class MonitorViewController: BaseViewController {
     }
     
     @objc func startUpdate() {
-        Toast.shareInstance().showView(self.view, title: "数据更新中...")
+//        Toast.shareInstance().showView(self.view, title: "数据更新中...")
         requestValues(true)
     }
     
@@ -158,19 +154,17 @@ class MonitorViewController: BaseViewController {
         imageActivity.center.x = self.view.center.y
         imageActivity.center.y = self.view.center.x
         
-        
-//        testLabel = UILabel.init(frame: CGRect.init(x: 48, y: 0, width: 200, height: 20))
-        
         self.view.addSubview(imageView)
         self.view.addSubview(editorView)
         self.view.addSubview(activityIndicator)
         self.view.addSubview(imageActivity)
         self.view.bringSubview(toFront: activityIndicator)
-//        self.view.addSubview(testLabel)
-//        self.view.bringSubview(toFront: testLabel)
     }
     
     func changeExchanger() {
+        if timer != nil {
+            timer.invalidate()
+        }
         imageView.transform = CGAffineTransform.identity
         changeButtonState()
         var name = ""
@@ -184,6 +178,7 @@ class MonitorViewController: BaseViewController {
             }else{
                 Toast.shareInstance().showView(self.imageView, title: "暂无数据", landscape: true)
                 Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+                return
             }
             }
         }else{
@@ -199,9 +194,9 @@ class MonitorViewController: BaseViewController {
         }
         titleName.text = newName
         labelArr.removeAll()
-        textArr.removeAll()
         stationLabelArr.removeAll()
         stationIDArr.removeAll()
+        testLabel.text = ""
         loadDatas()
     }
     
@@ -318,13 +313,80 @@ class MonitorViewController: BaseViewController {
             self.imageActivity.stopAnimating()
         }
     }
+    
+    func requestImageFor03(_ path: String, _ doc: DDXMLDocument) {
+        imageActivity.startAnimating()
+        let str = MonitorURL+"?action=get&path=\(path)"
+        let url = URL(string: str.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
+        imageView.kf.setImage(with: url, placeholder: nil, options: nil, progressBlock: nil) { (image, error, cache, url) in
+            self.imageActivity.stopAnimating()
+            if AppProvider.instance.appVersion == .homs03{
+                let dataStrs = doc.rootElement()?.elements(forName: "datastr")
+                if let dataW = doc.rootElement()?.attribute(forName: "width")?.stringValue, let dataH = doc.rootElement()?.attribute(forName: "height")?.stringValue{
+                    let H = (dataH as NSString).floatValue
+                    let W = (dataW as NSString).floatValue
+                    self.originalRatio = CGFloat(H/W)
+                }
+                
+                for data in dataStrs!{
+                    let model = LabelModel()
+                    if let location = data.elements(forName: "location").first{
+                        let x = location.attribute(forName: "x")?.stringValue
+                        let y = location.attribute(forName: "y")?.stringValue
+                        let width = location.attribute(forName: "width")?.stringValue
+                        let height = location.attribute(forName: "height")?.stringValue
+                        let fixedW = location.attribute(forName: "fixedparentwidth")?.stringValue
+                        let fixedH = location.attribute(forName: "fixedparentheight")?.stringValue
+                        //                            self.originalRatio = CGFloat((fixedH! as NSString).floatValue/(fixedW! as NSString).floatValue)
+                        model.x = (x! as NSString).floatValue * 0.01
+                        model.y = (y! as NSString).floatValue * 0.01
+                        model.width = (width! as NSString).floatValue * 0.01
+                        model.height = (height! as NSString).floatValue * 0.01
+                    }
+                    if let object = data.elements(forName: "object").first{
+                        let text = try! object.nodes(forXPath: "text").first?.stringValue
+                        if let objs = object.elements(forName: "text").first{
+                            let foreColor = objs.attribute(forName: "forecolor")?.stringValue
+                            let valueColor = objs.attribute(forName: "datacolor")?.stringValue
+                            let valuetrans = objs.attribute(forName: "valuetrans")?.stringValue
+                            let specialUnit = objs.attribute(forName: "specialunit")?.stringValue
+                            model.specialunit = specialUnit!
+                            model.text = text!
+                            model.foreColor = self.strToColor(foreColor!)
+                            model.dataColor = self.strToColor(valueColor!)
+                            model.valueTrans = valuetrans!
+                        }
+                        if let values = object.elements(forName: "values").first{
+                            let format = values.attribute(forName: "format")?.stringValue
+                            model.format = format!
+                        }
+                    }
+                    if let dataSource = data.elements(forName: "datasource").first{
+                        
+                        if let stationid = dataSource.attribute(forName: "stationid")?.stringValue{
+                            model.station_id = stationid
+                        }
+                        let tagid = dataSource.attribute(forName: "datatagid")?.stringValue
+                        let unit = dataSource.attribute(forName: "unit")?.stringValue
+                        model.tag_id = tagid!
+                        model.unit = unit!
+                    }
+                    if !self.stationIDArr.contains(model.station_id){
+                        self.stationIDArr.append(model.station_id)
+                    }
+                    self.labelArr.append(model)
+                }
+                self.archiverModels(self.labelArr)
+                self.requestValues()
+            }
+        }
+    }
     @objc func loadDatas() {
         if let heat = model {
             self.testLabel = UILabel.init(frame: CGRect.init(x: 48, y: 0, width: 300, height: 20))
             self.testLabel.text = heat.path
             self.view.addSubview(testLabel)
             self.view.bringSubview(toFront: testLabel)
-//            testLabel.text = heat.path
             let realm = try! Realm()
             if !realm.objects(heatModel.self).filter("parent_id == \(heat.area_id)").isEmpty{
                 Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": heat.path]).responseData(completionHandler: { reponse in
@@ -392,7 +454,6 @@ class MonitorViewController: BaseViewController {
                             }
                         }
                         
-                    let dataStrs = doc.rootElement()?.elements(forName: "datastr")
                         
                     if let dataW = doc.rootElement()?.attribute(forName: "width")?.stringValue, let dataH = doc.rootElement()?.attribute(forName: "height")?.stringValue{
                         let H = (dataH as NSString).floatValue
@@ -401,63 +462,76 @@ class MonitorViewController: BaseViewController {
                     }else{
                         self.originalRatio = CGFloat(1028/853)
                     }
-                    
-                    for data in dataStrs!{
-                        let model = LabelModel()
-                        if let location = data.elements(forName: "location").first{
-                            let x = location.attribute(forName: "x")?.stringValue
-                            let y = location.attribute(forName: "y")?.stringValue
-                            let width = location.attribute(forName: "width")?.stringValue
-                            let height = location.attribute(forName: "height")?.stringValue
-                            let fixedW = location.attribute(forName: "fixedparentwidth")?.stringValue
-                            let fixedH = location.attribute(forName: "fixedparentheight")?.stringValue
-                            self.originalRatio = CGFloat((fixedH! as NSString).floatValue/(fixedW! as NSString).floatValue)
-                            model.x = (x! as NSString).floatValue * 0.01
-                            model.y = (y! as NSString).floatValue * 0.01
-                            model.width = (width! as NSString).floatValue * 0.01
-                            model.height = (height! as NSString).floatValue * 0.01
-                        }
-                        if let object = data.elements(forName: "object").first{
-                            let text = try! object.nodes(forXPath: "text").first?.stringValue
-                            if let objs = object.elements(forName: "text").first{
-                            let foreColor = objs.attribute(forName: "forecolor")?.stringValue
-                            let valueColor = objs.attribute(forName: "datacolor")?.stringValue
-                            let valuetrans = objs.attribute(forName: "valuetrans")?.stringValue
-                            let specialUnit = objs.attribute(forName: "specialunit")?.stringValue
-                            model.specialunit = specialUnit!
-                            model.text = text!
-                            model.foreColor = self.strToColor(foreColor!)
-                            model.dataColor = self.strToColor(valueColor!)
-                            model.valueTrans = valuetrans!
+                        if let dataStrs = doc.rootElement()?.elements(forName: "datastr"){
+                            if dataStrs.isEmpty{
+                                self.activityIndicator.stopAnimating()
+                                Toast.shareInstance().showView(self.view, title: "暂无数据")
+                                Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+                            }else{
+                                
+                                for data in dataStrs{
+                                    let model = LabelModel()
+                                    if let location = data.elements(forName: "location").first{
+                                        let x = location.attribute(forName: "x")?.stringValue
+                                        let y = location.attribute(forName: "y")?.stringValue
+                                        let width = location.attribute(forName: "width")?.stringValue
+                                        let height = location.attribute(forName: "height")?.stringValue
+                                        let fixedW = location.attribute(forName: "fixedparentwidth")?.stringValue
+                                        let fixedH = location.attribute(forName: "fixedparentheight")?.stringValue
+                                        self.originalRatio = CGFloat((fixedH! as NSString).floatValue/(fixedW! as NSString).floatValue)
+                                        model.x = (x! as NSString).floatValue * 0.01
+                                        model.y = (y! as NSString).floatValue * 0.01
+                                        model.width = (width! as NSString).floatValue * 0.01
+                                        model.height = (height! as NSString).floatValue * 0.01
+                                    }
+                                    if let object = data.elements(forName: "object").first{
+                                        let text = try! object.nodes(forXPath: "text").first?.stringValue
+                                        if let objs = object.elements(forName: "text").first{
+                                            let foreColor = objs.attribute(forName: "forecolor")?.stringValue
+                                            let valueColor = objs.attribute(forName: "datacolor")?.stringValue
+                                            let valuetrans = objs.attribute(forName: "valuetrans")?.stringValue
+                                            let specialUnit = objs.attribute(forName: "specialunit")?.stringValue
+                                            model.specialunit = specialUnit!
+                                            model.text = text!
+                                            model.foreColor = self.strToColor(foreColor!)
+                                            model.dataColor = self.strToColor(valueColor!)
+                                            model.valueTrans = valuetrans!
+                                        }
+                                        if let values = object.elements(forName: "values").first{
+                                            let format = values.attribute(forName: "format")?.stringValue
+                                            model.format = format!
+                                        }
+                                    }
+                                    if let dataSource = data.elements(forName: "datasource").first{
+                                        if let stationid = dataSource.attribute(forName: "stationid")?.stringValue{
+                                            model.station_id = stationid
+                                        }
+                                        let tagid = dataSource.attribute(forName: "datatagid")?.stringValue
+                                        let unit = dataSource.attribute(forName: "unit")?.stringValue
+                                        model.tag_id = tagid!
+                                        model.unit = unit!
+                                    }
+                                    //                      存起来所有的ID
+                                    if !self.stationIDArr.contains(model.station_id){
+                                        self.stationIDArr.append(model.station_id)
+                                    }
+                                    self.labelArr.append(model)
+                                }
                             }
-                            if let values = object.elements(forName: "values").first{
-                                let format = values.attribute(forName: "format")?.stringValue
-                                model.format = format!
-                            }
-                        }
-                        if let dataSource = data.elements(forName: "datasource").first{
-                            if let stationid = dataSource.attribute(forName: "stationid")?.stringValue{
-                                model.station_id = stationid
-                            }
-                            let tagid = dataSource.attribute(forName: "datatagid")?.stringValue
-                            let unit = dataSource.attribute(forName: "unit")?.stringValue
-                            model.tag_id = tagid!
-                            model.unit = unit!
-                        }
-//                      存起来所有的ID
-                        self.stationIDArr.append(model.station_id)
-                        self.labelArr.append(model)
                         }
                     self.archiverModels(self.labelArr)
                     self.requestValues()
                     }
                 }else{
-                    Toast.shareInstance().showView(self.view, title: "暂无数据")
+                    Toast.shareInstance().showView(self.view, title: "请求数据失败")
                     Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
                     print("error")
                 }
             })
             }
+        }else{
+            Toast.shareInstance().showView(self.view, title: "暂无数据")
+            Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
         }
     }
     
@@ -473,67 +547,68 @@ class MonitorViewController: BaseViewController {
                         arr.removeLast()
                         arr.append(image)
                         let path = arr.joined(separator: "/")
-                        self.requestImage(path)
+                        self.requestImageFor03(path, doc)
                         self.activityIndicator.stopAnimating()
                     }
                 }
-                    let dataStrs = doc.rootElement()?.elements(forName: "datastr")
-                    if let dataW = doc.rootElement()?.attribute(forName: "width")?.stringValue, let dataH = doc.rootElement()?.attribute(forName: "height")?.stringValue{
-                        let H = (dataH as NSString).floatValue
-                        let W = (dataW as NSString).floatValue
-                        self.originalRatio = CGFloat(H/W)
-                    }else{
-                        self.originalRatio = CGFloat(1028/853)
-                    }
                 
-                    for data in dataStrs!{
-                        let model = LabelModel()
-                        if let location = data.elements(forName: "location").first{
-                            let x = location.attribute(forName: "x")?.stringValue
-                            let y = location.attribute(forName: "y")?.stringValue
-                            let width = location.attribute(forName: "width")?.stringValue
-                            let height = location.attribute(forName: "height")?.stringValue
-                            let fixedW = location.attribute(forName: "fixedparentwidth")?.stringValue
-                            let fixedH = location.attribute(forName: "fixedparentheight")?.stringValue
-                            self.originalRatio = CGFloat((fixedH! as NSString).floatValue/(fixedW! as NSString).floatValue)
-                            model.x = (x! as NSString).floatValue * 0.01
-                            model.y = (y! as NSString).floatValue * 0.01
-                            model.width = (width! as NSString).floatValue * 0.01
-                            model.height = (height! as NSString).floatValue * 0.01
-                        }
-                        if let object = data.elements(forName: "object").first{
-                            let text = try! object.nodes(forXPath: "text").first?.stringValue
-                            if let objs = object.elements(forName: "text").first{
-                                let foreColor = objs.attribute(forName: "forecolor")?.stringValue
-                                let valueColor = objs.attribute(forName: "datacolor")?.stringValue
-                                let valuetrans = objs.attribute(forName: "valuetrans")?.stringValue
-                                let specialUnit = objs.attribute(forName: "specialunit")?.stringValue
-                                model.specialunit = specialUnit!
-                                model.text = text!
-                                model.foreColor = self.strToColor(foreColor!)
-                                model.dataColor = self.strToColor(valueColor!)
-                                model.valueTrans = valuetrans!
-                            }
-                            if let values = object.elements(forName: "values").first{
-                                let format = values.attribute(forName: "format")?.stringValue
-                                model.format = format!
-                            }
-                        }
-                        if let dataSource = data.elements(forName: "datasource").first{
-                            
-                            if let stationid = dataSource.attribute(forName: "stationid")?.stringValue{
-                                model.station_id = stationid
-                            }
-                            let tagid = dataSource.attribute(forName: "datatagid")?.stringValue
-                            let unit = dataSource.attribute(forName: "unit")?.stringValue
-                            model.tag_id = tagid!
-                            model.unit = unit!
-                        }
-                        self.stationIDArr.append(model.station_id)
-                        self.labelArr.append(model)
-                    }
-                    self.archiverModels(self.labelArr)
-                    self.requestValues()
+//                    let dataStrs = doc.rootElement()?.elements(forName: "datastr")
+//                    if let dataW = doc.rootElement()?.attribute(forName: "width")?.stringValue, let dataH = doc.rootElement()?.attribute(forName: "height")?.stringValue{
+//                        let H = (dataH as NSString).floatValue
+//                        let W = (dataW as NSString).floatValue
+//                        self.originalRatio = CGFloat(H/W)
+//                    }
+//
+//                    for data in dataStrs!{
+//                        let model = LabelModel()
+//                        if let location = data.elements(forName: "location").first{
+//                            let x = location.attribute(forName: "x")?.stringValue
+//                            let y = location.attribute(forName: "y")?.stringValue
+//                            let width = location.attribute(forName: "width")?.stringValue
+//                            let height = location.attribute(forName: "height")?.stringValue
+//                            let fixedW = location.attribute(forName: "fixedparentwidth")?.stringValue
+//                            let fixedH = location.attribute(forName: "fixedparentheight")?.stringValue
+////                            self.originalRatio = CGFloat((fixedH! as NSString).floatValue/(fixedW! as NSString).floatValue)
+//                            model.x = (x! as NSString).floatValue * 0.01
+//                            model.y = (y! as NSString).floatValue * 0.01
+//                            model.width = (width! as NSString).floatValue * 0.01
+//                            model.height = (height! as NSString).floatValue * 0.01
+//                        }
+//                        if let object = data.elements(forName: "object").first{
+//                            let text = try! object.nodes(forXPath: "text").first?.stringValue
+//                            if let objs = object.elements(forName: "text").first{
+//                                let foreColor = objs.attribute(forName: "forecolor")?.stringValue
+//                                let valueColor = objs.attribute(forName: "datacolor")?.stringValue
+//                                let valuetrans = objs.attribute(forName: "valuetrans")?.stringValue
+//                                let specialUnit = objs.attribute(forName: "specialunit")?.stringValue
+//                                model.specialunit = specialUnit!
+//                                model.text = text!
+//                                model.foreColor = self.strToColor(foreColor!)
+//                                model.dataColor = self.strToColor(valueColor!)
+//                                model.valueTrans = valuetrans!
+//                            }
+//                            if let values = object.elements(forName: "values").first{
+//                                let format = values.attribute(forName: "format")?.stringValue
+//                                model.format = format!
+//                            }
+//                        }
+//                        if let dataSource = data.elements(forName: "datasource").first{
+//
+//                            if let stationid = dataSource.attribute(forName: "stationid")?.stringValue{
+//                                model.station_id = stationid
+//                            }
+//                            let tagid = dataSource.attribute(forName: "datatagid")?.stringValue
+//                            let unit = dataSource.attribute(forName: "unit")?.stringValue
+//                            model.tag_id = tagid!
+//                            model.unit = unit!
+//                        }
+//                        if !self.stationIDArr.contains(model.station_id){
+//                            self.stationIDArr.append(model.station_id)
+//                        }
+//                        self.labelArr.append(model)
+//                    }
+//                    self.archiverModels(self.labelArr)
+//                    self.requestValues()
             }else{
                 print("\(path)---error")
             }
@@ -553,8 +628,8 @@ class MonitorViewController: BaseViewController {
     }
     
     func requestValues(_ update: Bool = false) {
-        for temp in stationLabelArr {
-            let station = temp.station
+        for index in 0..<stationLabelArr.count {
+            let station = stationLabelArr[index].station
             //请求
             Alamofire.request(StationURL, method: .get, parameters: ["stationid": station]).responseData(completionHandler: { reponse in
                 if reponse.result.isSuccess{
@@ -562,25 +637,24 @@ class MonitorViewController: BaseViewController {
                     let data = doc.rootElement()?.elements(forName: "data")
                     for tem in data!{
                         if let tag = tem.elements(forName: "id").first?.stringValue{
-                            for model in temp.modles{
+                            
+                            for model in self.labelArr{
                             if tag == model.tag_id{
                                 model.value = (tem.elements(forName: "value").first?.stringValue)!
                             }
                             }
                         }
                     }
-                    if update{
-                        //                        if #available(iOS 10.0, *) {
-                        //                            Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { (time) in
-                        //                                Toast.shareInstance().hideView()
-                        //                            })
-                        //                        }
-                        self.reWriteData()
-                    }else{
-                        self.drawLabels()
+                    
+                    if index == self.stationLabelArr.count - 1{
+//                        Toast.shareInstance().hideView()
+                        if update{
+                            self.reWriteData()
+                        }else{
+                            self.drawLabels()
+                        }
                     }
                 }else{
-                    
                     print("error")
                 }
             })
@@ -589,19 +663,8 @@ class MonitorViewController: BaseViewController {
     
     //更新实时数据
     func reWriteData() {
-//        if #available(iOS 10.0, *) {
-//            Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { (time) in
-                Toast.shareInstance().hideView()
-//            })
-//        }
-//        for label in textArr {
-//            let label = imageView.viewWithTag(<#T##tag: Int##Int#>)
-            
             for temp in labelArr{
                 let label = imageView.viewWithTag((temp.tag_id as NSString).integerValue + ((temp.station_id as NSString).integerValue * 1000)) as! UILabel
-                
-//                if label.tag == (temp.tag_id as NSString).integerValue + ((temp.station_id as NSString).integerValue * 1000){
-//                    if !temp.text.isEmpty{
                     
                         let textAttribute = [NSAttributedStringKey.foregroundColor: temp.foreColor]
                         let valueAttribute = [NSAttributedStringKey.foregroundColor: temp.dataColor]
@@ -624,13 +687,8 @@ class MonitorViewController: BaseViewController {
                             text.append(unitAttribute)
                             label.attributedText = text
                         }
-                    
-//                        let size2 = (label.text! as NSString).boundingRect(with: CGSize.init(width: 0, height: 0), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: label.font], context: nil).size
-//                        label.frame.size = size2
-//                }
-//            }
         }
-//    }
+
         let formatt = DateFormatter()
         formatt.dateFormat = "yyyy-MM-dd HH:mm:ss"
         dateView.text = "数据时间:" + formatt.string(from: Date())
@@ -641,9 +699,11 @@ class MonitorViewController: BaseViewController {
         if let image = imageView.image {
             originalRatio = (image.size.height)/(image.size.width)
         }
+        
         for view in imageView.subviews {
             view.removeFromSuperview()
         }
+        
         var h = imageView.bounds.height
         var w = h/CGFloat(originalRatio)
         var x = (imageView.bounds.width - w)/2
@@ -657,70 +717,6 @@ class MonitorViewController: BaseViewController {
         }
         
         if last {
-            //labelArr is been deprecated Use stationLabelArr instead
-            
-//            for temp in stationLabelArr{
-//                for model in temp.modles{
-//                    if last{
-//                        let label = UILabel()
-//                        label.font = UIFont.systemFont(ofSize: 9)
-//                        label.frame = CGRect(x: CGFloat(model.x) * w + x, y: CGFloat(model.y) * h + y, width: CGFloat(model.width)*w, height: CGFloat(model.height)*h)
-//                        label.text = model.text
-//                        let size2 = (label.text! as NSString).boundingRect(with: CGSize.init(width: 0, height: 0), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: label.font], context: nil).size
-//                        label.frame.size = size2
-//                        imageView.addSubview(label)
-//                    }else{
-//                        let label = UILabel()
-//                        label.font = UIFont.systemFont(ofSize: 9)
-//                        label.tag = (model.tag_id as NSString).integerValue + ((model.station_id as NSString).integerValue * 100)
-//                        //            if !temp.text.isEmpty{
-//                        label.frame = CGRect(x: CGFloat(model.x) * w + x, y: CGFloat(model.y) * imageView.bounds.height, width: CGFloat(model.width)*w, height: CGFloat(model.height)*imageView.bounds.height)
-//                        let textAttribute = [NSAttributedStringKey.foregroundColor: model.foreColor]
-//                        let valueAttribute = [NSAttributedStringKey.foregroundColor: model.dataColor]
-//                        let text = NSMutableAttributedString.init(string: model.text, attributes: textAttribute)
-//
-//                        var unitAttribute = NSAttributedString.init(string: model.unit)
-//                        if !model.specialunit.isEmpty{
-//                            unitAttribute = NSAttributedString.init(string: model.specialunit)
-//                        }
-//                        if model.valueTrans.isEmpty{
-//                            let num = (model.value as NSString).floatValue
-//
-//                            let format = self.valueLength(model.format)
-//                            let value = NSAttributedString.init(string: String(format: "%.\(format)f", num), attributes: valueAttribute)
-//                            text.append(value)
-//                            text.append(unitAttribute)
-//                            label.attributedText = text
-//                        }else{
-//                            let value = NSAttributedString.init(string: getTransValue(model.valueTrans, model.value)!, attributes: valueAttribute)
-//                            text.append(value)
-//                            text.append(unitAttribute)
-//                            label.attributedText = text
-//                        }
-//
-//                        //                let size = CGSize.init(width: CGFloat(MAXFLOAT), height: CGFloat(temp.height)*imageView.bounds.height)
-//                        //
-//                        //                if UIScreen.main.bounds.width < 569{
-//                        //                    label.font = UIFont.systemFont(ofSize: 7)
-//                        //                }else{
-//                        //                    label.font = UIFont.systemFont(ofSize: 9)
-//                        //                }
-//                        //
-//                        //                let size2 = (label.text! as NSString).boundingRect(with: CGSize.init(width: 0, height: 0), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: label.font], context: nil).size
-//                        //
-//                        //                label.frame.size = size2
-//
-//                        label.adjustsFontSizeToFitWidth = true
-//
-//                        //                label.autoresizingMask = [.flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleWidth, .flexibleHeight]
-//                        print("\(label.frame)---\(imageView.frame)")
-//                        self.imageView.addSubview(label)
-//                        textArr.append(label)
-//                    }
-//                }
-//
-//            }
-            
             for temp in labelArr {
                 if !temp.text.isEmpty{
                     let label = UILabel()
@@ -738,7 +734,7 @@ class MonitorViewController: BaseViewController {
             label.font = UIFont.systemFont(ofSize: 9)
             label.tag = (temp.tag_id as NSString).integerValue + ((temp.station_id as NSString).integerValue * 1000)
 //            if !temp.text.isEmpty{
-                label.frame = CGRect(x: CGFloat(temp.x) * w + x, y: CGFloat(temp.y) * imageView.bounds.height, width: CGFloat(temp.width)*w, height: CGFloat(temp.height)*imageView.bounds.height)
+                label.frame = CGRect(x: CGFloat(temp.x) * w + x, y: CGFloat(temp.y) * h + y, width: CGFloat(temp.width)*w, height: CGFloat(temp.height)*h)
                 let textAttribute = [NSAttributedStringKey.foregroundColor: temp.foreColor]
                 let valueAttribute = [NSAttributedStringKey.foregroundColor: temp.dataColor]
                 let text = NSMutableAttributedString.init(string: temp.text, attributes: textAttribute)
@@ -762,25 +758,8 @@ class MonitorViewController: BaseViewController {
                     label.attributedText = text
                 }
                 
-//                let size = CGSize.init(width: CGFloat(MAXFLOAT), height: CGFloat(temp.height)*imageView.bounds.height)
-//
-//                if UIScreen.main.bounds.width < 569{
-//                    label.font = UIFont.systemFont(ofSize: 7)
-//                }else{
-//                    label.font = UIFont.systemFont(ofSize: 9)
-//                }
-//
-//                let size2 = (label.text! as NSString).boundingRect(with: CGSize.init(width: 0, height: 0), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: label.font], context: nil).size
-//
-//                label.frame.size = size2
-                
                 label.adjustsFontSizeToFitWidth = true
-                
-//                label.autoresizingMask = [.flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleWidth, .flexibleHeight]
                 self.imageView.addSubview(label)
-                textArr.append(label)
-//            }else{
-//            }
         }
             
         }
@@ -793,8 +772,12 @@ class MonitorViewController: BaseViewController {
         dateView.frame = CGRect.init(x: imageView.bounds.width/2 - 100, y: 10, width: 200, height: 20)
         dateView.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
         imageView.addSubview(dateView)
+        
+        //启用定时器，每30秒执行一次showRecentData方法
+        self.timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(startUpdate), userInfo: nil, repeats: true)
     }
     
+    //保留小数位
     func valueLength(_ format:String) ->Int{
         if format.contains(".") {
             let arr = format.components(separatedBy: ".")
@@ -820,10 +803,9 @@ class MonitorViewController: BaseViewController {
        return ""
     }
     
-    
+    //not common function ,just for xml file color(like R:,G:,B: )
     func strToColor(_ str: String) -> UIColor{
         var numArr: [Float] = []
-        
         let arr = str.components(separatedBy: ",")
         for color in arr {
             let str = color.components(separatedBy: ":").last

@@ -19,31 +19,19 @@ enum themeMode:Int {
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
     var window: UIWindow?
-    
     var landscape: Bool = false
     var provider = AppProvider.instance
-    
-    
     var brightnessValue:CGFloat = 0
     var nightMode:themeMode = .day
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-//        checkVersion()
-//        let manager = NetworkReachabilityManager.init(host: "www.baidu.com")
-//        manager?.listener = { status in
-//            if status == NetworkReachabilityManager.NetworkReachabilityStatus.reachable(.wwan) {
-//
-//            }
-//        }
-        
         RealmUtil.configurRealm()
         setupAppearance()
         if let user = Defaults.instance.getForKey(key: "userInfo") {
         IDH.setupCore(user)
         provider.setVersion()
-//        checkVersion()
+        checkVersion()
         if UserDefaults.standard.value(forKey: "roleID") != nil {
             let str = provider.providerLogin()
             role_id = UserDefaults.standard.value(forKey: "roleID") as! String
@@ -63,38 +51,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     //版本监测
     func checkVersion() {
             let currentVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
-        Alamofire.request("http://182.50.123.37:8080/hsn/version/is_updateApp", method: .get, parameters: ["version": currentVersion, "type": "ios"]).responseJSON { reponse in
+        print("\(currentVersion)")
+        Alamofire.request(ChecekUpdateURL, method: .post, parameters: ["version": currentVersion, "type": "ios", "name": "IDH"]).responseJSON { reponse in
             if reponse.result.isSuccess{
-//                print(reponse.result.value)
                 let result = reponse.result.value as? NSDictionary
-                if let update = result!["is_update"], let url = result!["url"]{
+                if let update = result!["is_update"]{
                     let updated = update as! Bool
                     if updated{
-                        self.alertNewVersion(url: url as! String)
+                        let data = result!["data"] as! NSDictionary
+                        let url = data["url"] as! String
+                        let toast = result!["toast"] as! String
+                        let is_must = data["is_must"] as! Bool
+                        self.alertNewVersion(url: url, is_must, toast)
                     }
                 }
             }else{
-//                print(reponse.error)
             }
         }
     }
     
-    func alertNewVersion(url:String){
+    func alertNewVersion(url:String, _ is_must: Bool = false, _ toast: String){
         let alertController = UIAlertController(title: "提示",
-                                                message: "发现需要升级的版本，现在去更新?", preferredStyle: .alert)
-        let cancle = UIAlertAction(title: "暂不更新", style: .cancel, handler: nil)
+                                                message: "\(toast)", preferredStyle: .alert)
+        if !is_must {
+            let cancle = UIAlertAction(title: "暂不更新", style: .cancel, handler: nil)
+            alertController.addAction(cancle)
+        }
         
         let okAction = UIAlertAction(title: "立即更新", style: .default, handler: {
             action in
             if let u = URL(string: url){
-                if #available(iOS 10.0, *) {
                     UIApplication.shared.open(u, options: [:], completionHandler: nil)
-                } else {
-                    // Fallback on earlier versions
-                }
             }
         })
-        alertController.addAction(cancle)
         alertController.addAction(okAction)
         self.window?.rootViewController?.present(alertController, animated: true, completion: nil)
     }

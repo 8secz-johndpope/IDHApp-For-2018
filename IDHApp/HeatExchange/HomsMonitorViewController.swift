@@ -417,6 +417,10 @@ class HomsMonitorViewController: UIViewController {
         
         let postUrl = "Http://\(idh_monitor_ip_port)/datacenter/dataservice/RecentData.aspx"
         
+        Alamofire.request(postUrl, method: .post, parameters: ["null": postXml]).response { (reponse) in
+            print("=-=-=-=\(reponse)")
+        }
+        
         //1.创建会话对象
         let session: URLSession = URLSession.shared
         //2.根据会话对象创建task
@@ -429,7 +433,6 @@ class HomsMonitorViewController: UIViewController {
         request.httpBody = self.postXml.data(using: String.Encoding.utf8)
         
         //根据会话对象创建一个Task(发送请求）
-        
         let dataTask: URLSessionDataTask = session.dataTask(with: request) { (data, reponse, error) in
             if data != nil{
                 DispatchQueue.main.async{
@@ -481,6 +484,7 @@ extension HomsMonitorViewController:XMLParserDelegate{
     }
     
     func parser(_ parser: XMLParser, foundCharacters string: String) {
+        
         currentElementValue = string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
     
