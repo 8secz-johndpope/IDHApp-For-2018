@@ -11,8 +11,11 @@ import Alamofire
 import Kingfisher
 import SwiftyJSON
 import RealmSwift
+import AVFoundation
 
 class HomeViewController: UIViewController {
+    
+
 
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var temperatureWeature: UILabel!
@@ -22,10 +25,13 @@ class HomeViewController: UIViewController {
     @IBOutlet var myCity: UILabel!
     
     @IBOutlet weak var factory: UIView!
+
+    @IBOutlet weak var EneryAnalyse: UIView!
     
+    @IBOutlet weak var alarmManagment: UIView!
+    @IBOutlet weak var heatQuality: UIView!
     var timer: Timer!
     var dataTimer: Timer!
-    
     
     @IBAction func clearImageCache(_ sender: UIButton) {
         //clean picture memory
@@ -50,14 +56,12 @@ class HomeViewController: UIViewController {
         
         self.navigationController?.navigationBar.setBackgroundImage(UIImage.init(), for: .compact)
         self.navigationController?.navigationBar.shadowImage = UIImage()
-
         // Do any additional setup after loading the view.
     }
     
     func setUpcityInfo() {
         myCity.text = city
     }
-    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -75,44 +79,48 @@ class HomeViewController: UIViewController {
     
     func setUpViews() {
         //给四个视图块添加单击手势功能
-//        let energyGesture = UITapGestureRecognizer(target: self, action: #selector(handleEnergyGesture(_:)))
+        let energyGesture = UITapGestureRecognizer(target: self, action: #selector(handleEnergyGesture(_:)))
         let factorGesture = UITapGestureRecognizer(target: self, action: #selector(handleFactorGesture(_:)))
-//        let qualityGesture = UITapGestureRecognizer(target: self, action: #selector(handleQualityGesture(_:)))
-//        let alarmGesture = UITapGestureRecognizer(target: self, action: #selector(handleAlarmGesture(_:)))
+        let qualityGesture = UITapGestureRecognizer(target: self, action: #selector(handleQualityGesture(_:)))
+        let alarmGesture = UITapGestureRecognizer(target: self, action: #selector(handleAlarmGesture(_:)))
         
-//        enery.addGestureRecognizer(energyGesture)
-        
+        EneryAnalyse.addGestureRecognizer(energyGesture)
         factory.addGestureRecognizer(factorGesture)
-        
-//        quality.addGestureRecognizer(qualityGesture)
-        
-//        alarm.addGestureRecognizer(alarmGesture)
+        heatQuality.addGestureRecognizer(qualityGesture)
+        alarmManagment.addGestureRecognizer(alarmGesture)
     }
     
     //设置四个视图块单击手势执行的方法
-//    @objc func handleEnergyGesture(_ sender:UITapGestureRecognizer)
-//    {
-//        setViewAnimation(enery,currentViewControllerIndex:0)
-//    }
+    @objc func handleEnergyGesture(_ sender:UITapGestureRecognizer)
+    {
+        setViewAnimation(EneryAnalyse,currentViewControllerIndex:0)
+    }
     
     @objc func handleFactorGesture(_ sender:UITapGestureRecognizer)
     {
         setViewAnimation(factory,currentViewControllerIndex:1)
     }
     
-//    @objc func handleQualityGesture(_ sender:UITapGestureRecognizer)
-//    {
-//        setViewAnimation(quality,currentViewControllerIndex:2)
-//    }
-//
-//    @objc func handleAlarmGesture(_ sender:UITapGestureRecognizer)
-//    {
-//        setViewAnimation(alarm,currentViewControllerIndex:3)
-//    }
+    @objc func handleQualityGesture(_ sender:UITapGestureRecognizer)
+    {
+        setViewAnimation(heatQuality,currentViewControllerIndex:2)
+    }
+
+    @objc func handleAlarmGesture(_ sender:UITapGestureRecognizer)
+    {
+        setViewAnimation(alarmManagment,currentViewControllerIndex:3)
+    }
     
     //设置UIView的动画效果
     func setViewAnimation(_ myView:UIView,currentViewControllerIndex:Int)
     {
+        //默认是昨天
+        let currentDate = Date()
+        let yesterdayDate = Date(timeIntervalSince1970: currentDate.timeIntervalSince1970-60*60*24)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        globalDate = dateFormatter.string(from: yesterdayDate)
         
         UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
             UIView.setAnimationTransition(.flipFromLeft, for: myView, cache: false)
@@ -120,17 +128,25 @@ class HomeViewController: UIViewController {
         }) { (finished: Bool) in
             
             if finished{
-                let story = UIStoryboard.init(name: "Storyboard", bundle: nil)
-                let factor = story.instantiateViewController(withIdentifier: "mainNav")
-                self.present(factor, animated: true, completion: nil)
+                
+                let rootTabBarController = RootTabBarController()
+                rootTabBarController.selectedIndex = currentViewControllerIndex
+                
+                //
+//                let story = UIStoryboard.init(name: "Storyboard", bundle: nil)
+//                let factor = story.instantiateViewController(withIdentifier: "mainNav")
+                self.present(rootTabBarController, animated: true, completion: nil)
             }
         }
     }
     
     @objc func getFactoryGroup() {
+        
         Alamofire.request(workingURL, method: .get).responseJSON { reponse in
             if reponse.result.isSuccess{
                 if let value = reponse.result.value{
+                    heatFactorArr = []
+                    exchangersArr = []
                     heatExchangeArr = []
                     let json = JSON(value)
                     for (_,facJson) in json{
@@ -146,8 +162,8 @@ class HomeViewController: UIViewController {
                             let factagValue = tagItem["TagValue"].stringValue
                             facTagArr.append(["TagName": facTagName, "TagUnit": facTagUnit, "TagValue": factagValue])
                         }
-                        
-                        let facModel = HeatFactoryModel.init(id: facID, name: facName, flag: facFlag, datatime: facDataTime, tagArr: facTagArr)
+                        let facModel = HeatFactoryModel.init(id: facID, name: facName, flag: facFlag, datatime: facDataTime, type: "", offline: "", online: "", tagArr: facTagArr)
+                    heatFactorArr.append(facModel)
                         
                         //换热站
                         let heatExchangeerArrJson = facJson["HeatExchangers"].arrayValue
@@ -169,9 +185,11 @@ class HomeViewController: UIViewController {
                             }
                             let exchangerModel = HeatExchangeModel(id: id, name: name, flag: flag, datatime: datatime, tagArr: tagArr)
                             exchModelArr.append(exchangerModel)
+                            exchangersArr.append(exchangerModel)
                         }
                         heatExchangeArr.append((facModel, exchModelArr))
                     }
+                    self.setFAndE()
                 }
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "update"), object: self, userInfo: nil)
             }else{
@@ -180,9 +198,20 @@ class HomeViewController: UIViewController {
         }
     }
     
+    func setFAndE() {
+        print(heatFactorArr)
+        print(exchangersArr)
+        if heatFactoryID.isEmpty {
+            heatFactoryID = (heatFactorArr.first?.ID)!
+            heatFactoryName = (heatFactorArr.first?.Name)!
+        }
+        if heatExchangerID.isEmpty {
+            heatExchangerID = (exchangersArr.first?.ID)!
+            heatExchangerName = (exchangersArr.first?.Name)!
+        }
+    }
+    
     func getInfo() {
-//        DispatchQueue.global().async {
-        
             Alamofire.request(factoryURL, method: .get).responseJSON(completionHandler: { reponse in
                 if reponse.result.isSuccess{
                     let myResult = reponse.result.value as? NSArray
@@ -191,15 +220,19 @@ class HomeViewController: UIViewController {
                         for item in myResult{
                                 let groupInfo = GroupingInfo.init(dic: item as! NSDictionary)
                                 groupList.append(groupInfo)
+                            if groupInfo.GroupingType == "group"{
+                                globalGrouping = groupInfo
+                                grouping = groupInfo
+                                groupingType = (grouping?.GroupingType)!
+                                groupingID = (grouping?.GroupingID)!
+                            }
+                            print("\(groupInfo.GroupingName)----\(groupInfo.GroupingID)---\(groupInfo.GroupingType)")
                         }
-                        print(groupList)
                     }
-                    
                 }else{
                     print("\(reponse.error)")
                 }
             })
-//        }
     }
     
     @objc func getWeatherInfo() {

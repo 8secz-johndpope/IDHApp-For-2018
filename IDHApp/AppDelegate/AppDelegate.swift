@@ -25,12 +25,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var brightnessValue:CGFloat = 0
     var nightMode:themeMode = .day
     
+//    let notificationHandler = NotificationHandler()
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        requestNotification()
+        
+        openDB()
         RealmUtil.configurRealm()
         setupAppearance()
+        registWX()
+        
         if let user = Defaults.instance.getForKey(key: "userInfo") {
         IDH.setupCore(user)
         provider.setVersion()
+        registWX()
         checkVersion()
         if UserDefaults.standard.value(forKey: "roleID") != nil {
             let str = provider.providerLogin()
@@ -45,8 +53,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }else{
                     self.window?.rootViewController = AlertViewController()
                 }
+        
+        UNUserNotificationCenter.current().delegate = self
         return true
     }
+    
+    func requestNotification() {
+        
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .authorized:
+                print("允许通知")
+                return
+            case .notDetermined:
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (accepted, error) in
+                    if !accepted{
+                        ToastView.instance.showToast(text: "通知", pos: .Mid)
+                    }
+                }
+            case .denied:
+                DispatchQueue.main.async(execute: { () -> Void in
+                    let alert = UIAlertController.init(title: "消息推送已关闭", message: "想要获取消息，点击设置，开启通知权限", preferredStyle: .alert)
+                    let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+                    let set = UIAlertAction.init(title: "设置", style: .default, handler: { (action) -> Void in
+                        let url = URL.init(string: UIApplicationOpenSettingsURLString)
+                        if let u = url, UIApplication.shared.canOpenURL(u){
+                            UIApplication.shared.open(u, options: [:], completionHandler: { (sucess) in
+                                
+                            })
+                        }
+                        
+                    })
+                    
+                    alert.addAction(cancel)
+                    alert.addAction(set)
+//                    self.window?.rootViewController?.present(alert, animated: true, completion: nil)
+                    
+                })
+                
+            }
+        }
+        
+//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (accepted, error) in
+//            <#code#>
+//        }
+    }
+    
+    
     
     //版本监测
     func checkVersion() {
@@ -66,6 +119,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
             }else{
+                print("访问失败")
             }
         }
     }
@@ -93,6 +147,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let main = UIStoryboard.init(name: "Home", bundle: nil)
         let home = main.instantiateViewController(withIdentifier: "home")
         self.window?.rootViewController = home
+        
+//        let home = UIStoryboard(name: "TabbarStoryboard", bundle: nil).instantiateViewController(withIdentifier: "facbar") as! UITabBarController
+//        self.window?.rootViewController = home
     }
     
     
@@ -124,6 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func registWX() {
         WXApi.registerApp("wx5d9d3f6590fd96f2")
     }
+    
     /*
      func registJpush(options: [UIApplicationLaunchOptionsKey: Any]?) {
      
@@ -189,4 +247,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
 }
+
+extension AppDelegate:UNUserNotificationCenterDelegate{
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        print(response.notification.request.content.body)
+        print(response.notification.request.content.title)
+        let userInfo = response.notification.request.content.userInfo
+        print(userInfo)
+        UIApplication.shared.applicationIconBadgeNumber = 0
+//        let a = RootTabBarController()
+//        a.selectedIndex = 3
+        //        NotificationHandler
+        //        UIApplication.shared.windows.first?.rootViewController
+        //        self.window?.rootViewController?.present(a, animated: true, completion: nil)
+//        self.window?.rootViewController? = a
+        completionHandler()
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .sound, .badge])
+        UIApplication.shared.applicationIconBadgeNumber = 10
+    }
+}
+
+//class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
+//    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+//        print(response.notification.request.content.body)
+//        print(response.notification.request.content.title)
+//        let userInfo = response.notification.request.content.userInfo
+//        print(userInfo)
+//        let a = RootTabBarController()
+//        a.selectedIndex = 3
+////        NotificationHandler
+////        UIApplication.shared.windows.first?.rootViewController
+////        self.window?.rootViewController?.present(a, animated: true, completion: nil)
+//        completionHandler()
+//    }
+//
+//    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+//        completionHandler([.alert, .sound, .badge])
+//    }
+//}
 

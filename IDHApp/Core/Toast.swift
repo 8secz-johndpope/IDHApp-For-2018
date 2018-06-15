@@ -20,6 +20,7 @@ class Toast: UIView {
     private static var __once: () = {
         YMSingleton.instance = Toast(frame: CGRect.zero)
     }()
+    
     var loadingLab:UILabel!
     var masks:UIView!
     var timer:Timer!

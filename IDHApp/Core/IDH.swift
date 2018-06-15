@@ -49,6 +49,7 @@ class IDH{
 //        idh_monitor_ip_port = ""
 //        group_name = "东琰热力"
         
+        
 //        homs_mapping_ip_port = ""
 //        homs_ip_port = ""
 //        idh_ip_port = "113.140.66.34:6099"
@@ -58,6 +59,19 @@ class IDH{
 //        currentVersion = "1"
 //        idh_monitor_ip_port = "113.140.66.34:8000"
 //        group_name = "高新热力"
+//        needGroup = false
+        
+        //            {"idh_ip_port":"221.2.85.190:6099","homs_ip_port":"221.2.85.190:8000","homs_mapping_ip_port":"221.2.85.190:8010","idh_monitor_ip_port":"","group_id":"1","weather_id":"101110101","city":"费县","version":"3","group_name":"费县热力"}
+//        homs_mapping_ip_port = "221.2.85.190:8010"
+//        homs_ip_port = "221.2.85.190:8000"
+//        idh_ip_port = "221.2.85.190:6099"
+//        groupid = "1"
+//        city = "费县"
+//        weatherid = "101110101"
+//        currentVersion = "3"
+//        idh_monitor_ip_port = ""
+//        group_name = "费县热力"
+        
         
         //        {"idh_ip_port":"124.114.131.38:6099","homs_ip_port":"124.114.131.38:8000","homs_mapping_ip_port":"124.114.131.38:8010","idh_monitor_ip_port":"","group_id":"1","weather_id":"101110101","city":"西安","version":"3","group_name":"西安市热力"}
         
@@ -71,21 +85,21 @@ class IDH{
 //        idh_monitor_ip_port = ""
 //        group_name = "西安市热力"
         
-        
-        
-         let myDic = user as! [String:Any]
+         let myDic = user as! [String:String]
          print("\(myDic)")
-         homs_mapping_ip_port = myDic["homs_mapping_ip_port"]! as! String
-         homs_ip_port = myDic["homs_ip_port"]! as! String
-         idh_ip_port = myDic["idh_ip_port"]! as! String
-         
-         groupid = myDic["group_id"]! as! String
-         city = myDic["city"]! as! String
-         weatherid = myDic["weather_id"]! as! String
-         currentVersion = myDic["version"]! as! String
-         idh_monitor_ip_port = myDic["idh_monitor_ip_port"]! as! String
-         group_name = myDic["group_name"]! as! String
- 
+        homs_mapping_ip_port = myDic["homs_mapping_ip_port"]!
+         homs_ip_port = myDic["homs_ip_port"]!
+         idh_ip_port = myDic["idh_ip_port"]!
+
+         groupid = myDic["group_id"]!
+         city = myDic["city"]!
+         weatherid = myDic["weather_id"]!
+         currentVersion = myDic["version"]!
+//        currentVersion = "1"
+         idh_monitor_ip_port = myDic["idh_monitor_ip_port"]!
+         group_name = myDic["group_name"]!
+         needGroup = false
+        
     }
     
     class func getVCFromStr(_ str: String) -> UIViewController {
@@ -244,5 +258,4 @@ class IDH{
             }
         }
     }
-    
 }

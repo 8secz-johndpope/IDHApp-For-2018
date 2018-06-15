@@ -55,7 +55,7 @@ class TreeStructureViewController: UIViewController {
     }
     
     func setupTable() {
-        treeTable.frame = CGRect.init(x: 0, y: 64, width: self.view.bounds.width, height: self.view.bounds.height-48)
+        treeTable.frame = CGRect.init(x: 0, y: 64, width: self.view.bounds.width, height: self.view.bounds.height-64)
         treeTable.delegate = self
         treeTable.dataSource = self
         treeTable.register(HomsTreeTableViewCell.self, forCellReuseIdentifier: "treeCell")
@@ -182,10 +182,14 @@ extension TreeStructureViewController:UITableViewDelegate, UITableViewDataSource
 
 extension TreeStructureViewController:TreeCellProtocol{
     func chooseCell(_ data: heatModel) {
+        
         let monitor = MonitorViewController()
-        monitor.model = data
-        monitor.models = []
-        monitor.current = 0
+//        monitor.model = data
+//        monitor.models = []
+//        monitor.current = 0
+        model = data
+        models = []
+       current = 0
         self.present(monitor, animated: true, completion: nil)
         
     }

@@ -7,23 +7,36 @@
 //
 
 import UIKit
+import Alamofire
+import SwiftyJSON
 
 protocol ChangeFactory {
     func change(factory: GroupingInfo)
 }
+
+typealias updateFactor = (_ isFac:Bool, _ factorID:String, _ groupID:String?)->Void
 
 class MenuViewController: UIViewController {
     var table = UITableView()
     var sceneChange = UIButton()
     var fac: HeatFactoryModel?
     
+    var currentModel:TreeGroupModel?
     var current = 0
+    
     
     var groupArr: [GroupingInfo] = []
     
     var delegate: ChangeFactory?
+    var updateFromMenu:updateFactor?
+    
+    //2018.4.2
+    var facModelArr:[TreeGroupModel] = []
+    
+    //    var arr:[(TreeGroupModel, group)]
     
     
+    var closeArr: [Bool] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,16 +47,56 @@ class MenuViewController: UIViewController {
         self.view.addSubview(table)
         self.view.backgroundColor = UIColor.gray
         self.table.backgroundColor = UIColor.gray
-        self.table.register(MenuTableViewCell.self, forCellReuseIdentifier: "menuCell")
+        if needGroup {
+            getDataForGroup()
+            self.table.register(MenuCell.self, forCellReuseIdentifier: "cell")
+        }else{
+            self.table.register(MenuTableViewCell.self, forCellReuseIdentifier: "menuCell")
+        }
         self.table.tableFooterView = UIView()
     }
-
+    
+    func getDataForGroup() {
+        let url = "http://124.114.131.38:6099/Analyze.svc/GetGroupListAll"
+        Alamofire.request(url, method: .get).responseJSON { (reponse) in
+            if reponse.result.isSuccess{
+                if let data = reponse.result.value{
+                    let jsData = JSON(data)
+                    for (_,data) in jsData{
+                        
+                        let id = data["ID"].stringValue
+                        let name = data["Name"].stringValue
+                        let Type = data["Type"].stringValue
+                        let list = data["ItemList"].arrayValue
+                        var arr:[TreeGroupModel] = []
+                        for temp in list{
+                            let name = temp["Name"].stringValue
+                            let id = temp["ID"].stringValue
+                            let type = temp["Type"].stringValue
+                            let hfID = temp["HeatFactoryID"].stringValue
+                            
+                            let data = TreeGroupModel.init(id, name, nil, type, hfID)
+                            arr.append(data)
+                        }
+                        self.facModelArr.append(TreeGroupModel.init(id, name, arr, Type, nil))
+                    }
+                    for _ in self.facModelArr{
+                        self.closeArr.append(true)
+                    }
+                    self.table.reloadData()
+                }
+            }
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     func getTitle() {
+        
+        self.navigationItem.title = "菜单"
         for group in groupList {
             if group.GroupingType == "group"{
                 self.navigationItem.title = group.GroupingName
@@ -77,45 +130,228 @@ extension MenuViewController: UITableViewDelegate, UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return groupArr.count
+        if needGroup {
+            
+            return facModelArr.count
+        }else{
+            return groupArr.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "menuCell", for: indexPath) as! MenuTableViewCell
-        cell.titleLabel.text = groupArr[indexPath.row].GroupingName
-        if indexPath.row == current {
-            cell.titleLabel.textColor = #colorLiteral(red: 0, green: 0.9991016984, blue: 0.9278653264, alpha: 1)
+        if needGroup {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! MenuCell
+            
+            cell.index = indexPath
+            cell.isClose = closeArr[indexPath.row]
+            cell.data = self.facModelArr[indexPath.row]
+            
+            cell.icon.addTarget(self, action: #selector(showOrExpand(_:)), for: .touchUpInside)
+            
+            if cell.data.ID == currentModel?.ID && cell.data.Type == currentModel?.Type {
+                cell.title.textColor = #colorLiteral(red: 0, green: 0.9991016984, blue: 0.9278653264, alpha: 1)
+            }else{
+                cell.title.textColor = UIColor.white
+            }
+            cell.selectionStyle = .none
+            return cell
         }else{
-            cell.titleLabel.textColor = UIColor.white
+            let cell = tableView.dequeueReusableCell(withIdentifier: "menuCell", for: indexPath) as! MenuTableViewCell
+            cell.titleLabel.text = groupArr[indexPath.row].GroupingName
+            if indexPath.row == current {
+                cell.titleLabel.textColor = #colorLiteral(red: 0, green: 0.9991016984, blue: 0.9278653264, alpha: 1)
+            }else{
+                cell.titleLabel.textColor = UIColor.white
+            }
+            cell.selectionStyle = .none
+            return cell
         }
-        cell.selectionStyle = .none
-        return cell
+    }
+    
+    @objc func showOrExpand(_ sender:MenuButton) {
+        if let indexPath = sender.index{
+            let cell = self.table.cellForRow(at: indexPath) as! MenuCell
+            if cell.isClose {
+                if !cell.childs.isEmpty{
+                    var i = 1
+                    var index: [IndexPath] = []
+                    closeArr[indexPath.row] = false
+                    for temp in cell.childs{
+                        facModelArr.insert(temp, at: indexPath.row + i)
+                        closeArr.insert(true, at: indexPath.row + i)
+                        let ip = IndexPath.init(row: indexPath.row + i, section: 0)
+                        index.append(ip)
+                        i += 1
+                    }
+                    self.table.insertRows(at: index, with: .none)
+                    cell.isClose = false
+                }
+            }else{
+                if !cell.childs.isEmpty{
+                    closeArr[indexPath.row] = true
+                    cell.isClose = true
+                    var ips:[IndexPath] = []
+                    for i in 1...cell.childs.count{
+                        ips.append(IndexPath.init(row: indexPath.row + i, section: 0))
+                    }
+                    facModelArr.removeSubrange(ips[0].row...(ips.last?.row)!)
+                    closeArr.removeSubrange(ips[0].row...(ips.last?.row)!)
+                    self.table.deleteRows(at: ips, with: .none)
+                }
+            }
+            
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let reveal = self.revealViewController()
-        
-        if heatExchangeArr.contains(where: { (element) -> Bool in
-            if element.heatFactory.ID == groupArr[indexPath.row].GroupingID{
-                return true
-            }else{
-                return false
-            }
-        }){
+        if needGroup {
             
-            current = indexPath.row
+            let cell = tableView.cellForRow(at: indexPath) as! MenuCell
+            //点击 不同区域调用不同接口
+            var userinfo :[String:Any] = [:]
+            let data = cell.data
+            
+            if cell.data.Type == "heatfactory" {
+                userinfo = ["id":"\(cell.data.ID!)"]
+            }else if cell.data.Type == "group"{
+                userinfo = ["hfid":"\(data?.hfID! ?? "")", "id":"\(data?.ID! ?? "")"]
+            }
+            let reveal = self.revealViewController()
+            //            cell.data.ID
+            currentModel = cell.data
+            
             self.table.reloadData()
+            
+            guard let postBlock = self.updateFromMenu else { return }
+            if let id = data?.hfID {
+                postBlock(false, id, (data?.ID)!)
+            }else{
+                postBlock(true,(data?.ID)!,nil)
+            }
+            
             reveal?.setFrontViewPosition(FrontViewPosition.right, animated: true)
             
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeFactory"), object: self, userInfo: ["datas": groupArr[current]])
-            
         }else{
-            //do nothing
-            Toast.shareInstance().showView(self.view, title: "暂无数据")
-            Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+            
+            
+            
+            let reveal = self.revealViewController()
+            
+            if heatExchangeArr.contains(where: { (element) -> Bool in
+                if element.heatFactory.ID == groupArr[indexPath.row].GroupingID{
+                    return true
+                }else{
+                    return false
+                }
+            }){
+                
+                current = indexPath.row
+                self.table.reloadData()
+                reveal?.setFrontViewPosition(FrontViewPosition.right, animated: true)
+                
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeFactory"), object: self, userInfo: ["datas": groupArr[current]])
+                
+            }else{
+                //do nothing
+                Toast.shareInstance().showView(self.view, title: "暂无数据")
+                Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+            }
+            
         }
+        //            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeFactory"), object: self, userInfo: userinfo)
         
         
+        
+        /*
+         if !cell.childs.isEmpty {
+         if cell.isClose {
+         var i = 1
+         var index: [IndexPath] = []
+         closeArr[indexPath.row] = false
+         for temp in cell.childs{
+         facModelArr.insert(temp, at: indexPath.row + i)
+         closeArr.insert(true, at: indexPath.row + i)
+         let ip = IndexPath.init(row: indexPath.row + i, section: 0)
+         index.append(ip)
+         i += 1
+         }
+         tableView.insertRows(at: index, with: .none)
+         cell.isClose = false
+         }else{
+         closeArr[indexPath.row] = true
+         cell.isClose = true
+         var ips:[IndexPath] = []
+         for i in 1...cell.childs.count{
+         ips.append(IndexPath.init(row: indexPath.row + i, section: 0))
+         }
+         facModelArr.removeSubrange(ips[0].row...(ips.last?.row)!)
+         closeArr.removeSubrange(ips[0].row...(ips.last?.row)!)
+         tableView.deleteRows(at: ips, with: .none)
+         }
+         }else{
+         //跳转
+         
+         }
+         
+         if cell.isClose {
+         if !cell.childs.isEmpty{
+         var i = 1
+         var index: [IndexPath] = []
+         closeArr[indexPath.row] = false
+         for temp in cell.childs{
+         facModelArr.insert(temp, at: indexPath.row + i)
+         closeArr.insert(true, at: indexPath.row + i)
+         let ip = IndexPath.init(row: indexPath.row + i, section: 0)
+         index.append(ip)
+         i += 1
+         }
+         tableView.insertRows(at: index, with: .none)
+         cell.isClose = false
+         }else{
+         //
+         }
+         }else{
+         if !cell.childs.isEmpty{
+         closeArr[indexPath.row] = true
+         cell.isClose = true
+         var ips:[IndexPath] = []
+         for i in 1...cell.childs.count{
+         ips.append(IndexPath.init(row: indexPath.row + i, section: 0))
+         }
+         facModelArr.removeSubrange(ips[0].row...(ips.last?.row)!)
+         closeArr.removeSubrange(ips[0].row...(ips.last?.row)!)
+         tableView.deleteRows(at: ips, with: .none)
+         }else{
+         
+         }
+         }
+         
+         
+         
+         
+         let reveal = self.revealViewController()
+         
+         if heatExchangeArr.contains(where: { (element) -> Bool in
+         if element.heatFactory.ID == groupArr[indexPath.row].GroupingID{
+         return true
+         }else{
+         return false
+         }
+         }){
+         
+         current = indexPath.row
+         self.table.reloadData()
+         reveal?.setFrontViewPosition(FrontViewPosition.right, animated: true)
+         
+         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeFactory"), object: self, userInfo: ["datas": groupArr[current]])
+         
+         }else{
+         //do nothing
+         Toast.shareInstance().showView(self.view, title: "暂无数据")
+         Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+         }
+         
+         */
     }
     
     //隐藏Toast提示并销毁其中的定时器
@@ -123,8 +359,4 @@ extension MenuViewController: UITableViewDelegate, UITableViewDataSource{
         Thread.sleep(forTimeInterval: 0.5)
         Toast.shareInstance().hideView()
     }
-    
-    
-    
-    
 }

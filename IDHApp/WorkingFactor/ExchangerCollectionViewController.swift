@@ -10,9 +10,11 @@ import UIKit
 import RealmSwift
 import Alamofire
 import KissXML
+import SwiftyJSON
 import MMDrawerController
 
 private let reuseIdentifier = "Cell"
+
 
 class ExchangerCollectionViewController: UICollectionViewController{
     
@@ -24,17 +26,23 @@ class ExchangerCollectionViewController: UICollectionViewController{
     
     var rightSlideMenu: UIViewController!
     
+    var refreshTimer:Timer?
+    
     var current: Int = 0
     
     var delegate = UIApplication.shared.delegate as! AppDelegate
     
+    //
+    var factor:HFModel?
+    var group:groupModel?
+    var isFactor:Bool = true
     
-//    var delegate: refreshManager?
-//
-//    var changeDelegate: ChangeFactory?
-    
+    //
+    var hfid:String?
+    var groupid:String?
     
     var searchBtn: UIButton?
+    var bgView:UIView?
     
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -51,8 +59,20 @@ class ExchangerCollectionViewController: UICollectionViewController{
         UIDevice.current.setValue(value, forKey: "orientation")
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        if needGroup {
+            refreshTimer?.invalidate()
+            refreshTimer = nil
+        }
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        if needGroup {
+            ToastView.instance.showLoadingDlg()
+            getData()
+        }
         if #available(iOS 11.0, *) {
             self.collectionView?.contentInsetAdjustmentBehavior = .never
         } else {
@@ -62,6 +82,24 @@ class ExchangerCollectionViewController: UICollectionViewController{
         let reveal = self.revealViewController()
         reveal?.panGestureRecognizer()
         reveal?.tapGestureRecognizer()
+        if needGroup {
+
+            let menu = reveal?.rightViewController as! MenuViewController
+            menu.updateFromMenu = {(isFactor,hfid,groupid) in
+                self.isFactor = isFactor
+                if isFactor {
+                    self.bgView?.isHidden = false
+                    self.collectionView?.frame = CGRect.init(x: 0, y: 108, width: self.view.bounds.width, height: self.view.bounds.height - 108)
+                    self.hfid = hfid
+                }else{
+                    self.bgView?.isHidden = true
+                    self.collectionView?.frame = CGRect.init(x: 0, y: 108-44, width: self.view.bounds.width, height: self.view.bounds.height - 108+44)
+                    self.groupid = groupid
+                    self.hfid = hfid
+                }
+                self.getData()
+            }
+        }
         
         initCollectionView()
         initSearch()
@@ -70,12 +108,15 @@ class ExchangerCollectionViewController: UICollectionViewController{
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "back").withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(back))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "menu"), style: .done, target: reveal, action: #selector(reveal?.rightRevealToggle(_:)))
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(sendData(_:)), name: NSNotification.Name(rawValue: "changeData"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(changeFactor(_:)), name: NSNotification.Name(rawValue: "changeFactory"), object: nil)
-        
-        self.collectionView?.reloadData()
+        if !needGroup {
+            
+                    NotificationCenter.default.addObserver(self, selector: #selector(sendData(_:)), name: NSNotification.Name(rawValue: "changeData"), object: nil)
+            
+                    NotificationCenter.default.addObserver(self, selector: #selector(changeFactor(_:)), name: NSNotification.Name(rawValue: "changeFactory"), object: nil)
+        }else{
+            
+            createTimer()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -84,10 +125,46 @@ class ExchangerCollectionViewController: UICollectionViewController{
         self.collectionView?.setNeedsDisplay()
     }
     
+    @objc func getData() {
+        var url = ""
+        if !isFactor {
+            url = "http://124.114.131.38:6099/Analyze.svc/GetRunningDataByHeatFactoryIDAndGroupID/\(self.hfid!)/\(self.groupid!)"
+        }else{
+            url = "http://124.114.131.38:6099/Analyze.svc/GetRunningDataByHeatFactoryID/\(self.hfid!)"
+        }
+        Alamofire.request(url, method: .get).responseJSON { (reponse) in
+            ToastView.instance.hide()
+            if reponse.result.isSuccess{
+                if let value = reponse.result.value{
+                let data = JSON(value)
+                    self.factor = HFModel.init(data: data)
+                    if !self.isFactor {
+//                        self.group = groupModel.init(data: data)
+                        self.title = self.factor?.groups.first?.Name
+                    }else{
+                        self.title = self.factor?.Name
+                    }
+                    self.collectionView?.reloadData()
+                }
+            }else{
+                ToastView.instance.showToast(text: "请求失败", pos: .Mid)
+                print("error")
+            }
+        }
+    }
+    
+    func createTimer() {
+        if let _ = self.refreshTimer{
+            return
+        }
+        self.refreshTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getData), userInfo: nil, repeats: true)
+        RunLoop.main.add(self.refreshTimer!, forMode: .commonModes)
+    }
+    
     @objc func changeFactor(_ sender: Notification) {
+        
         let info = sender.userInfo as! [String: GroupingInfo]
         let factory = info["datas"]
-        
         if datas?.heatFactory.ID == factory?.GroupingID {
         }else{
             for index in 0..<heatExchangeArr.count {
@@ -99,6 +176,30 @@ class ExchangerCollectionViewController: UICollectionViewController{
                 }
             }
         }
+        
+//        let info = sender.userInfo as! [String: String]
+//        var url = ""
+//
+//        if let hf = info["hfid"]{
+//            //厂+分区
+//            url = "http://124.114.131.38:6099/Analyze.svc/GetRunningDataByHeatFactoryIDAndGroupID/\(hf)/\(info["ID"]))"
+//        }else{
+//            //厂
+//            url = "http://124.114.131.38:6099/Analyze.svc/GetRunningDataByHeatFactoryID/\(info["ID"] ?? "")"
+//        }
+        
+//        getData(url)
+//        if datas?.heatFactory.ID == factory?.GroupingID {
+//        }else{
+//            for index in 0..<heatExchangeArr.count {
+//                if heatExchangeArr[index].heatFactory.ID == factory?.GroupingID{
+//                    current = index
+//                    self.datas = heatExchangeArr[index]
+//                    self.navigationItem.title = datas?.heatFactory.Name
+//                    self.collectionView?.reloadData()
+//                }
+//            }
+//        }
     }
     
     
@@ -120,10 +221,10 @@ class ExchangerCollectionViewController: UICollectionViewController{
     }
     
     func initSearch() {
-        let bgView = UIView.init(frame: CGRect.init(origin: CGPoint.init(x: 0, y: 64), size: CGSize.init(width: self.view.bounds.width, height: 44)))
-        bgView.backgroundColor = UIColor(red: CGFloat(0)/255.0, green: CGFloat(178)/255.0, blue: CGFloat(178)/255.0, alpha: CGFloat(0.4))
-        bgView.backgroundColor = UIColor.init(hexString: "#DBf4f4")
-        self.view.addSubview(bgView)
+        bgView = UIView.init(frame: CGRect.init(origin: CGPoint.init(x: 0, y: 64), size: CGSize.init(width: self.view.bounds.width, height: 44)))
+        bgView?.backgroundColor = UIColor(red: CGFloat(0)/255.0, green: CGFloat(178)/255.0, blue: CGFloat(178)/255.0, alpha: CGFloat(0.4))
+        bgView?.backgroundColor = UIColor.init(hexString: "#DBf4f4")
+        self.view.addSubview(bgView!)
         searchTxt.frame = CGRect.init(x: 10, y: 7, width: self.view.bounds.width - 90, height: 30)
         searchTxt.borderStyle = .roundedRect
         let imageview = UIImageView.init(image: #imageLiteral(resourceName: "search"))
@@ -140,8 +241,8 @@ class ExchangerCollectionViewController: UICollectionViewController{
         searchBtn?.layer.cornerRadius = 5
         searchBtn?.tintColor = UIColor.white
         searchBtn?.addTarget(self, action: #selector(toResult), for: .touchUpInside)
-        bgView.addSubview(searchBtn!)
-        bgView.addSubview(searchTxt)
+        bgView?.addSubview(searchBtn!)
+        bgView?.addSubview(searchTxt)
     }
     
     
@@ -154,6 +255,21 @@ class ExchangerCollectionViewController: UICollectionViewController{
         result = []
         if let text = searchTxt.text {
             if !text.isEmpty{
+                if needGroup{
+                    
+                Alamofire.request("http://124.114.131.38:6099/Analyze.svc/SearchByHeatFactoryIDAndName/4/\(text)", method: .get).responseJSON(completionHandler: { (reponse) in
+                    if reponse.result.isSuccess{
+                        if let value = reponse.result.value{
+                            let data = JSON(value)
+                            let result = HFModel.init(data: data)
+                            
+                        }else{
+                            
+                        }
+                    }
+                })
+                
+                }
                 let facModel = datas?.heatFactory
                 let heatExchangers = datas?.heatExchangerList
                 var exchangers: [HeatExchangeModel] = []
@@ -173,16 +289,35 @@ class ExchangerCollectionViewController: UICollectionViewController{
     }
     
     @objc func toResult() {
-        getSearchData()
-        let resultController = resultCollectionViewController()
-        resultController.models = result
-        resultController.fromFactory = false
-        self.searchTxt.resignFirstResponder()
-        let nav = UINavigationController.init(rootViewController: resultController)
+        if needGroup {
+            if let text = searchTxt.text {
+                if !text.isEmpty{
+                    let story = UIStoryboard.init(name: "ResultStoryBoard", bundle: nil)
+                    let result = story.instantiateViewController(withIdentifier: "result") as! ResultViewController
+                    result.text = text
+                    result.global = false
+                    result.factorID = (self.factor?.ID)!
+                    let nav = UINavigationController.init(rootViewController: result)
+                    self.present(nav, animated: true, completion: nil)
+                }
+            }
+        }else{
+            
+            getSearchData()
+            let resultController = resultCollectionViewController()
+            resultController.models = result
+            resultController.fromFactory = false
+            self.searchTxt.resignFirstResponder()
+            let nav = UINavigationController.init(rootViewController: resultController)
+            
+            self.present(nav, animated: true, completion: nil)
+        }
         
-        self.present(nav, animated: true, completion: nil)
         
-        
+//        getSearchData()
+//        let resultController = resultCollectionViewController()
+//        resultController.models = result
+//        resultController.fromFactory = false
     }
     
     private func initCollectionView() {
@@ -192,10 +327,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
         self.collectionView?.allowsMultipleSelection = false
         self.collectionView?.keyboardDismissMode = .onDrag
         self.collectionView?.backgroundColor = UIColor.clear
-        
-//        let changers = MenuViewController()
-//        changers.delegate = self
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -204,26 +335,74 @@ class ExchangerCollectionViewController: UICollectionViewController{
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
+        if needGroup {
+            if isFactor {
+                if let fac = self.factor{
+                    return fac.isHaveGroup ? fac.groups.count : 1
+                }
+            }
+            return 1
+        }else{
+            return 1
+        }
     }
     
-    
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
         let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Identify.header, for: indexPath) as! CollectionReusableView
-        view.model = datas?.heatFactory
+        if needGroup {
+            if isFactor{
+                if let fac = self.factor {
+                    if fac.isHaveGroup{
+                        view.model = self.factor?.groups[indexPath.section]
+                    }
+                }
+            }else{
+                view.model = self.factor?.groups.first
+            }
+        }else{
+//            view.frame.height = 0
+            view.model1 = datas?.heatFactory
+        }
         return view
     }
 
-
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return datas!.heatExchangerList.count
+        var num = 0
+        if needGroup {
+            
+            if isFactor {
+                if let fac = self.factor {
+                    num = fac.isHaveGroup ? fac.groups[section].exchangers.count : fac.heatExchangers.count
+                }
+            }else{
+                num = (self.factor?.groups.first?.exchangers.count)!
+            }
+        }else{
+            num = datas!.heatExchangerList.count
+        }
+        return num
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Identify.cell, for: indexPath) as! CollectionViewCell
-        cell.exchangerModel = datas?.heatExchangerList[indexPath.row]
+        if needGroup {
+        if isFactor {
+        if let fac = self.factor {
+        if fac.isHaveGroup {
+            cell.exchangerModel = fac.groups[indexPath.section].exchangers[indexPath.row]
+        }else{
+            cell.exchangerModel = fac.heatExchangers[indexPath.row]
+        }
+            }
+        }else{
+            cell.exchangerModel = self.factor?.groups.first?.exchangers[indexPath.row]
+        }
+        }else{
+            cell.exchangerModel1 = datas?.heatExchangerList[indexPath.row]
+        }
+        
         return cell
     }
     
@@ -231,24 +410,151 @@ class ExchangerCollectionViewController: UICollectionViewController{
         AppProvider.instance.setVersion()
         if AppProvider.instance.appVersion == .idh {
             
-            let storyBoard = UIStoryboard.init(name: "HomsExchanger", bundle: nil)
-            let monitor = storyBoard.instantiateViewController(withIdentifier: "HomsMonitor") as! HomsMonitorViewController
-            monitor.dataModel = (datas?.heatExchangerList)!
-            monitor.currentIndex = indexPath.row
-            self.present(monitor, animated: true, completion: nil)
-        }else{
+            let exc = HeatExchangerTabBarController()
+            exc.selectedIndex = 0
+            heatExchangerID = (datas?.heatExchangerList[indexPath.row].ID)!
+            heatExchangerName = (datas?.heatExchangerList[indexPath.row].Name)!
+//            print(<#T##items: Any...##Any#>)
+//            let storyBoard = UIStoryboard.init(name: "HomsExchanger", bundle: nil)
+//            let monitor = storyBoard.instantiateViewController(withIdentifier: "HomsMonitor") as! HomsMonitorViewController
             
-            let monitor = MonitorViewController()
-            monitor.model = getModel(indexPath)
-            if let data = datas {
-                let exchangers = data.heatExchangerList
-                monitor.models = exchangers
+            if let fac = self.factor{
+                if fac.isHaveGroup{    
+//              monitor.dataModel = factor?.groups[indexPath.section].exchangers
+                }else{
+//              monitor.dataModel = factor?.heatExchangers
+                }
+            }else{
+                //
+                
             }
-            monitor.current = indexPath.row
+//            heatExchangerID =
+//            monitor.dataModel = (datas?.heatExchangerList)!
+//            monitor.currentIndex = indexPath.row
+            self.present(exc, animated: true, completion: nil)
+        }else{
+//            model = getExchangerModel(indexPath)
+            if needGroup{
+                
+//                monitor.model = getExchangerModel(indexPath)
+//                monitor.groupModels = getModels(indexPath)
+            }else{
+                
+                
+                heatExchangerID = (datas?.heatExchangerList[indexPath.row].ID)!
+                heatExchangerName = (datas?.heatExchangerList[indexPath.row].Name)!
+                
+            Tools.setMonitors((datas?.heatExchangerList[indexPath.row].ID)!)
+//                model = getModel(indexPath)
+//                if let data = datas {
+//                    let exchangers = data.heatExchangerList
+//                    models = exchangers
+//                }
+            }
+            let root = HeatExchangerTabBarController()
+            root.selectedIndex = 0
+            let nav = UINavigationController.init(rootViewController: root)
+            
+//            let heatStoryBoard = UIStoryboard(name: "MixMonitorVC", bundle: nil)
+//            let monitor = heatStoryBoard.instantiateViewController(withIdentifier: "excMixMonitor")
+            
+//            let monitor = ExchangerMixMonitorViewController()
+            
+            
+//            let monitor = MonitorViewController()
+//            monitor.model = getModel(indexPath)
+//            if let data = datas {
+//                let exchangers = data.heatExchangerList
+//                monitor.models = exchangers
+//            }
+
+//            let exc = HeatExchangerTabBarController()
+//            exc.selectedIndex = 0
+//            let monitor = MonitorViewController()
+//            var models:[exchangerModel] = []
+//            if needGroup{
+//            monitor.model = getExchangerModel(indexPath)
+//            monitor.groupModels = getModels(indexPath)
+//            }else{
+//                monitor.model = getModel(indexPath)
+//                if let data = datas {
+//                    let exchangers = data.heatExchangerList
+//                    monitor.models = exchangers
+//                }
+//            }
+//            monitor.current = indexPath.row
+            
             self.searchTxt.resignFirstResponder()
-            self.present(monitor, animated: true, completion: nil)
+            self.present(nav, animated: true, completion: nil)
+            
+//            if isFactor{
+//                monitor.model = getExchangerModel(indexPath)
+//                if let fac = self.factor{
+//                    if fac.isHaveGroup{
+//                    models = fac.groups[indexPath.section].exchangers
+//                }else{
+//                    models = fac.heatExchangers
+//                }
+//            }
+//            }else{
+//                models = (self.factor?.heatExchangers)!
+//            }
+//            monitor.models = models
+//            monitor.current = indexPath.row
+//            self.searchTxt.resignFirstResponder()
+//            self.present(monitor, animated: true, completion: nil)
+        }
+    }
+
+    
+    //create for new working factor
+    func getExchangerModel(_ index:IndexPath) -> heatModel? {
+        realm = try! Realm()
+        let model:exchangerModel?
+        if isFactor {
+            if let fac = self.factor {
+                if fac.isHaveGroup{
+                    model = fac.groups[index.section].exchangers[index.item]
+                    if let id = model?.ID{
+                        let modelRealm = realm?.objects(heatModel.self).filter("idh_id = '\(id)' AND type = '换热站'").first
+                        return modelRealm
+                    }
+
+                }else{
+                    model = fac.heatExchangers[index.item]
+                    if let id = model?.ID{
+                        let modelRealm = realm?.objects(heatModel.self).filter("idh_id = '\(id)' AND type = '换热站'").first
+                        return modelRealm
+                    }
+
+                }
+            }
+        }else{
+            model = factor?.groups.first?.exchangers[index.item]
+            if let id = model?.ID{
+                let modelRealm = realm?.objects(heatModel.self).filter("idh_id = '\(id)' AND type = '换热站'").first
+                return modelRealm
+            }
         }
         
+        return nil
+    }
+    
+    func getModels(_ index:IndexPath) -> [exchangerModel] {
+        var models:[exchangerModel] = []
+        
+        if isFactor {
+            if let fac = self.factor {
+                if fac.isHaveGroup{
+                    models = fac.groups[index.section].exchangers
+                }else{
+                    models = fac.heatExchangers
+                }
+            }
+        }else{
+            models = (factor?.groups.first?.exchangers)!
+        }
+        return models
     }
     
     func getModel(_ index: IndexPath) -> heatModel? {
@@ -337,6 +643,9 @@ extension ExchangerCollectionViewController: UICollectionViewDelegateFlowLayout{
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        if !isFactor {
+            return CGSize.init(width: collectionView.bounds.width, height: 0)
+        }
         return CGSize.init(width: collectionView.bounds.width, height: 40)
     }
     

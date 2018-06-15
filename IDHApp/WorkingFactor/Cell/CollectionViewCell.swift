@@ -9,7 +9,13 @@
 import UIKit
 
 class CollectionViewCell: UICollectionViewCell {
-    var exchangerModel:HeatExchangeModel?{
+    var exchangerModel:exchangerModel?{
+        didSet{
+            setUpDatasForGroup()
+        }
+    }
+    
+    var exchangerModel1:HeatExchangeModel?{
         didSet{
             setUpDatas()
         }
@@ -29,6 +35,7 @@ class CollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         self.addSubview(titleLabel)
         self.addSubview(datatimeLabel)
         self.addSubview(detailView)
@@ -61,26 +68,74 @@ class CollectionViewCell: UICollectionViewCell {
     func setUpViews() {
         titleLabel.textAlignment = .left
         datatimeLabel.textAlignment = .left
-        datatimeLabel.textColor = #colorLiteral(red: 0.1711417295, green: 0.6183155089, blue: 0.6635651525, alpha: 1)
+        titleLabel.font = UIFont.systemFont(ofSize: 12)
+//        datatimeLabel.textColor = #colorLiteral(red: 0.1711417295, green: 0.6183155089, blue: 0.6635651525, alpha: 1)
         datatimeLabel.font = UIFont.systemFont(ofSize: 12)
+    }
+    
+    func setUpDatasForGroup() {
+        clearTextContent()
+        titleLabel.text = exchangerModel?.Name
+        if let flag = exchangerModel?.State {
+            if flag == "在线"{
+                titleLabel.textColor = #colorLiteral(red: 0.1711417295, green: 0.6183155089, blue: 0.6635651525, alpha: 1)
+                datatimeLabel.textColor = #colorLiteral(red: 0.1711417295, green: 0.6183155089, blue: 0.6635651525, alpha: 1)
+            }else{
+                titleLabel.textColor = #colorLiteral(red: 0.2431372549, green: 0.2431372549, blue: 0.2431372549, alpha: 1)
+                datatimeLabel.textColor = #colorLiteral(red: 0.2431372549, green: 0.2431372549, blue: 0.2431372549, alpha: 1)
+            }
+        }else{
+            titleLabel.textColor = #colorLiteral(red: 0.2431372549, green: 0.2431372549, blue: 0.2431372549, alpha: 1)
+            datatimeLabel.textColor = #colorLiteral(red: 0.2431372549, green: 0.2431372549, blue: 0.2431372549, alpha: 1)
+        }
+        if let date = exchangerModel?.DataTime {
+        datatimeLabel.text = date.components(separatedBy: " ").last
+        }
+        if let model = exchangerModel?.ItemList {
+            for i in 0..<model.count{
+                
+                let attributeValue = [NSAttributedStringKey.foregroundColor: UIColor.gray]
+                let valueAttribute = [NSAttributedStringKey.foregroundColor: UIColor.black]
+                let textVValue = NSMutableAttributedString.init(string: model[i].TagValue, attributes: valueAttribute)
+                let textName = NSMutableAttributedString.init(string: model[i].TagName, attributes: attributeValue)
+                let textUnit = NSMutableAttributedString.init(string: model[i].TagUnit, attributes: attributeValue)
+                textName.append(textVValue)
+                textName.append(textUnit)
+                switch i{
+                case 0:
+                    itemOne.attributedText = textName
+                case 1:
+                    itemTwo.attributedText = textName
+                case 2:
+                    itemThree.attributedText = textName
+                case 3:
+                    itemFour.attributedText = textName
+                default:
+                    print("other details")
+                }
+            }
+        }
     }
     
     func setUpDatas() {
         clearTextContent()
-        titleLabel.text = exchangerModel?.Name
-        if let flag = exchangerModel?.flag {
+        titleLabel.text = exchangerModel1?.Name
+        if let flag = exchangerModel1?.flag {
             if flag == "0"{
                 titleLabel.textColor = #colorLiteral(red: 0.1711417295, green: 0.6183155089, blue: 0.6635651525, alpha: 1)
+                datatimeLabel.textColor = #colorLiteral(red: 0.1711417295, green: 0.6183155089, blue: 0.6635651525, alpha: 1)
             }else{
                 titleLabel.textColor = #colorLiteral(red: 0.2431372549, green: 0.2431372549, blue: 0.2431372549, alpha: 1)
+                datatimeLabel.textColor = #colorLiteral(red: 0.2431372549, green: 0.2431372549, blue: 0.2431372549, alpha: 1)
             }
         }else{
             titleLabel.textColor = #colorLiteral(red: 0.2431372549, green: 0.2431372549, blue: 0.2431372549, alpha: 1)
+            datatimeLabel.textColor = #colorLiteral(red: 0.2431372549, green: 0.2431372549, blue: 0.2431372549, alpha: 1)
         }
-        if let date = exchangerModel?.datatime {
-        datatimeLabel.text = date.components(separatedBy: " ").last
+        if let date = exchangerModel1?.datatime {
+            datatimeLabel.text = date.components(separatedBy: " ").last
         }
-        if let model = exchangerModel?.tagArr {
+        if let model = exchangerModel1?.tagArr {
             for i in 0..<model.count{
                 
                 let attributeValue = [NSAttributedStringKey.foregroundColor: UIColor.gray]

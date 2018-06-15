@@ -12,7 +12,6 @@ class Defaults{
     
     func getForKey(key:String)->[String: Any]?{
         return UserDefaults.standard.dictionary(forKey: key)
-//        object(forKey: key) as? [String : String]
     }
     
     func setValue(forKey:String,forValue value:Any){
@@ -21,6 +20,10 @@ class Defaults{
     
     func removeValue(key:String){
         UserDefaults.standard.removeObject(forKey: key)
+    }
+    
+    func getFor(key:String)->Any?{
+        return UserDefaults.standard.object(forKey: key)
     }
     
 }

@@ -8,6 +8,8 @@
 
 import UIKit
 import RealmSwift
+import Alamofire
+import SwiftyJSON
 
 class resultCollectionViewController: UICollectionViewController {
     
@@ -15,6 +17,7 @@ class resultCollectionViewController: UICollectionViewController {
 
     var realm: Realm?
     var exchangersArr: [HeatExchangeModel] = []
+    var hfModelArr:[HFModel] = []
     
     var fromFactory = true
     
@@ -43,6 +46,31 @@ class resultCollectionViewController: UICollectionViewController {
         }
         
 
+    }
+    
+    func getSearchBy(name:String,_ id:String) {
+        var url = ""
+        
+        if !fromFactory {
+            //厂+组
+            url = "http://124.114.131.38:6099/Analyze.svc/SearchByHeatFactoryIDAndName/\(id)/\(name)"
+        }else{
+            url = "http://124.114.131.38:6099/Analyze.svc/SearchAllByName/\(name)"
+        }
+        
+        Alamofire.request(url).responseJSON { (reponse) in
+            if reponse.result.isSuccess{
+                if let data = reponse.result.value{
+                    
+                    let json = JSON(data)
+                    for (_,fac) in json{
+                        let facModel = HFModel.init(data: fac)
+                        self.hfModelArr.append(facModel)
+                    }
+                }
+            }
+        }
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -78,18 +106,65 @@ class resultCollectionViewController: UICollectionViewController {
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return models.count
-    }
+        if needGroup {
+                    var count = 0
+            for temp in hfModelArr {
+                if temp.isHaveGroup{
+                    count += temp.groups.count
+                }else{
+                    count += 1
+                }
+            }
+            return count
+        }else{
+            return models.count
+        }
 
+
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Identify.header, for: indexPath) as! CollectionReusableView
+        if needGroup {
+            let fac = self.hfModelArr
+            for temp in fac{
+                if temp.isHaveGroup{
+                    for i in 0..<temp.groups.count{
+                        view.model = temp.groups[i]
+                        view.factorName = temp.Name
+                        //                    view.first = (i == 0) ? true : false
+                    }
+                }else{
+                    view.factorName = temp.Name
+                }
+            }
+        }else{
+            view.model1 = models[indexPath.section].heatFactory
+        }
+        return view
+    }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return models[section].heatExchangerList.count
+        
+        if needGroup {
+            let fac = self.hfModelArr
+            if fac[section].isHaveGroup{
+                return fac[section].groups.count
+            }else{
+            }
+            return 0
+        }else{
+            return models[section].heatExchangerList.count
+        }
+        
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Identify.cell, for: indexPath) as! CollectionViewCell
-        cell.exchangerModel = models[indexPath.section].heatExchangerList[indexPath.row]
+        if !needGroup {
+        cell.exchangerModel1 = models[indexPath.section].heatExchangerList[indexPath.row]
+        }
     
         return cell
     }
@@ -103,9 +178,14 @@ class resultCollectionViewController: UICollectionViewController {
             self.present(monitor, animated: true, completion: nil)
         }else if AppProvider.instance.appVersion == .idhWithHoms{
             let monitor = MonitorViewController()
-            monitor.model = getModel(indexPath)
-            monitor.models = getExchangers(indexPath)
-            monitor.current = indexPath.row
+//            monitor.model = getModel(indexPath)
+////            monitor.models = getExchangers(indexPath)
+//            monitor.current = indexPath.row
+            
+            
+            model = getModel(indexPath)
+            ////            monitor.models = getExchangers(indexPath)
+            current = indexPath.row
             self.present(monitor, animated: true, completion: nil)
         }
         
@@ -142,15 +222,16 @@ class resultCollectionViewController: UICollectionViewController {
         return models[index.section].heatExchangerList
     }
     
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if models.isEmpty {
-            return UIView() as! UICollectionReusableView
-        }else{
-        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Identify.header, for: indexPath) as! CollectionReusableView
-        view.model = models[indexPath.section].heatFactory
-        return view
-        }
-    }
+//    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+//        if models.isEmpty {
+//            return UIView() as! UICollectionReusableView
+//        }else{
+//        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Identify.header, for: indexPath) as! CollectionReusableView
+////        view.model = models[indexPath.section].heatFactory
+//
+//        return view
+//        }
+//    }
 
     // MARK: UICollectionViewDelegate
 
@@ -199,6 +280,14 @@ extension resultCollectionViewController: UICollectionViewDelegateFlowLayout{
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        for temp in self.hfModelArr {
+            if temp.isHaveGroup{
+                
+            }else{
+                
+            }
+        }
+        
         return CGSize.init(width: collectionView.bounds.width, height: 40)
     }
     

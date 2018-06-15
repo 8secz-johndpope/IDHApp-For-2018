@@ -13,22 +13,39 @@ import SwiftyJSON
 let landScapeWidth = UIScreen.main.bounds.height
 let landScapeHeight = UIScreen.main.bounds.width
 
-class HomsMonitorViewController: UIViewController {
+class HomsMonitorViewController: UIViewController, UITabBarDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @IBAction func preButton(_ sender: UIButton) {
         currentIndex -= 1
+        getExc()
         setNavgationTitleAndButton()
     }
+    
     @IBAction func nextButton(_ sender: UIButton) {
         currentIndex += 1
+        getExc()
         setNavgationTitleAndButton()
     }
+    
     @IBOutlet weak var preBtn: UIButton!
     @IBOutlet weak var nextBtn: UIButton!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet var monitorView: UIView!
+    @IBOutlet weak var monitorButton: UIButton!
+    @IBAction func trendButton(_ sender: UIButton) {
+            self.tabBarController?.selectedIndex = 1
+    }
+    @IBAction func eneryButton(_ sender: UIButton) {
+        self.tabBarController?.selectedIndex = 2
+    }
     
+    @IBAction func surveyButton(_ sender: UIButton) {
+        self.tabBarController?.selectedIndex = 3
+    }
+    @IBAction func qualityButton(_ sender: UIButton) {
+        self.tabBarController?.selectedIndex = 4
+    }
     @IBAction func ToHome(_ sender: UIButton) {
         let home = UIStoryboard.init(name: "Home", bundle: nil)
         let vc = home.instantiateViewController(withIdentifier: "home")
@@ -49,8 +66,6 @@ class HomsMonitorViewController: UIViewController {
     var postXml = ""
     
     var update = false
-    
-    
     var isData = false
     var currentElementValue:String = ""
     var cno:String?
@@ -63,12 +78,17 @@ class HomsMonitorViewController: UIViewController {
     var timer:Timer!
     var currentIndex = 0
     
+//    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+//        print("\(item.t
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        self.parent?.navigationController?.isNavigationBarHidden = true
+        self.tabBarController?.tabBar.isHidden = true
         appDelegate.landscape = true
         let value = UIInterfaceOrientation.landscapeRight.rawValue
         UIDevice.current.setValue(value, forKey: "orientation")
+        getIndex()
         setNavgationTitleAndButton()
         update = true
     }
@@ -85,6 +105,8 @@ class HomsMonitorViewController: UIViewController {
             timer.invalidate()
         }
         update = false
+        self.parent?.navigationController?.isNavigationBarHidden = false
+                self.tabBarController?.tabBar.isHidden = false
     }
     
     //设置换热站监控画面上要显示的参数
@@ -99,12 +121,11 @@ class HomsMonitorViewController: UIViewController {
         }
         
         //0:热源厂，1:换热站
-        let url = "Http://\(idh_ip_port)/Analyze.svc/GetHoxConfig/\(dataModel[currentIndex].ID)/1"
+        let url = "Http://\(idh_ip_port)/Analyze.svc/GetHoxConfig/\(heatFactoryID)/0"
         Alamofire.request(url).responseJSON { response in
             guard response.result.isSuccess else{
                 return
             }
-            
             guard let value = response.result.value else{
                 return
             }
@@ -263,7 +284,7 @@ class HomsMonitorViewController: UIViewController {
         if sender.state == .began || sender.state == .changed {
             
             let currentScale: CGFloat = sender.view!.layer.value(forKeyPath: "transform.scale") as! CGFloat
-            let kMaxScale: CGFloat = 1.5
+            let kMaxScale: CGFloat = 2.0
             let kMinScale: CGFloat = 1.0
             var newScale = 1 - (scaleValue - sender.scale)
             newScale = min(newScale, kMaxScale / currentScale)
@@ -371,15 +392,29 @@ class HomsMonitorViewController: UIViewController {
         }
     }
     
-    //
+    func getIndex() {
+        for index in 0..<heatFactorArr.count {
+            if heatFactoryID == heatFactorArr[index].ID{
+                currentIndex = index
+                break
+            }
+        }
+    }
+    
+    func getExc() {
+        heatFactoryName = heatFactorArr[currentIndex].Name
+        heatFactoryID = heatFactorArr[currentIndex].ID
+    }
+    
     func setNavgationTitleAndButton(){
-        if dataModel.count == 1 {
+//        getIndex()
+        if heatFactorArr.count == 1 {
             preBtn.isHidden = true
             nextBtn.isHidden = true
         }else{
             if currentIndex == 0 {
                 preBtn.isHidden = true
-            }else if currentIndex == dataModel.count - 1{
+            }else if currentIndex == heatFactorArr.count - 1{
                 preBtn.isHidden = false
                 nextBtn.isHidden = true
             }else{
@@ -387,15 +422,13 @@ class HomsMonitorViewController: UIViewController {
                 nextBtn.isHidden = false
             }
         }
-        
-        var name = ""
-        
-        for char in dataModel[currentIndex].Name {
-            name.append(char)
-            name.append("\n")
-        }
+//        var name = ""
+//        for char in dataModel[currentIndex].Name {
+//            name.append(char)
+//            name.append("\n")
+//        }
         titleLabel.textAlignment = .center
-        titleLabel.text = name
+        titleLabel.text = heatFactoryName
         //重新显示数据
         monitorImageView.transform = CGAffineTransform.identity
         monitorImageView.layer.anchorPoint = CGPoint.init(x: 0.5, y: 0.5)
@@ -463,6 +496,9 @@ class HomsMonitorViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+
     
     /*
      // MARK: - Navigation

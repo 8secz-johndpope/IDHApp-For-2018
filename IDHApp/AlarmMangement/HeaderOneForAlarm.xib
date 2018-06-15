@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HeaderForAlarmOne" customModule="IDHApp" customModuleProvider="target">
+            <connections>
+                <outlet property="contentView" destination="wzJ-9N-EsK" id="y9I-l4-RUh"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" restorationIdentifier="headerOne" id="wzJ-9N-EsK" customClass="HeaderForAlarmOne" customModule="IDHApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="35u-Gj-Cj4">
+                    <rect key="frame" x="0.0" y="0.0" width="187.5" height="40"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="时间" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vaJ-uB-bIS">
+                            <rect key="frame" x="0.0" y="0.0" width="93" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" red="0.0031930240800000001" green="0.67566800120000003" blue="0.6819582582" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="当前值" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AKC-z4-qsA">
+                            <rect key="frame" x="95" y="0.0" width="92.5" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" red="0.0031930240800000001" green="0.67566800120000003" blue="0.6819582582" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="报警信息" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XBY-Dm-PEZ">
+                    <rect key="frame" x="187.5" y="0.0" width="187.5" height="40"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="0.0031930240800000001" green="0.67566800120000003" blue="0.6819582582" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="XBY-Dm-PEZ" firstAttribute="top" secondItem="boY-yA-rms" secondAttribute="top" id="5Qe-RP-PU1"/>
+                <constraint firstItem="35u-Gj-Cj4" firstAttribute="top" secondItem="boY-yA-rms" secondAttribute="top" id="BZs-yN-NRg"/>
+                <constraint firstItem="35u-Gj-Cj4" firstAttribute="leading" secondItem="boY-yA-rms" secondAttribute="leading" id="MJq-VH-bu2"/>
+                <constraint firstItem="35u-Gj-Cj4" firstAttribute="width" secondItem="wzJ-9N-EsK" secondAttribute="width" multiplier="0.5" id="U88-OY-iE8"/>
+                <constraint firstItem="boY-yA-rms" firstAttribute="bottom" secondItem="35u-Gj-Cj4" secondAttribute="bottom" id="UOH-MI-cUl"/>
+                <constraint firstItem="XBY-Dm-PEZ" firstAttribute="leading" secondItem="35u-Gj-Cj4" secondAttribute="trailing" id="gId-DR-jAS"/>
+                <constraint firstItem="boY-yA-rms" firstAttribute="trailing" secondItem="XBY-Dm-PEZ" secondAttribute="trailing" id="gc8-Dm-T2C"/>
+                <constraint firstItem="boY-yA-rms" firstAttribute="bottom" secondItem="XBY-Dm-PEZ" secondAttribute="bottom" id="y3g-DC-tVe"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="boY-yA-rms"/>
+            <point key="canvasLocation" x="188" y="152"/>
+        </view>
+    </objects>
+</document>

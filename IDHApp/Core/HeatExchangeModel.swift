@@ -15,14 +15,20 @@ class HeatExchangeModel: NSObject {
     var datatime:String = ""
     var tagArr:[[String: String]] = []
     
-    
-    init(id:String, name: String, flag: String, datatime:String, tagArr:[[String: String]]) {
+    init(id:String, name: String, flag: String = "", datatime:String = "", tagArr:[[String: String]] = []) {
         super.init()
         self.ID = id
         self.Name = name
         self.flag = flag
         self.datatime = datatime
         self.tagArr = tagArr
+    }
+    
+    init(dic:[String:AnyObject]) {
+        super.init()
+        
+        //采用kvc自动装配赋值
+        self.setValuesForKeys(dic)
     }
     
     override func setValue(_ value: Any?, forUndefinedKey key: String) {

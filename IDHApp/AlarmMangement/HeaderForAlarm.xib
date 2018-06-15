@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HeaderForAlarm" customModule="IDHApp" customModuleProvider="target">
+            <connections>
+                <outlet property="contentView" destination="iN0-l3-epB" id="zwQ-nz-O6d"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" restorationIdentifier="header" id="iN0-l3-epB" customClass="HeaderForAlarm" customModule="IDHApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="Otw-ut-bk3">
+                    <rect key="frame" x="0.0" y="0.0" width="150" height="40"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="时间" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="17x-tg-M8f">
+                            <rect key="frame" x="0.0" y="0.0" width="74.5" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" red="0.0031930240800000001" green="0.67566800120000003" blue="0.6819582582" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="当前值" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FGr-0j-6cq">
+                            <rect key="frame" x="75.5" y="0.0" width="74.5" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" red="0.0031930240800000001" green="0.67566800120000003" blue="0.6819582582" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="H2I-qM-PWa">
+                    <rect key="frame" x="150" y="0.0" width="225" height="40"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="报警信息" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tlr-l5-ZZD">
+                            <rect key="frame" x="0.0" y="0.0" width="112.5" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" red="0.0031930240800000001" green="0.67566800120000003" blue="0.6819582582" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="专家建议" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eMz-m1-Sp2">
+                            <rect key="frame" x="112.5" y="0.0" width="112.5" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" red="0.0031930240800000001" green="0.67566800120000003" blue="0.6819582582" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="H2I-qM-PWa" firstAttribute="leading" secondItem="Otw-ut-bk3" secondAttribute="trailing" id="00A-GL-LaC"/>
+                <constraint firstItem="Otw-ut-bk3" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.4" id="IP6-aS-NqD"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="H2I-qM-PWa" secondAttribute="trailing" id="OXt-Lw-P5Z"/>
+                <constraint firstItem="Otw-ut-bk3" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="TXe-wC-LT4"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="Otw-ut-bk3" secondAttribute="bottom" id="VFr-K1-KAZ"/>
+                <constraint firstItem="H2I-qM-PWa" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="lgX-4w-tzr"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="H2I-qM-PWa" secondAttribute="bottom" id="tgB-tX-4Bj"/>
+                <constraint firstItem="Otw-ut-bk3" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="zMK-fk-iWc"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <point key="canvasLocation" x="179" y="131"/>
+        </view>
+    </objects>
+</document>

@@ -28,6 +28,8 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     
     var delegate: refreshManager?
     var startUpdate: Int?
+    var facModelArr:[HeatFactoryModel] = []
+    
     
 //    var heatExchangeArr: [(heatFactory: HeatFactoryModel, heatExchangerList: [HeatExchangeModel])] = []
     
@@ -41,10 +43,15 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     }
     
     override func viewDidAppear(_ animated: Bool) {
-
+        if needGroup{
+            
+        }else{
+        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
+        
     }
     
     override func viewDidLoad() {
@@ -68,7 +75,12 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
             activityIndicator.startAnimating()
         }
         tap.cancelsTouchesInView = false
-        NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: NSNotification.Name(rawValue: "update"), object: nil)
+        if needGroup{
+            
+            getFactoryGroup()
+        }else{
+                    NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: NSNotification.Name(rawValue: "update"), object: nil)
+        }
         self.factoryTable.tableFooterView = UIView()
     }
     
@@ -100,19 +112,37 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     }
     
     @objc func getFactoryGroup() {
-        Alamofire.request(workingURL, method: .get).responseJSON { reponse in
+
+        let url = "http://124.114.131.38:6099/Analyze.svc/GetFactoryList"
+        
+//        Alamofire.request(url, method: .get).responseJSON { reponse in
+//            if reponse.result.isSuccess{
+//                if let value = reponse.result.value{
+//                    let json = JSON(value)
+//
+//
+//                }
+//            }else{
+//
+//            }
+//        }
+        
+        Alamofire.request(url, method: .get).responseJSON { reponse in
             if reponse.result.isSuccess{
                 if let value = reponse.result.value{
+                    self.facModelArr.removeAll()
                     self.activityIndicator.stopAnimating()
-//                    self.heatExchangeArr = []
                     self.resultHeatExchangeArr = []
                     let json = JSON(value)
                     for (_,facJson) in json{
                         let facID = facJson["ID"].stringValue
                         let facName = facJson["Name"].stringValue
-                        let facFlag = facJson["Flag"].stringValue
+//                        let facFlag = facJson["Flag"].stringValue
                         let facDataTime = facJson["DataTime"].stringValue
                         let facItems = facJson["ItemList"].arrayValue
+                        let facOffline = facJson["OffLine"].stringValue
+                        let facOnline = facJson["OnLine"].stringValue
+                        let facType = facJson["Type"].stringValue
                         
                         var facTagArr:[[String: String]] = []
                         
@@ -123,34 +153,35 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
                             facTagArr.append(["TagName": facTagName, "TagUnit": facTagUnit, "TagValue": factagValue])
                         }
                         
-                        let facModel = HeatFactoryModel.init(id: facID, name: facName, flag: facFlag, datatime: facDataTime, tagArr: facTagArr)
-                        
-                        //换热站
-                        let heatExchangeerArrJson = facJson["HeatExchangers"].arrayValue
-                        var exchModelArr:[HeatExchangeModel] = []
-                        
-                        for item in heatExchangeerArrJson{
-                            let id = item["ID"].stringValue
-                            let name = item["Name"].stringValue
-                            let flag = item["Flag"].stringValue
-                            let datatime = item["DataTime"].stringValue
-                            
-                            let itemList = item["ItemList"].arrayValue
-                            
-                            
-                            var tagArr: [[String: String]] = []
-                            
-                                for tagItem in itemList{
-                                    let tagName = tagItem["TagName"].stringValue
-                                    let tagUnit = tagItem["TagUnit"].stringValue
-                                    let tagValue = tagItem["TagValue"].stringValue
-                                    tagArr.append(["TagName":tagName, "TagUnit": tagUnit, "TagValue": tagValue])
-                                }
-                            let exchangerModel = HeatExchangeModel(id: id, name: name, flag: flag, datatime: datatime, tagArr: tagArr)
-                            exchModelArr.append(exchangerModel)
-                        }
+                        let facModel = HeatFactoryModel.init(id: facID, name: facName, flag: facName, datatime: facDataTime, type: facType, offline: facOffline, online: facOnline, tagArr: facTagArr)
+                        self.facModelArr.append(facModel)
+//                        //换热站
+//                        let heatExchangeerArrJson = facJson["HeatExchangers"].arrayValue
+//                        var exchModelArr:[HeatExchangeModel] = []
+//
+//                        for item in heatExchangeerArrJson{
+//                            let id = item["ID"].stringValue
+//                            let name = item["Name"].stringValue
+//                            let flag = item["Flag"].stringValue
+//                            let datatime = item["DataTime"].stringValue
+//
+//                            let itemList = item["ItemList"].arrayValue
+//
+//
+//                            var tagArr: [[String: String]] = []
+//
+//                                for tagItem in itemList{
+//                                    let tagName = tagItem["TagName"].stringValue
+//                                    let tagUnit = tagItem["TagUnit"].stringValue
+//                                    let tagValue = tagItem["TagValue"].stringValue
+//                                    tagArr.append(["TagName":tagName, "TagUnit": tagUnit, "TagValue": tagValue])
+//                                }
+//                            let exchangerModel = HeatExchangeModel(id: id, name: name, flag: flag, datatime: datatime, tagArr: tagArr)
+//                            exchModelArr.append(exchangerModel)
+//                        }
                     }
                 }
+                print("\(self.facModelArr)")
                 self.factoryTable.reloadData()
             }else{
             }
@@ -188,13 +219,68 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     func toResult() {
         if (search.text?.isEmpty)! {
         }else{
-        getSearchRunningData()
-        let result = resultCollectionViewController()
-        result.models = self.resultHeatExchangeArr
-        result.fromFactory = true
-            let nav = UINavigationController.init(rootViewController: result)
+            if needGroup{
+                let story = UIStoryboard.init(name: "ResultStoryBoard", bundle: nil)
+                let result = story.instantiateViewController(withIdentifier: "result") as! ResultViewController
+                result.text = search.text!
+                result.global = true
+                let nav = UINavigationController.init(rootViewController: result)
+                
+                self.present(nav, animated: true, completion: nil)
+
+            }else{
+                
+                getSearchRunningData()
+                let result = resultCollectionViewController()
+                result.models = self.resultHeatExchangeArr
+                result.fromFactory = true
+                let nav = UINavigationController.init(rootViewController: result)
+                
+                self.present(nav, animated: true, completion: nil)
+            }
+        }
             
-        self.present(nav, animated: true, completion: nil)
+//        getSearchRunningData()
+//        let result = resultCollectionViewController()
+//        result.models = self.resultHeatExchangeArr
+//        result.fromFactory = true
+//        let nav = UINavigationController.init(rootViewController: result)
+//
+//        self.present(nav, animated: true, completion: nil)
+//        }
+    }
+    
+    func searchBy(name:String) {
+        let url = "http://124.114.131.38:6099/Analyze.svc/SearchAllByName/水"
+        let encodeStr = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        let Url = URL.init(string: encodeStr!)
+        
+        
+        Alamofire.request(Url!, method: .get).responseJSON { (reponse) in
+            if reponse.result.isSuccess{
+                if let data = reponse.result.value{
+                    let json = JSON(data)
+                    var resultArr:[HFModel] = []
+                    
+                    for (_,temp) in json{
+                        let fac = HFModel.init(data: temp)
+                        resultArr.append(fac)
+                    }
+                    
+                    let story = UIStoryboard.init(name: "ResultStoryBoard", bundle: nil)
+                    let result = story.instantiateViewController(withIdentifier: "result") as! ResultViewController
+                    result.datas = resultArr
+//                    self.present(factor, animated: true, completion: nil)
+                    
+//                    let result = ResultViewController()
+                    let nav = UINavigationController.init(rootViewController: result)
+                    
+                    self.present(nav, animated: true, completion: nil)
+                    
+                }
+            }else{
+                print("\(reponse.error.debugDescription)")
+            }
         }
     }
     
@@ -231,12 +317,22 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
 
 extension WorkingViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return heatExchangeArr.count
+        if needGroup{
+            return facModelArr.count
+        }else{
+            return heatExchangeArr.count
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let items = heatExchangeArr[indexPath.section].heatFactory.tagArr.count
-        return CGFloat(ceilf(Float(items/2)) * 20) + 40
+        if needGroup{
+            let items = facModelArr[indexPath.row].tagArr.count
+            print("\(items)")
+            return CGFloat(ceilf(Float(items/2)) * 20) + 40 + 200
+        }else{
+            let items = heatExchangeArr[indexPath.section].heatFactory.tagArr.count
+            return CGFloat(ceilf(Float(items/2)) * 20) + 40
+        }
     }
     
     //解决分割线不全的问题
@@ -257,34 +353,49 @@ extension WorkingViewController: UITableViewDelegate, UITableViewDataSource {
         for view in cell.contentView.subviews {
             view.removeFromSuperview()
         }
-        cell.factoryModel = heatExchangeArr[indexPath.row].heatFactory
+        if needGroup {
+            cell.factoryModel = facModelArr[indexPath.row]
+        }else{
+            
+                    cell.factoryModel = heatExchangeArr[indexPath.row].heatFactory
+        }
         cell.selectionStyle = .none
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let exchanges = ExchangerCollectionViewController()
-        exchanges.datas = heatExchangeArr[indexPath.row]
-        exchanges.current = indexPath.row
         self.factoryTable.endEditing(true)
-        
+        let exchanges = ExchangerCollectionViewController()
         let frontNav = UINavigationController.init(rootViewController: exchanges)
-        let menu = MenuViewController()
-        let fac = heatExchangeArr[indexPath.row].heatFactory
-        menu.fac = fac
-        let menuNav = UINavigationController.init(rootViewController: menu)
-        
-//        let menu = MenuViewController()
         let reveal = SWRevealViewController.init(rearViewController: nil, frontViewController: frontNav)
-        reveal?.rightViewController = menuNav
-        
-        reveal?.rightViewRevealWidth = UIScreen.main.bounds.width/1.5
-//        reveal?.rightViewRevealDisplacement = 100
-        reveal?.rightViewRevealOverdraw = 0
-        reveal?.delegate = self
-        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
-        
-        self.present(reveal!, animated: true, completion: nil)
+        let menu = MenuViewController()
+        if needGroup {
+            
+            exchanges.hfid = facModelArr[indexPath.row].ID
+            exchanges.title = facModelArr[indexPath.row].Name
+            
+            reveal?.rightViewController = menu
+            reveal?.rightViewRevealWidth = UIScreen.main.bounds.width/1.5
+            reveal?.rightViewRevealOverdraw = 0
+            reveal?.delegate = self
+            self.present(reveal!, animated: true, completion: nil)
+        }else{
+            exchanges.datas = heatExchangeArr[indexPath.row]
+            exchanges.current = indexPath.row
+            let fac = heatExchangeArr[indexPath.row].heatFactory
+            menu.fac = fac
+            let menuNav = UINavigationController.init(rootViewController: menu)
+            
+//            let reveal = SWRevealViewController.init(rearViewController: nil, frontViewController: frontNav)
+            reveal?.rightViewController = menuNav
+            
+            reveal?.rightViewRevealWidth = UIScreen.main.bounds.width/1.5
+            reveal?.rightViewRevealOverdraw = 0
+            reveal?.delegate = self
+            //        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
+            
+            self.present(reveal!, animated: true, completion: nil)
+        }
     }
     
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import SwiftyJSON
 
 class heatModel: Object {
     @objc dynamic var idh_id: String = ""
@@ -49,12 +50,131 @@ class heatModel: Object {
     
 }
 
+class HFModel{
+        var ID = ""
+        var Name = ""
+        var groups:[groupModel] = []
+        var `Type` = ""
+    var isHaveGroup = true
+    var heatExchangers:[exchangerModel] = []
+        
+    init(data:JSON) {
+            self.ID = data["ID"].stringValue
+            self.Name = data["Name"].stringValue
+            self.Type = data["Type"].stringValue
+        let haveG = data["IsHaveGroup"].stringValue
+        if haveG == "1" {
+            self.isHaveGroup = true
+        }else{
+            self.isHaveGroup = false
+        }
+        
+//        self.isHaveGroup = data["IsHaveGroup"].stringValue
+        if self.isHaveGroup {
+            let arr = data["Group"].arrayValue
+            for gr in arr {
+                let gro = groupModel.init(data: gr)
+                groups.append(gro)
+            }
+            
+        }else{
+            let arr = data["HeatExchangers"].arrayValue
+            for gr in arr {
+                let gro = exchangerModel.init(data: gr)
+                heatExchangers.append(gro)
+            }
+        }
+    }
+    
+}
+class groupModel {
+    var ID = ""
+    var Name = ""
+    var `Type` = ""
+    var exchangers:[exchangerModel] = []
+    
+    init(data:JSON) {
+        self.ID = data["GroupID"].stringValue
+        self.Name = data["GroupName"].stringValue
+        self.Type = data["Type"].stringValue
+        for temp in data["HeatExchangers"].arrayValue {
+            let exchanger = exchangerModel.init(data: temp)
+            exchangers.append(exchanger)
+        }
+//        self.exchangers = exchangers
+    }
+}
+
+class exchangerModel{
+    var ID = ""
+    var DataTime = ""
+    var Name = ""
+    var State = ""
+    var `Type` = ""
+    var ItemList:[Item] = []
+    
+    init(data:JSON) {
+        self.ID = data["ID"].stringValue
+        self.Name = data["Name"].stringValue
+        self.State = data["State"].stringValue
+        self.DataTime = data["DataTime"].stringValue
+        for temp in data["ItemList"].arrayValue {
+            let exchangerItem = Item.init(data: temp)
+            ItemList.append(exchangerItem)
+        }
+        self.Type = data["Type"].stringValue
+    }
+}
+
+struct Item {
+    var TagName = ""
+    var TagUnit = ""
+    var TagValue = ""
+    
+    init(data:JSON) {
+        TagName = data["TagName"].stringValue
+        TagUnit = data["TagUnit"].stringValue
+        TagValue = data["TagValue"].stringValue
+    }
+    
+    
+    
+}
+
+
+class TreeGroupModel {
+    var ID: String?
+    var Name: String?
+    var List: [TreeGroupModel]?
+    var `Type`: String?
+    var hfID: String?
+    
+    
+    init(_ id:String, _ name: String, _ list:[TreeGroupModel]?, _ type: String, _ hfid:String?) {
+        self.Name = name
+        self.List = list
+        self.ID = id
+        self.Type = type
+        self.hfID = hfid
+    }
+    
+}
+
+enum HeatType:Int {
+    case heatFactory = 0, group, exchanger
+}
+
+//class GroupModel {
+//    var ID: Int?
+//    var Name: String?
+//    var type: HeatType?
+//}
+
 class TreeDataModel {
     var model:heatModel?
     var hasChild:Bool?
     var childs:[heatModel]?
     var parent_id:Int?
-    
 }
 
 class MappingModel {

@@ -37,7 +37,6 @@ class HomsTreeTableViewCell: UITableViewCell {
     }
     var delegate: TreeCellProtocol!
     
-    
     var icon = UIImageView()
     var titleLabel = UILabel()
     var editor = LayoutableView()
@@ -72,6 +71,7 @@ class HomsTreeTableViewCell: UITableViewCell {
         self.addSubview(button)
         
     }
+    
     func setModel() {
         titleLabel.text = data?.area_name
     }

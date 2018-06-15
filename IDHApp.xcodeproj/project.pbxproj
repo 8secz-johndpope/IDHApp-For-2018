@@ -8,13 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		A703AA8B2011DEB2008A1A2A /* home_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = A703AA8A2011DEB2008A1A2A /* home_bg.png */; };
+		A70E50B3207F471D00F97C20 /* AlarmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70E50B2207F471D00F97C20 /* AlarmViewController.swift */; };
+		A70E50B5207F473500F97C20 /* AlarmStoryBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A70E50B4207F473500F97C20 /* AlarmStoryBoard.storyboard */; };
 		A71387DF200DDC2100ED9984 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71387DB200DDC2000ED9984 /* BaseViewController.swift */; };
 		A71387E0200DDC2100ED9984 /* UIDevice+Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = A71387DC200DDC2000ED9984 /* UIDevice+Orientation.m */; };
 		A71A53C2200F56BE0001B2ED /* UIViewController+UINavigation in Resources */ = {isa = PBXBuildFile; fileRef = A71A53C1200F56BE0001B2ED /* UIViewController+UINavigation */; };
-		A732C4DE1FF0B4730097A979 /* Mine.plist in Resources */ = {isa = PBXBuildFile; fileRef = A732C4DD1FF0B4730097A979 /* Mine.plist */; };
 		A732C4E21FF1025F0097A979 /* RootTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A732C4E11FF1025F0097A979 /* RootTabBarController.swift */; };
 		A732C4E51FF1065B0097A979 /* WorkingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A732C4E41FF1065B0097A979 /* WorkingViewController.swift */; };
 		A732C4E71FF106720097A979 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A732C4E61FF106720097A979 /* Storyboard.storyboard */; };
+		A737B63C20D3BDBB00BEC40A /* HeaderOneForAlarm.xib in Resources */ = {isa = PBXBuildFile; fileRef = A737B63B20D3BDBB00BEC40A /* HeaderOneForAlarm.xib */; };
+		A742780320A97B56001EE0CA /* FactoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A742780220A97B56001EE0CA /* FactoryModels.swift */; };
+		A742780520AAD9B4001EE0CA /* TabbarStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A742780420AAD9B4001EE0CA /* TabbarStoryboard.storyboard */; };
+		A742780B20AD5F67001EE0CA /* ExchangerTabBar.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A742780A20AD5F67001EE0CA /* ExchangerTabBar.storyboard */; };
 		A74469C320107C750017064C /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74469C220107C750017064C /* MenuViewController.swift */; };
 		A748DD161FE8EC6E0021EA71 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A748DD151FE8EC6E0021EA71 /* AppDelegate.swift */; };
 		A748DD1D1FE8EC6E0021EA71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A748DD1C1FE8EC6E0021EA71 /* Assets.xcassets */; };
@@ -59,6 +64,24 @@
 		A764CD091FF5F287003647AF /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A764CD081FF5F287003647AF /* CollectionViewCell.swift */; };
 		A764CD0B1FF639AB003647AF /* MonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A764CD0A1FF639AB003647AF /* MonitorViewController.swift */; };
 		A764CD111FF63DB2003647AF /* libxml2.2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A764CD101FF63DB2003647AF /* libxml2.2.tbd */; };
+		A76DCECE20996CFD00C6D2D8 /* Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76DCECD20996CFD00C6D2D8 /* Tools.swift */; };
+		A76DCED0209AFB2600C6D2D8 /* TypeindexViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76DCECF209AFB2600C6D2D8 /* TypeindexViewController.swift */; };
+		A76DCED2209B16E100C6D2D8 /* AnalyseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76DCED1209B16E100C6D2D8 /* AnalyseModel.swift */; };
+		A76DCED420A0053500C6D2D8 /* DetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A76DCED320A0053500C6D2D8 /* DetailView.xib */; };
+		A76DCED620A0087D00C6D2D8 /* HeatViewDeatils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76DCED520A0087D00C6D2D8 /* HeatViewDeatils.swift */; };
+		A76DCED820A04D6C00C6D2D8 /* Water&EleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76DCED720A04D6C00C6D2D8 /* Water&EleView.swift */; };
+		A76DCEDA20A139BC00C6D2D8 /* Water&EleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A76DCED920A139BC00C6D2D8 /* Water&EleView.xib */; };
+		A76DCEDC20A1400D00C6D2D8 /* Gas_CoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76DCEDB20A1400D00C6D2D8 /* Gas_CoalView.swift */; };
+		A76DCEDE20A1401E00C6D2D8 /* Gas_CoalView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A76DCEDD20A1401E00C6D2D8 /* Gas_CoalView.xib */; };
+		A77383252071C533005AAA88 /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77383232071C533005AAA88 /* MenuTableViewCell.swift */; };
+		A77383262071C533005AAA88 /* MenuTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A77383242071C533005AAA88 /* MenuTableViewCell.xib */; };
+		A773832E207373AF005AAA88 /* resultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A773832D207373AF005AAA88 /* resultTableViewCell.swift */; };
+		A77383302073775E005AAA88 /* resultCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A773832F2073775E005AAA88 /* resultCollectionView.swift */; };
+		A773833220738FCE005AAA88 /* ResultStoryBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A773833120738FCE005AAA88 /* ResultStoryBoard.storyboard */; };
+		A7738334207390A3005AAA88 /* ResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7738333207390A3005AAA88 /* ResultViewController.swift */; };
+		A773833720739188005AAA88 /* ResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A773833520739188005AAA88 /* ResultTableViewCell.swift */; };
+		A773833820739188005AAA88 /* ResultTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A773833620739188005AAA88 /* ResultTableViewCell.xib */; };
+		A773833E20746A87005AAA88 /* ResultFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A773833D20746A87005AAA88 /* ResultFlowLayout.swift */; };
 		A77535A21FFC85A000BB140D /* resultCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77535A11FFC85A000BB140D /* resultCollectionViewController.swift */; };
 		A77535A41FFCA0E300BB140D /* APPManagerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77535A31FFCA0E300BB140D /* APPManagerProvider.swift */; };
 		A77535A81FFCAA3D00BB140D /* APPManager.plist in Resources */ = {isa = PBXBuildFile; fileRef = A77535A71FFCAA3D00BB140D /* APPManager.plist */; };
@@ -67,12 +90,57 @@
 		A77AE3C6201EB81600BFFB9E /* HomsMonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77AE3C5201EB81600BFFB9E /* HomsMonitorViewController.swift */; };
 		A77AE3E72024101300BFFB9E /* TreeStructureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77AE3E62024101300BFFB9E /* TreeStructureViewController.swift */; };
 		A77AE3E920284B8D00BFFB9E /* HomsTreeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77AE3E820284B8D00BFFB9E /* HomsTreeTableViewCell.swift */; };
+		A77C01462060C59A00FD54D8 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77C01452060C59A00FD54D8 /* ChartViewController.swift */; };
+		A78027D0207A220E000CD830 /* ExtensionToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78027CF207A220E000CD830 /* ExtensionToast.swift */; };
 		A780733A20104A0400EAAAE1 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = A780733920104A0400EAAAE1 /* Defaults.swift */; };
+		A78214F6208D8B1B00903DEB /* AlarmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78214F5208D8B1B00903DEB /* AlarmModel.swift */; };
+		A78214FC208DD53600903DEB /* AlarmSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78214FB208DD53600903DEB /* AlarmSettingViewController.swift */; };
+		A78214FE208DD54800903DEB /* AlarmManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78214FD208DD54800903DEB /* AlarmManagementViewController.swift */; };
+		A7821500208DDC7900903DEB /* AlarmMenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78214FF208DDC7900903DEB /* AlarmMenuTableViewCell.swift */; };
+		A7821506208F0BE800903DEB /* HeatingQualityManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7821505208F0BE800903DEB /* HeatingQualityManagementViewController.swift */; };
+		A7821508208F2C9300903DEB /* QualityModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7821507208F2C9300903DEB /* QualityModel.swift */; };
+		A782150B208F468300903DEB /* TransferViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782150A208F468300903DEB /* TransferViewController.swift */; };
+		A782150D208F46B200903DEB /* Transfer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A782150C208F46B200903DEB /* Transfer.storyboard */; };
+		A7821518209014A100903DEB /* MenuFactoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7821516209014A100903DEB /* MenuFactoryTableViewCell.swift */; };
+		A7821519209014A100903DEB /* MenuFactoryTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7821517209014A100903DEB /* MenuFactoryTableViewCell.xib */; };
+		A782151D209091B200903DEB /* slideToCall.png in Resources */ = {isa = PBXBuildFile; fileRef = A782151C209091B200903DEB /* slideToCall.png */; };
+		A78215212090983D00903DEB /* GlobalMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78215202090983D00903DEB /* GlobalMenuViewController.swift */; };
+		A7821523209098FF00903DEB /* GlobalTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7821522209098FF00903DEB /* GlobalTableViewCell.swift */; };
+		A782152720940C9D00903DEB /* HeatExchangerTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782152620940C9C00903DEB /* HeatExchangerTabBarController.swift */; };
+		A782152920940DB500903DEB /* HeatFactory.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A782152820940DB500903DEB /* HeatFactory.storyboard */; };
+		A782152B20940DC300903DEB /* HeatExchanger.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A782152A20940DC300903DEB /* HeatExchanger.storyboard */; };
+		A782152D20941A5D00903DEB /* HeatExchangerMonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782152C20941A5D00903DEB /* HeatExchangerMonitorViewController.swift */; };
+		A782152F20941A7500903DEB /* HeatExchangerEnergyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782152E20941A7500903DEB /* HeatExchangerEnergyViewController.swift */; };
+		A782153120941A8E00903DEB /* HeatExchangerTrendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782153020941A8E00903DEB /* HeatExchangerTrendViewController.swift */; };
+		A782153320941AAB00903DEB /* HeatExchangerSurveyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782153220941AAB00903DEB /* HeatExchangerSurveyViewController.swift */; };
+		A782153520941ABC00903DEB /* HeatExchangerQualityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782153420941ABC00903DEB /* HeatExchangerQualityViewController.swift */; };
+		A782153720941AD500903DEB /* HeatFactoryMonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782153620941AD500903DEB /* HeatFactoryMonitorViewController.swift */; };
+		A782153920941AEB00903DEB /* HeatFactoryEneryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782153820941AEB00903DEB /* HeatFactoryEneryViewController.swift */; };
+		A782153B20941AFA00903DEB /* HeatFactoryTrendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782153A20941AFA00903DEB /* HeatFactoryTrendViewController.swift */; };
+		A782153D20941B0B00903DEB /* HeatFactorySurveyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782153C20941B0B00903DEB /* HeatFactorySurveyViewController.swift */; };
+		A782153F20941B2200903DEB /* HeatFactoryQualityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A782153E20941B2200903DEB /* HeatFactoryQualityViewController.swift */; };
+		A78EE4AF20BFA5270009FADB /* ExchangerMonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78EE4AE20BFA5260009FADB /* ExchangerMonitorViewController.swift */; };
+		A78EE4B120BFA5C70009FADB /* CustomButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = A78EE4B020BFA5C70009FADB /* CustomButton.xib */; };
 		A79FB92F2015851C0045ED08 /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A79FB92D2015851B0045ED08 /* SWRevealViewController.m */; };
-		A79FB953201598930045ED08 /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79FB952201598930045ED08 /* MenuTableViewCell.swift */; };
+		A7D033DC206B737A00ED7429 /* WorkingFactorMenuViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D033DA206B737A00ED7429 /* WorkingFactorMenuViewCell.swift */; };
+		A7D033DD206B737A00ED7429 /* WorkingFactorMenuViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7D033DB206B737A00ED7429 /* WorkingFactorMenuViewCell.xib */; };
+		A7D033DF206C8F8600ED7429 /* Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D033DE206C8F8600ED7429 /* Charts.swift */; };
 		A7D4B80D201188C700827950 /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D4B80C201188C700827950 /* ScanViewController.swift */; };
 		A7D4B80F20118B4A00827950 /* AlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D4B80E20118B4A00827950 /* AlertViewController.swift */; };
 		A7D4B811201191DB00827950 /* IDH.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D4B810201191DB00827950 /* IDH.swift */; };
+		A7E2BF9820C6863900F05464 /* MixMonitorVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A7E2BF9720C6863900F05464 /* MixMonitorVC.storyboard */; };
+		A7E2BF9A20C68E5600F05464 /* ExchangerMixMonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E2BF9920C68E5600F05464 /* ExchangerMixMonitorViewController.swift */; };
+		A7E2BF9F20CE599200F05464 /* AdviceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E2BF9D20CE599200F05464 /* AdviceTableViewCell.swift */; };
+		A7E2BFA020CE599200F05464 /* AdviceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7E2BF9E20CE599200F05464 /* AdviceTableViewCell.xib */; };
+		A7E2BFA220D2466700F05464 /* HeaderForAlarm.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E2BFA120D2466700F05464 /* HeaderForAlarm.swift */; };
+		A7E2BFA420D2467B00F05464 /* HeaderForAlarm.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7E2BFA320D2467B00F05464 /* HeaderForAlarm.xib */; };
+		A7FCCF152084862A00301ED2 /* alarm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7FCCF142084862A00301ED2 /* alarm.mp3 */; };
+		A7FCCF362085EE6A00301ED2 /* HeatFactoryTabBarControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FCCF352085EE6A00301ED2 /* HeatFactoryTabBarControllerViewController.swift */; };
+		A7FCCF392086EB3000301ED2 /* HeatQualityStoryBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A7FCCF382086EB3000301ED2 /* HeatQualityStoryBoard.storyboard */; };
+		A7FCCF3B2086EB6100301ED2 /* EneryAnalyseStoryBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A7FCCF3A2086EB6100301ED2 /* EneryAnalyseStoryBoard.storyboard */; };
+		A7FCCF3D2086EB8100301ED2 /* EneryAnalyseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FCCF3C2086EB8100301ED2 /* EneryAnalyseViewController.swift */; };
+		A7FCCF3F2086EB8E00301ED2 /* HeatQualityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FCCF3E2086EB8E00301ED2 /* HeatQualityViewController.swift */; };
+		A7FCCF5F208824F100301ED2 /* ServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FCCF5E208824F100301ED2 /* ServiceAPI.swift */; };
 		AC3E856453F2EB988F07B7A0 /* Pods_IDHApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B179CBE08C993B7E60C9E7B /* Pods_IDHApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -95,14 +163,19 @@
 		0B179CBE08C993B7E60C9E7B /* Pods_IDHApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IDHApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9448E291664761AED7388EB5 /* Pods-IDHApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IDHApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-IDHApp/Pods-IDHApp.debug.xcconfig"; sourceTree = "<group>"; };
 		A703AA8A2011DEB2008A1A2A /* home_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_bg.png; sourceTree = "<group>"; };
+		A70E50B2207F471D00F97C20 /* AlarmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmViewController.swift; sourceTree = "<group>"; };
+		A70E50B4207F473500F97C20 /* AlarmStoryBoard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AlarmStoryBoard.storyboard; sourceTree = "<group>"; };
 		A71387DB200DDC2000ED9984 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		A71387DC200DDC2000ED9984 /* UIDevice+Orientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+Orientation.m"; sourceTree = "<group>"; };
 		A71387DD200DDC2000ED9984 /* UIDevice+Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+Orientation.h"; sourceTree = "<group>"; };
 		A71A53C1200F56BE0001B2ED /* UIViewController+UINavigation */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "UIViewController+UINavigation"; sourceTree = "<group>"; };
-		A732C4DD1FF0B4730097A979 /* Mine.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Mine.plist; sourceTree = "<group>"; };
 		A732C4E11FF1025F0097A979 /* RootTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabBarController.swift; sourceTree = "<group>"; };
 		A732C4E41FF1065B0097A979 /* WorkingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkingViewController.swift; sourceTree = "<group>"; };
 		A732C4E61FF106720097A979 /* Storyboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
+		A737B63B20D3BDBB00BEC40A /* HeaderOneForAlarm.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeaderOneForAlarm.xib; sourceTree = "<group>"; };
+		A742780220A97B56001EE0CA /* FactoryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryModels.swift; sourceTree = "<group>"; };
+		A742780420AAD9B4001EE0CA /* TabbarStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = TabbarStoryboard.storyboard; sourceTree = "<group>"; };
+		A742780A20AD5F67001EE0CA /* ExchangerTabBar.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ExchangerTabBar.storyboard; sourceTree = "<group>"; };
 		A74469C220107C750017064C /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		A748DD121FE8EC6E0021EA71 /* IDHApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IDHApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A748DD151FE8EC6E0021EA71 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -146,6 +219,24 @@
 		A764CD081FF5F287003647AF /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		A764CD0A1FF639AB003647AF /* MonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorViewController.swift; sourceTree = "<group>"; };
 		A764CD101FF63DB2003647AF /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = usr/lib/libxml2.2.tbd; sourceTree = SDKROOT; };
+		A76DCECD20996CFD00C6D2D8 /* Tools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tools.swift; sourceTree = "<group>"; };
+		A76DCECF209AFB2600C6D2D8 /* TypeindexViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeindexViewController.swift; sourceTree = "<group>"; };
+		A76DCED1209B16E100C6D2D8 /* AnalyseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyseModel.swift; sourceTree = "<group>"; };
+		A76DCED320A0053500C6D2D8 /* DetailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailView.xib; sourceTree = "<group>"; };
+		A76DCED520A0087D00C6D2D8 /* HeatViewDeatils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatViewDeatils.swift; sourceTree = "<group>"; };
+		A76DCED720A04D6C00C6D2D8 /* Water&EleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Water&EleView.swift"; sourceTree = "<group>"; };
+		A76DCED920A139BC00C6D2D8 /* Water&EleView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "Water&EleView.xib"; sourceTree = "<group>"; };
+		A76DCEDB20A1400D00C6D2D8 /* Gas_CoalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gas_CoalView.swift; sourceTree = "<group>"; };
+		A76DCEDD20A1401E00C6D2D8 /* Gas_CoalView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Gas_CoalView.xib; sourceTree = "<group>"; };
+		A77383232071C533005AAA88 /* MenuTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
+		A77383242071C533005AAA88 /* MenuTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuTableViewCell.xib; sourceTree = "<group>"; };
+		A773832D207373AF005AAA88 /* resultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = resultTableViewCell.swift; sourceTree = "<group>"; };
+		A773832F2073775E005AAA88 /* resultCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = resultCollectionView.swift; sourceTree = "<group>"; };
+		A773833120738FCE005AAA88 /* ResultStoryBoard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ResultStoryBoard.storyboard; sourceTree = "<group>"; };
+		A7738333207390A3005AAA88 /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
+		A773833520739188005AAA88 /* ResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultTableViewCell.swift; sourceTree = "<group>"; };
+		A773833620739188005AAA88 /* ResultTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ResultTableViewCell.xib; sourceTree = "<group>"; };
+		A773833D20746A87005AAA88 /* ResultFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultFlowLayout.swift; sourceTree = "<group>"; };
 		A77535A11FFC85A000BB140D /* resultCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = resultCollectionViewController.swift; sourceTree = "<group>"; };
 		A77535A31FFCA0E300BB140D /* APPManagerProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APPManagerProvider.swift; sourceTree = "<group>"; };
 		A77535A71FFCAA3D00BB140D /* APPManager.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = APPManager.plist; sourceTree = "<group>"; };
@@ -154,13 +245,59 @@
 		A77AE3C5201EB81600BFFB9E /* HomsMonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomsMonitorViewController.swift; sourceTree = "<group>"; };
 		A77AE3E62024101300BFFB9E /* TreeStructureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeStructureViewController.swift; sourceTree = "<group>"; };
 		A77AE3E820284B8D00BFFB9E /* HomsTreeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomsTreeTableViewCell.swift; sourceTree = "<group>"; };
+		A77C01452060C59A00FD54D8 /* ChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
+		A78027CF207A220E000CD830 /* ExtensionToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionToast.swift; sourceTree = "<group>"; };
 		A780733920104A0400EAAAE1 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
+		A78214F5208D8B1B00903DEB /* AlarmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmModel.swift; sourceTree = "<group>"; };
+		A78214FB208DD53600903DEB /* AlarmSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmSettingViewController.swift; sourceTree = "<group>"; };
+		A78214FD208DD54800903DEB /* AlarmManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmManagementViewController.swift; sourceTree = "<group>"; };
+		A78214FF208DDC7900903DEB /* AlarmMenuTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmMenuTableViewCell.swift; sourceTree = "<group>"; };
+		A7821505208F0BE800903DEB /* HeatingQualityManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatingQualityManagementViewController.swift; sourceTree = "<group>"; };
+		A7821507208F2C9300903DEB /* QualityModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QualityModel.swift; sourceTree = "<group>"; };
+		A782150A208F468300903DEB /* TransferViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferViewController.swift; sourceTree = "<group>"; };
+		A782150C208F46B200903DEB /* Transfer.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Transfer.storyboard; sourceTree = "<group>"; };
+		A7821516209014A100903DEB /* MenuFactoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuFactoryTableViewCell.swift; sourceTree = "<group>"; };
+		A7821517209014A100903DEB /* MenuFactoryTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuFactoryTableViewCell.xib; sourceTree = "<group>"; };
+		A782151C209091B200903DEB /* slideToCall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slideToCall.png; sourceTree = "<group>"; };
+		A78215202090983D00903DEB /* GlobalMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalMenuViewController.swift; sourceTree = "<group>"; };
+		A7821522209098FF00903DEB /* GlobalTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalTableViewCell.swift; sourceTree = "<group>"; };
+		A782152620940C9C00903DEB /* HeatExchangerTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatExchangerTabBarController.swift; sourceTree = "<group>"; };
+		A782152820940DB500903DEB /* HeatFactory.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HeatFactory.storyboard; sourceTree = "<group>"; };
+		A782152A20940DC300903DEB /* HeatExchanger.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HeatExchanger.storyboard; sourceTree = "<group>"; };
+		A782152C20941A5D00903DEB /* HeatExchangerMonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatExchangerMonitorViewController.swift; sourceTree = "<group>"; };
+		A782152E20941A7500903DEB /* HeatExchangerEnergyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatExchangerEnergyViewController.swift; sourceTree = "<group>"; };
+		A782153020941A8E00903DEB /* HeatExchangerTrendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatExchangerTrendViewController.swift; sourceTree = "<group>"; };
+		A782153220941AAB00903DEB /* HeatExchangerSurveyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatExchangerSurveyViewController.swift; sourceTree = "<group>"; };
+		A782153420941ABC00903DEB /* HeatExchangerQualityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatExchangerQualityViewController.swift; sourceTree = "<group>"; };
+		A782153620941AD500903DEB /* HeatFactoryMonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatFactoryMonitorViewController.swift; sourceTree = "<group>"; };
+		A782153820941AEB00903DEB /* HeatFactoryEneryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatFactoryEneryViewController.swift; sourceTree = "<group>"; };
+		A782153A20941AFA00903DEB /* HeatFactoryTrendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatFactoryTrendViewController.swift; sourceTree = "<group>"; };
+		A782153C20941B0B00903DEB /* HeatFactorySurveyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatFactorySurveyViewController.swift; sourceTree = "<group>"; };
+		A782153E20941B2200903DEB /* HeatFactoryQualityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatFactoryQualityViewController.swift; sourceTree = "<group>"; };
+		A78EE4AC20BC00500009FADB /* FBShimmeringView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FBShimmeringView.m; path = IDHApp/AlarmMangement/FBShimmering/FBShimmeringView.m; sourceTree = "<group>"; };
+		A78EE4AE20BFA5260009FADB /* ExchangerMonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangerMonitorViewController.swift; sourceTree = "<group>"; };
+		A78EE4B020BFA5C70009FADB /* CustomButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomButton.xib; sourceTree = "<group>"; };
 		A79FB92D2015851B0045ED08 /* SWRevealViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWRevealViewController.m; sourceTree = "<group>"; };
 		A79FB92E2015851C0045ED08 /* SWRevealViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWRevealViewController.h; sourceTree = "<group>"; };
-		A79FB952201598930045ED08 /* MenuTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
+		A7D033DA206B737A00ED7429 /* WorkingFactorMenuViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkingFactorMenuViewCell.swift; sourceTree = "<group>"; };
+		A7D033DB206B737A00ED7429 /* WorkingFactorMenuViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkingFactorMenuViewCell.xib; sourceTree = "<group>"; };
+		A7D033DE206C8F8600ED7429 /* Charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Charts.swift; sourceTree = "<group>"; };
 		A7D4B80C201188C700827950 /* ScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
 		A7D4B80E20118B4A00827950 /* AlertViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewController.swift; sourceTree = "<group>"; };
 		A7D4B810201191DB00827950 /* IDH.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDH.swift; sourceTree = "<group>"; };
+		A7E2BF9720C6863900F05464 /* MixMonitorVC.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MixMonitorVC.storyboard; sourceTree = "<group>"; };
+		A7E2BF9920C68E5600F05464 /* ExchangerMixMonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangerMixMonitorViewController.swift; sourceTree = "<group>"; };
+		A7E2BF9D20CE599200F05464 /* AdviceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdviceTableViewCell.swift; sourceTree = "<group>"; };
+		A7E2BF9E20CE599200F05464 /* AdviceTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AdviceTableViewCell.xib; sourceTree = "<group>"; };
+		A7E2BFA120D2466700F05464 /* HeaderForAlarm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderForAlarm.swift; sourceTree = "<group>"; };
+		A7E2BFA320D2467B00F05464 /* HeaderForAlarm.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeaderForAlarm.xib; sourceTree = "<group>"; };
+		A7FCCF142084862A00301ED2 /* alarm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = alarm.mp3; sourceTree = "<group>"; };
+		A7FCCF352085EE6A00301ED2 /* HeatFactoryTabBarControllerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatFactoryTabBarControllerViewController.swift; sourceTree = "<group>"; };
+		A7FCCF382086EB3000301ED2 /* HeatQualityStoryBoard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HeatQualityStoryBoard.storyboard; sourceTree = "<group>"; };
+		A7FCCF3A2086EB6100301ED2 /* EneryAnalyseStoryBoard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = EneryAnalyseStoryBoard.storyboard; sourceTree = "<group>"; };
+		A7FCCF3C2086EB8100301ED2 /* EneryAnalyseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EneryAnalyseViewController.swift; sourceTree = "<group>"; };
+		A7FCCF3E2086EB8E00301ED2 /* HeatQualityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatQualityViewController.swift; sourceTree = "<group>"; };
+		A7FCCF5E208824F100301ED2 /* ServiceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceAPI.swift; sourceTree = "<group>"; };
 		CBD42830FEBC1962D60FD54C /* Pods-IDHApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IDHApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-IDHApp/Pods-IDHApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -223,6 +360,55 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		A70E50AE207F44A400F97C20 /* AlarmMangement */ = {
+			isa = PBXGroup;
+			children = (
+				A782151C209091B200903DEB /* slideToCall.png */,
+				A70E50B2207F471D00F97C20 /* AlarmViewController.swift */,
+				A7E2BF9D20CE599200F05464 /* AdviceTableViewCell.swift */,
+				A7E2BF9E20CE599200F05464 /* AdviceTableViewCell.xib */,
+				A7E2BFA120D2466700F05464 /* HeaderForAlarm.swift */,
+				A7E2BFA320D2467B00F05464 /* HeaderForAlarm.xib */,
+				A737B63B20D3BDBB00BEC40A /* HeaderOneForAlarm.xib */,
+				A78214FB208DD53600903DEB /* AlarmSettingViewController.swift */,
+				A78214FF208DDC7900903DEB /* AlarmMenuTableViewCell.swift */,
+				A78214FD208DD54800903DEB /* AlarmManagementViewController.swift */,
+				A70E50B4207F473500F97C20 /* AlarmStoryBoard.storyboard */,
+				A78214F5208D8B1B00903DEB /* AlarmModel.swift */,
+			);
+			path = AlarmMangement;
+			sourceTree = "<group>";
+		};
+		A70E50AF207F44B400F97C20 /* HeatingQuality */ = {
+			isa = PBXGroup;
+			children = (
+				A7FCCF382086EB3000301ED2 /* HeatQualityStoryBoard.storyboard */,
+				A7821505208F0BE800903DEB /* HeatingQualityManagementViewController.swift */,
+				A7FCCF3E2086EB8E00301ED2 /* HeatQualityViewController.swift */,
+				A7821507208F2C9300903DEB /* QualityModel.swift */,
+			);
+			path = HeatingQuality;
+			sourceTree = "<group>";
+		};
+		A70E50B0207F44C700F97C20 /* EnergyAnalyse */ = {
+			isa = PBXGroup;
+			children = (
+				A7FCCF3A2086EB6100301ED2 /* EneryAnalyseStoryBoard.storyboard */,
+				A7FCCF3C2086EB8100301ED2 /* EneryAnalyseViewController.swift */,
+				A76DCED1209B16E100C6D2D8 /* AnalyseModel.swift */,
+				A76DCECF209AFB2600C6D2D8 /* TypeindexViewController.swift */,
+				A76DCED320A0053500C6D2D8 /* DetailView.xib */,
+				A76DCED720A04D6C00C6D2D8 /* Water&EleView.swift */,
+				A76DCEDB20A1400D00C6D2D8 /* Gas_CoalView.swift */,
+				A76DCEDD20A1401E00C6D2D8 /* Gas_CoalView.xib */,
+				A76DCED920A139BC00C6D2D8 /* Water&EleView.xib */,
+				A76DCED520A0087D00C6D2D8 /* HeatViewDeatils.swift */,
+				A7821516209014A100903DEB /* MenuFactoryTableViewCell.swift */,
+				A7821517209014A100903DEB /* MenuFactoryTableViewCell.xib */,
+			);
+			path = EnergyAnalyse;
+			sourceTree = "<group>";
+		};
 		A71387DA200DDC0C00ED9984 /* Orientation */ = {
 			isa = PBXGroup;
 			children = (
@@ -237,6 +423,11 @@
 			isa = PBXGroup;
 			children = (
 				A732C4E11FF1025F0097A979 /* RootTabBarController.swift */,
+				A7FCCF352085EE6A00301ED2 /* HeatFactoryTabBarControllerViewController.swift */,
+				A742780420AAD9B4001EE0CA /* TabbarStoryboard.storyboard */,
+				A742780A20AD5F67001EE0CA /* ExchangerTabBar.storyboard */,
+				A78EE4B020BFA5C70009FADB /* CustomButton.xib */,
+				A782152620940C9C00903DEB /* HeatExchangerTabBarController.swift */,
 			);
 			path = RootTabBar;
 			sourceTree = "<group>";
@@ -244,13 +435,22 @@
 		A732C4E31FF1055E0097A979 /* WorkingFactor */ = {
 			isa = PBXGroup;
 			children = (
+				A78EE4B220BFA6DB0009FADB /* IDHWorking */,
 				A77AE3E520240F6F00BFFB9E /* HomsTreeStructure */,
 				A79FB92C201585050045ED08 /* slideMenu */,
 				A753DB1B1FF4FCAF0005D86E /* Cell */,
 				A732C4E41FF1065B0097A979 /* WorkingViewController.swift */,
 				A764CD001FF5DDD8003647AF /* ExchangerCollectionViewController.swift */,
 				A74469C220107C750017064C /* MenuViewController.swift */,
+				A77383232071C533005AAA88 /* MenuTableViewCell.swift */,
+				A77383242071C533005AAA88 /* MenuTableViewCell.xib */,
 				A77535A11FFC85A000BB140D /* resultCollectionViewController.swift */,
+				A773832F2073775E005AAA88 /* resultCollectionView.swift */,
+				A773833120738FCE005AAA88 /* ResultStoryBoard.storyboard */,
+				A7738333207390A3005AAA88 /* ResultViewController.swift */,
+				A773833520739188005AAA88 /* ResultTableViewCell.swift */,
+				A773833D20746A87005AAA88 /* ResultFlowLayout.swift */,
+				A773833620739188005AAA88 /* ResultTableViewCell.xib */,
 				A749D18C1FF257AA0042986E /* WorkingFactoryContainerViewController.swift */,
 				A749D18E1FF259DA0042986E /* WorkingMenuViewController.swift */,
 				A732C4E61FF106720097A979 /* Storyboard.storyboard */,
@@ -261,6 +461,8 @@
 		A748DD091FE8EC6E0021EA71 = {
 			isa = PBXGroup;
 			children = (
+				A78EE4AC20BC00500009FADB /* FBShimmeringView.m */,
+				A7FCCF142084862A00301ED2 /* alarm.mp3 */,
 				A763820E2004763A0086E17D /* Realm.framework */,
 				A763820F2004763B0086E17D /* RealmSwift.framework */,
 				A748DD141FE8EC6E0021EA71 /* IDHApp */,
@@ -281,6 +483,13 @@
 		A748DD141FE8EC6E0021EA71 /* IDHApp */ = {
 			isa = PBXGroup;
 			children = (
+				A782152520940C3900903DEB /* HeatFactory */,
+				A782152420940C2900903DEB /* HeatExchanger */,
+				A7821509208F465400903DEB /* TransferView */,
+				A7FCCF162084868900301ED2 /* Service */,
+				A70E50B0207F44C700F97C20 /* EnergyAnalyse */,
+				A70E50AF207F44B400F97C20 /* HeatingQuality */,
+				A70E50AE207F44A400F97C20 /* AlarmMangement */,
 				A77AE3BB201EB2FC00BFFB9E /* HeatExchange */,
 				A7D4B80B201188B800827950 /* QRCode */,
 				A71A53C1200F56BE0001B2ED /* UIViewController+UINavigation */,
@@ -296,7 +505,6 @@
 				A748DD1C1FE8EC6E0021EA71 /* Assets.xcassets */,
 				A748DD1E1FE8EC6E0021EA71 /* LaunchScreen.storyboard */,
 				A748DD211FE8EC6E0021EA71 /* Info.plist */,
-				A732C4DD1FF0B4730097A979 /* Mine.plist */,
 				A77535A71FFCAA3D00BB140D /* APPManager.plist */,
 				A761B6E91FEBA18C009E9307 /* IDHApp-Bridging-Header.h */,
 			);
@@ -327,7 +535,9 @@
 				A764CD041FF5F0C4003647AF /* CollectionReusableView.swift */,
 				A764CD081FF5F287003647AF /* CollectionViewCell.swift */,
 				A753DB1C1FF4FCC80005D86E /* FactoryTableViewCell.swift */,
-				A79FB952201598930045ED08 /* MenuTableViewCell.swift */,
+				A773832D207373AF005AAA88 /* resultTableViewCell.swift */,
+				A7D033DA206B737A00ED7429 /* WorkingFactorMenuViewCell.swift */,
+				A7D033DB206B737A00ED7429 /* WorkingFactorMenuViewCell.xib */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -347,6 +557,7 @@
 			children = (
 				A77AE3BC201EB3AA00BFFB9E /* HeatExchangerTabBarControllerViewController.swift */,
 				A77AE3C5201EB81600BFFB9E /* HomsMonitorViewController.swift */,
+				A78EE4AE20BFA5260009FADB /* ExchangerMonitorViewController.swift */,
 				A77AE3C3201EB7CD00BFFB9E /* HomsExchanger.storyboard */,
 			);
 			path = HeatExchange;
@@ -366,6 +577,7 @@
 			children = (
 				A7D4B80E20118B4A00827950 /* AlertViewController.swift */,
 				A748DD151FE8EC6E0021EA71 /* AppDelegate.swift */,
+				A77C01452060C59A00FD54D8 /* ChartViewController.swift */,
 			);
 			path = AppDelegate;
 			sourceTree = "<group>";
@@ -377,6 +589,8 @@
 				A780733920104A0400EAAAE1 /* Defaults.swift */,
 				A761B6F11FEBBBB8009E9307 /* Core.swift */,
 				A7D4B810201191DB00827950 /* IDH.swift */,
+				A7D033DE206C8F8600ED7429 /* Charts.swift */,
+				A76DCECD20996CFD00C6D2D8 /* Tools.swift */,
 				A762EBC71FECE93B000295EF /* HeatFactoryModel.swift */,
 				A762EBC91FECE957000295EF /* HeatExchangeModel.swift */,
 				A762EBC51FECC383000295EF /* GroupingInfo.swift */,
@@ -384,14 +598,62 @@
 				A763820C20045EA40086E17D /* DBManager.swift */,
 				A763821C2004AB8A0086E17D /* XMLParser.swift */,
 				A762EBBF1FECABEF000295EF /* Toast.swift */,
+				A78027CF207A220E000CD830 /* ExtensionToast.swift */,
 			);
 			path = Core;
+			sourceTree = "<group>";
+		};
+		A7821509208F465400903DEB /* TransferView */ = {
+			isa = PBXGroup;
+			children = (
+				A782150A208F468300903DEB /* TransferViewController.swift */,
+				A782150C208F46B200903DEB /* Transfer.storyboard */,
+				A78215202090983D00903DEB /* GlobalMenuViewController.swift */,
+				A7821522209098FF00903DEB /* GlobalTableViewCell.swift */,
+			);
+			path = TransferView;
+			sourceTree = "<group>";
+		};
+		A782152420940C2900903DEB /* HeatExchanger */ = {
+			isa = PBXGroup;
+			children = (
+				A782152A20940DC300903DEB /* HeatExchanger.storyboard */,
+				A782152C20941A5D00903DEB /* HeatExchangerMonitorViewController.swift */,
+				A782152E20941A7500903DEB /* HeatExchangerEnergyViewController.swift */,
+				A782153020941A8E00903DEB /* HeatExchangerTrendViewController.swift */,
+				A782153220941AAB00903DEB /* HeatExchangerSurveyViewController.swift */,
+				A782153420941ABC00903DEB /* HeatExchangerQualityViewController.swift */,
+			);
+			path = HeatExchanger;
+			sourceTree = "<group>";
+		};
+		A782152520940C3900903DEB /* HeatFactory */ = {
+			isa = PBXGroup;
+			children = (
+				A782152820940DB500903DEB /* HeatFactory.storyboard */,
+				A782153620941AD500903DEB /* HeatFactoryMonitorViewController.swift */,
+				A782153820941AEB00903DEB /* HeatFactoryEneryViewController.swift */,
+				A782153A20941AFA00903DEB /* HeatFactoryTrendViewController.swift */,
+				A782153C20941B0B00903DEB /* HeatFactorySurveyViewController.swift */,
+				A782153E20941B2200903DEB /* HeatFactoryQualityViewController.swift */,
+				A742780220A97B56001EE0CA /* FactoryModels.swift */,
+			);
+			path = HeatFactory;
+			sourceTree = "<group>";
+		};
+		A78EE4B220BFA6DB0009FADB /* IDHWorking */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = IDHWorking;
 			sourceTree = "<group>";
 		};
 		A7916A102003241700093A7B /* Monitor */ = {
 			isa = PBXGroup;
 			children = (
 				A764CD0A1FF639AB003647AF /* MonitorViewController.swift */,
+				A7E2BF9720C6863900F05464 /* MixMonitorVC.storyboard */,
+				A7E2BF9920C68E5600F05464 /* ExchangerMixMonitorViewController.swift */,
 			);
 			path = Monitor;
 			sourceTree = "<group>";
@@ -411,6 +673,14 @@
 				A7D4B80C201188C700827950 /* ScanViewController.swift */,
 			);
 			path = QRCode;
+			sourceTree = "<group>";
+		};
+		A7FCCF162084868900301ED2 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				A7FCCF5E208824F100301ED2 /* ServiceAPI.swift */,
+			);
+			path = Service;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -482,16 +752,38 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A782152B20940DC300903DEB /* HeatExchanger.storyboard in Resources */,
 				A748DD201FE8EC6E0021EA71 /* LaunchScreen.storyboard in Resources */,
+				A7E2BFA020CE599200F05464 /* AdviceTableViewCell.xib in Resources */,
 				A748DD1D1FE8EC6E0021EA71 /* Assets.xcassets in Resources */,
 				A71A53C2200F56BE0001B2ED /* UIViewController+UINavigation in Resources */,
+				A737B63C20D3BDBB00BEC40A /* HeaderOneForAlarm.xib in Resources */,
+				A78EE4B120BFA5C70009FADB /* CustomButton.xib in Resources */,
+				A76DCEDE20A1401E00C6D2D8 /* Gas_CoalView.xib in Resources */,
 				A761B6EE1FEBB9A4009E9307 /* Login.storyboard in Resources */,
 				A703AA8B2011DEB2008A1A2A /* home_bg.png in Resources */,
 				A77AE3C4201EB7CD00BFFB9E /* HomsExchanger.storyboard in Resources */,
-				A732C4DE1FF0B4730097A979 /* Mine.plist in Resources */,
+				A76DCED420A0053500C6D2D8 /* DetailView.xib in Resources */,
+				A7FCCF3B2086EB6100301ED2 /* EneryAnalyseStoryBoard.storyboard in Resources */,
+				A7FCCF392086EB3000301ED2 /* HeatQualityStoryBoard.storyboard in Resources */,
+				A782150D208F46B200903DEB /* Transfer.storyboard in Resources */,
+				A782151D209091B200903DEB /* slideToCall.png in Resources */,
+				A7E2BF9820C6863900F05464 /* MixMonitorVC.storyboard in Resources */,
+				A76DCEDA20A139BC00C6D2D8 /* Water&EleView.xib in Resources */,
+				A773833220738FCE005AAA88 /* ResultStoryBoard.storyboard in Resources */,
+				A7D033DD206B737A00ED7429 /* WorkingFactorMenuViewCell.xib in Resources */,
 				A77535A81FFCAA3D00BB140D /* APPManager.plist in Resources */,
+				A742780520AAD9B4001EE0CA /* TabbarStoryboard.storyboard in Resources */,
+				A782152920940DB500903DEB /* HeatFactory.storyboard in Resources */,
+				A70E50B5207F473500F97C20 /* AlarmStoryBoard.storyboard in Resources */,
+				A77383262071C533005AAA88 /* MenuTableViewCell.xib in Resources */,
 				A762EBC41FECB6C0000295EF /* Home.storyboard in Resources */,
+				A742780B20AD5F67001EE0CA /* ExchangerTabBar.storyboard in Resources */,
 				A732C4E71FF106720097A979 /* Storyboard.storyboard in Resources */,
+				A773833820739188005AAA88 /* ResultTableViewCell.xib in Resources */,
+				A7E2BFA420D2467B00F05464 /* HeaderForAlarm.xib in Resources */,
+				A7FCCF152084862A00301ED2 /* alarm.mp3 in Resources */,
+				A7821519209014A100903DEB /* MenuFactoryTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,35 +874,79 @@
 			buildActionMask = 2147483647;
 			files = (
 				A763821D2004AB8A0086E17D /* XMLParser.swift in Sources */,
+				A7738334207390A3005AAA88 /* ResultViewController.swift in Sources */,
+				A782152F20941A7500903DEB /* HeatExchangerEnergyViewController.swift in Sources */,
+				A76DCED620A0087D00C6D2D8 /* HeatViewDeatils.swift in Sources */,
 				A7D4B80D201188C700827950 /* ScanViewController.swift in Sources */,
+				A77383252071C533005AAA88 /* MenuTableViewCell.swift in Sources */,
+				A70E50B3207F471D00F97C20 /* AlarmViewController.swift in Sources */,
+				A76DCECE20996CFD00C6D2D8 /* Tools.swift in Sources */,
 				A764CD011FF5DDD8003647AF /* ExchangerCollectionViewController.swift in Sources */,
 				A77AE3E920284B8D00BFFB9E /* HomsTreeTableViewCell.swift in Sources */,
 				A764CD061FF5F0C4003647AF /* CollectionReusableView.swift in Sources */,
+				A7821508208F2C9300903DEB /* QualityModel.swift in Sources */,
+				A77C01462060C59A00FD54D8 /* ChartViewController.swift in Sources */,
+				A78215212090983D00903DEB /* GlobalMenuViewController.swift in Sources */,
 				A77535A41FFCA0E300BB140D /* APPManagerProvider.swift in Sources */,
 				A762EBCA1FECE957000295EF /* HeatExchangeModel.swift in Sources */,
+				A782153720941AD500903DEB /* HeatFactoryMonitorViewController.swift in Sources */,
 				A780733A20104A0400EAAAE1 /* Defaults.swift in Sources */,
+				A7821523209098FF00903DEB /* GlobalTableViewCell.swift in Sources */,
 				A7D4B811201191DB00827950 /* IDH.swift in Sources */,
 				A71387DF200DDC2100ED9984 /* BaseViewController.swift in Sources */,
-				A79FB953201598930045ED08 /* MenuTableViewCell.swift in Sources */,
+				A78214FC208DD53600903DEB /* AlarmSettingViewController.swift in Sources */,
 				A74469C320107C750017064C /* MenuViewController.swift in Sources */,
+				A782152720940C9D00903DEB /* HeatExchangerTabBarController.swift in Sources */,
+				A782152D20941A5D00903DEB /* HeatExchangerMonitorViewController.swift in Sources */,
+				A76DCED2209B16E100C6D2D8 /* AnalyseModel.swift in Sources */,
+				A782153D20941B0B00903DEB /* HeatFactorySurveyViewController.swift in Sources */,
+				A78EE4AF20BFA5270009FADB /* ExchangerMonitorViewController.swift in Sources */,
 				A77AE3C6201EB81600BFFB9E /* HomsMonitorViewController.swift in Sources */,
 				A749D18D1FF257AA0042986E /* WorkingFactoryContainerViewController.swift in Sources */,
 				A79FB92F2015851C0045ED08 /* SWRevealViewController.m in Sources */,
+				A76DCED820A04D6C00C6D2D8 /* Water&EleView.swift in Sources */,
 				A7D4B80F20118B4A00827950 /* AlertViewController.swift in Sources */,
+				A7FCCF5F208824F100301ED2 /* ServiceAPI.swift in Sources */,
 				A763820D20045EA40086E17D /* DBManager.swift in Sources */,
+				A782153320941AAB00903DEB /* HeatExchangerSurveyViewController.swift in Sources */,
 				A732C4E21FF1025F0097A979 /* RootTabBarController.swift in Sources */,
+				A7E2BFA220D2466700F05464 /* HeaderForAlarm.swift in Sources */,
+				A782153B20941AFA00903DEB /* HeatFactoryTrendViewController.swift in Sources */,
+				A782153120941A8E00903DEB /* HeatExchangerTrendViewController.swift in Sources */,
+				A76DCED0209AFB2600C6D2D8 /* TypeindexViewController.swift in Sources */,
+				A773833E20746A87005AAA88 /* ResultFlowLayout.swift in Sources */,
+				A782150B208F468300903DEB /* TransferViewController.swift in Sources */,
 				A71387E0200DDC2100ED9984 /* UIDevice+Orientation.m in Sources */,
 				A77535A21FFC85A000BB140D /* resultCollectionViewController.swift in Sources */,
+				A78214F6208D8B1B00903DEB /* AlarmModel.swift in Sources */,
+				A7E2BF9A20C68E5600F05464 /* ExchangerMixMonitorViewController.swift in Sources */,
+				A773833720739188005AAA88 /* ResultTableViewCell.swift in Sources */,
+				A7821506208F0BE800903DEB /* HeatingQualityManagementViewController.swift in Sources */,
 				A732C4E51FF1065B0097A979 /* WorkingViewController.swift in Sources */,
+				A7E2BF9F20CE599200F05464 /* AdviceTableViewCell.swift in Sources */,
+				A7FCCF3F2086EB8E00301ED2 /* HeatQualityViewController.swift in Sources */,
 				A762EBC21FECB67D000295EF /* HomeViewController.swift in Sources */,
 				A77AE3BD201EB3AA00BFFB9E /* HeatExchangerTabBarControllerViewController.swift in Sources */,
 				A762EBC81FECE93B000295EF /* HeatFactoryModel.swift in Sources */,
+				A7D033DC206B737A00ED7429 /* WorkingFactorMenuViewCell.swift in Sources */,
 				A76419DD1FFE2F44007E2D31 /* LayoutableView.swift in Sources */,
 				A77AE3E72024101300BFFB9E /* TreeStructureViewController.swift in Sources */,
+				A782153520941ABC00903DEB /* HeatExchangerQualityViewController.swift in Sources */,
+				A782153920941AEB00903DEB /* HeatFactoryEneryViewController.swift in Sources */,
+				A782153F20941B2200903DEB /* HeatFactoryQualityViewController.swift in Sources */,
+				A7D033DF206C8F8600ED7429 /* Charts.swift in Sources */,
+				A78214FE208DD54800903DEB /* AlarmManagementViewController.swift in Sources */,
+				A76DCEDC20A1400D00C6D2D8 /* Gas_CoalView.swift in Sources */,
+				A7FCCF3D2086EB8100301ED2 /* EneryAnalyseViewController.swift in Sources */,
+				A7821500208DDC7900903DEB /* AlarmMenuTableViewCell.swift in Sources */,
+				A773832E207373AF005AAA88 /* resultTableViewCell.swift in Sources */,
 				A761B6F21FEBBBB8009E9307 /* Core.swift in Sources */,
+				A742780320A97B56001EE0CA /* FactoryModels.swift in Sources */,
+				A7FCCF362085EE6A00301ED2 /* HeatFactoryTabBarControllerViewController.swift in Sources */,
 				A76419DA1FFE2EAF007E2D31 /* WeightsLayout.swift in Sources */,
 				A749D18F1FF259DA0042986E /* WorkingMenuViewController.swift in Sources */,
 				A764CD0B1FF639AB003647AF /* MonitorViewController.swift in Sources */,
+				A77383302073775E005AAA88 /* resultCollectionView.swift in Sources */,
 				A764CD091FF5F287003647AF /* CollectionViewCell.swift in Sources */,
 				A762EBC01FECABEF000295EF /* Toast.swift in Sources */,
 				A76419DB1FFE2EAF007E2D31 /* WeightsLayoutData.swift in Sources */,
@@ -618,6 +954,8 @@
 				A762EBC61FECC383000295EF /* GroupingInfo.swift in Sources */,
 				A753DB1D1FF4FCC80005D86E /* FactoryTableViewCell.swift in Sources */,
 				A748DD161FE8EC6E0021EA71 /* AppDelegate.swift in Sources */,
+				A7821518209014A100903DEB /* MenuFactoryTableViewCell.swift in Sources */,
+				A78027D0207A220E000CD830 /* ExtensionToast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -806,7 +1144,7 @@
 					"\"UserNotifications\"",
 					"-lxml2",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "SRT.IDHApp.BooleanW-test11";
+				PRODUCT_BUNDLE_IDENTIFIER = "SRT.IDHApp.BooleanW-2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -881,7 +1219,7 @@
 					"\"UserNotifications\"",
 					"-lxml2",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "SRT.IDHApp.BooleanW-test11";
+				PRODUCT_BUNDLE_IDENTIFIER = "SRT.IDHApp.BooleanW-2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

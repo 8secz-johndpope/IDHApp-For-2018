@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>10.65</string>
+	<string>IDH</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconName</key>
@@ -19,9 +19,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.2</string>
+	<string>1.0.6</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>3</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -30,7 +30,15 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>请求访问相机</string>
+	<string>请求访问相机扫描二维码，以激活该APP</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>请求访问位置信息</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>请求访问位置信息</string>
+	<key>NSLocationUsageDescription</key>
+	<string>请求访问位置信息</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>请求访问位置信息</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
