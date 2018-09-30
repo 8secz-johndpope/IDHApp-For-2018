@@ -43,14 +43,18 @@ class Gas_CoalView: UIView {
     @IBAction func toMax(_ sender: UIButton) {
         if let clousre = call {
             if let max = data?.max{
-                clousre(myType, max,false)
+                if !(max.Name?.isEmpty)!{
+                    clousre(myType, max,true)
+                }
             }
         }
     }
     @IBAction func toMin(_ sender: UIButton) {
         if let clousre = call {
             if let min = data?.min{
-                clousre(myType, min,false)
+                if !(min.Name?.isEmpty)!{
+                    clousre(myType, min,true)
+                }
             }
         }
     }
@@ -113,7 +117,6 @@ class Gas_CoalView: UIView {
             temp?.setTitle("--", for: .normal)
         }
     }
-
     
     func setData(_ type:ConsumeType, data:JSON) {
         self.data = gasModel.init(data)

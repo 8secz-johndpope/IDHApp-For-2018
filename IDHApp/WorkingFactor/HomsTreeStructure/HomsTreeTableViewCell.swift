@@ -96,7 +96,10 @@ class HomsTreeTableViewCell: UITableViewCell {
     func getChilds() -> [heatModel]? {
         let realm = try! Realm()
         if let id = data?.area_id{
-            let objects = realm.objects(heatModel.self).filter("parent_id == \(id)").toArray(of: heatModel.self)
+            var objects = realm.objects(heatModel.self).filter("parent_id == \(id)").toArray(of: heatModel.self)
+            objects.sort(by: { (child1, child2) -> Bool in
+                return child1.area_name < child2.area_name
+            })
             return objects.count > 0 ? objects : []
         }
         return []

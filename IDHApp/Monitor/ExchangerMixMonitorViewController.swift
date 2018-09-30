@@ -20,8 +20,8 @@ class ExchangerMixMonitorViewController: UIViewController {
     @IBOutlet weak var Home: UIButton!
     @IBOutlet weak var backView: UIView!
     var newModel:HeatExchangeModel?
-//    var factorModel:HeatFactoryModel?
     
+//    var factorModel:HeatFactoryModel?
     
     var labelArr: [LabelModel] = []
     var stationLabelArr: [(station: String, modles:[LabelModel])] = []
@@ -31,6 +31,7 @@ class ExchangerMixMonitorViewController: UIViewController {
     @IBOutlet weak var preButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
     let dateView = UILabel()
+    let nameLabel = UILabel()
     var lastPoint: CGPoint?
     var maxScale: CGFloat = 1.5
     var minScale: CGFloat = 0.5
@@ -114,6 +115,9 @@ class ExchangerMixMonitorViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+//        if needGroup{
+//            current = getIndex(model!)
+//        }
         appDelegate.landscape = true
         let value = UIInterfaceOrientation.landscapeRight.rawValue
         UIDevice.current.setValue(value, forKey: "orientation")
@@ -124,11 +128,14 @@ class ExchangerMixMonitorViewController: UIViewController {
             Tools.setMonitors(heatFactoryID, isFactor: true)
             changeFactory()
         }else{
-            Tools.setMonitors(heatExchangerID)
+            if needGroup{
+                
+            }else{
+                Tools.setMonitors(heatExchangerID)
+            }
             changeExchanger()
         }
     }
-    
     
     @IBAction func changeExc(_ sender: UIButton) {
         changeModel(sender)
@@ -145,7 +152,9 @@ class ExchangerMixMonitorViewController: UIViewController {
 //        UIDevice.current.setValue(value, forKey: "orientation")
 //        self.view.frame = CGRect.init(x: 0, y: 0, width: globalHeight, height: globalWidth)
         self.view.backgroundColor = UIColor.white
-        
+//        if needGroup{
+//            current = getIndex(model!)
+//        }
         setUpViews()
         if factoryMonitor {
             if facModels.count > 1 {
@@ -209,79 +218,8 @@ class ExchangerMixMonitorViewController: UIViewController {
     }
     
     func setUpViews() {
-//        let editorView = LayoutableView()
-//        editorView.layout = WeightsLayout.init(horizontal: false)
-//        editorView.layout?.weights = [1,1,1,4,1,1,1]
-//        editorView.frame = CGRect.init(x: 0, y: 0, width: 48, height: self.view.bounds.width)
-//        editorView.backgroundColor = UIColor.gray
-//
-//        let home = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 48, height: 48))
-//        home.setImage(#imageLiteral(resourceName: "quality_ico_home"), for: .normal)
-//        home.addTarget(self, action: #selector(toHome), for: .touchUpInside)
-//
-//        if AppProvider.instance.appVersion == .homs03 || AppProvider.instance.appVersion == .homsOther {
-//            home.isHidden = true
-//        }
-//
-//        let back = UIButton(frame: CGRect(x: 0, y: self.view.bounds.width - 48, width: 48, height: 48))
-//        back.setImage(#imageLiteral(resourceName: "back_factory"), for: .normal)
-//        back.addTarget(self, action: #selector(backTo), for: .touchUpInside)
-//        preButton = UIButton(frame: CGRect.init(x: 0, y: 0, width: 48, height: 48))
-//        preButton?.setImage(#imageLiteral(resourceName: "next"), for: .normal)
-//        preButton?.tag = 100
-//        preButton?.addTarget(self, action: #selector(changeModel(_:)), for: .touchUpInside)
-//
-//        nextButton = UIButton(frame: CGRect.init(x: 0, y: 0, width: 48, height: 48))
-//        nextButton?.setImage(#imageLiteral(resourceName: "pre"), for: .normal)
-//        nextButton?.tag = 200
-//        nextButton?.addTarget(self, action: #selector(changeModel(_:)), for: .touchUpInside)
-//
-//        titleName.numberOfLines = 0
-//        titleName.lineBreakMode = .byCharWrapping
-//        titleName.textAlignment = .center
-//        var newName = ""
-//        //        if models.isEmpty {
-//        //            for char in (model?.area_name)!{
-//        //                newName.append(char)
-//        //                newName.append("\n")
-//        //            }
-//        //            preButton?.isHidden = true
-//        //            nextButton?.isHidden = true
-//        //        }else{
-//        //            if models.count == 1 {
-//        //                preButton?.isHidden = true
-//        //                nextButton?.isHidden = true
-//        //            }else{
-//        //                if current == 0 {
-//        //                    preButton?.isHidden = true
-//        //                }else if current == (models.count) - 1{
-//        //                    nextButton?.isHidden = true
-//        //                }
-//        //            }
-//        //            for char in models[current].Name {
-//        //                newName.append(char)
-//        //                newName.append("\n")
-//        //            }
-//        //        }
-        
         titleName.text = model?.area_name
-        
-        
-//        titleName.textColor = UIColor.white
-//        editorView.addSubview(home)
-//        editorView.addSubview(UIView())
-//        editorView.addSubview(preButton!)
-//        editorView.addSubview(titleName)
-//        editorView.addSubview(nextButton!)
-//        editorView.addSubview(UIView())
-//        editorView.addSubview(back)
-        
-//        imageView.frame = CGRect(x: 48, y: 0, width: self.view.bounds.height, height: self.view.bounds.width)
-//
-        
-//        trendButton.addTarget(self, action: #selector(toTrend(_:)), for: .touchUpInside)
         let gesture = UIPinchGestureRecognizer.init(target: self, action: #selector(zoomImage(_:)))
-        
         imageView.addGestureRecognizer(gesture)
         imageView.addGestureRecognizer(UIPanGestureRecognizer.init(target: self, action: #selector(move)))
         
@@ -296,32 +234,6 @@ class ExchangerMixMonitorViewController: UIViewController {
         imageActivity = UIActivityIndicatorView.init(activityIndicatorStyle: .gray)
         imageActivity.center.x = self.view.center.y
         imageActivity.center.y = self.view.center.x
-//
-//        let backView = LayoutableView()
-//        backView.layout = WeightsLayout.init(horizontal: false)
-//        backView.layout?.weights = [1,1,1,1,1]
-//        backView.frame = CGRect.init(x: self.view.bounds.height-48, y: 0, width: 48, height: self.view.bounds.width)
-//        let tAtt = ["监控画面", "运行趋势", "能耗", "概况", "供热质量"]
-//        let IArr = [#imageLiteral(resourceName: "heat_btn_look_select"), #imageLiteral(resourceName: "heat_btn_trend_unselect"), #imageLiteral(resourceName: "heat_btn_power_unselect"), #imageLiteral(resourceName: "heat_btn_survey_unselect"), #imageLiteral(resourceName: "heat_btn_qu_unselect")]
-//
-//        for index in 0..<4 {
-//            let btn = LayoutableView()
-//            btn.layout = WeightsLayout.init(horizontal: false)
-//            btn.layout?.weights = [2,1]
-//            let image = UIImageView.init()
-//            image.image = IArr[index]
-//            let label = UILabel()
-//            label.textAlignment = .center
-//            label.text = tAtt[index]
-//            btn.addSubview(image)
-//            btn.addSubview(label)
-//            btn.tag = index
-//            btn.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(toTab(_:))))
-//            backView.addSubview(btn)
-//
-//        }
-//        backView.backgroundColor = UIColor.darkGray
-//
         AppProvider.instance.setVersion()
         if AppProvider.instance.appVersion == .homs03 && AppProvider.instance.appVersion == .homsOther{
             backView.isHidden = true
@@ -391,15 +303,16 @@ class ExchangerMixMonitorViewController: UIViewController {
     }
     
     func changeExchanger() {
+        
+        print(model,current)
         if timer != nil {
             timer.invalidate()
         }
         imageView.transform = CGAffineTransform.identity
         //        changeButtonState()
-
         var name = ""
         if models.isEmpty {
-            name = (model?.area_name)!
+//            name = (model?.area_name)!
             AppProvider.instance.setVersion()
             if AppProvider.instance.appVersion == .idhWithHoms{
                 let realm = try! Realm()
@@ -413,12 +326,9 @@ class ExchangerMixMonitorViewController: UIViewController {
         }else{
             let exchanger = models[current]
             name = exchanger.Name
-            //
             heatExchangerID = exchanger.ID
-            heatExchangerName = exchanger.Name
-            //
             model = getModel(exchanger)
-            //
+            heatExchangerName = exchanger.Name
         }
         var newName = ""
         
@@ -426,14 +336,31 @@ class ExchangerMixMonitorViewController: UIViewController {
             newName.append(char)
             newName.append("\n")
         }
-        
         titleName.text = heatExchangerName
-        
         labelArr.removeAll()
         stationLabelArr.removeAll()
         stationIDArr.removeAll()
+        for view in imageView.subviews {
+            view.removeFromSuperview()
+        }
         loadDatas()
     }
+    
+    func getIndex(_ model:heatModel) ->Int{
+        print(model.idh_id)
+        for num in models.enumerated(){
+            if num.element.ID == model.idh_id{
+                return num.offset
+            }
+        }
+        return 0
+//        for(var i = 0;i < models.count;i++){
+//            if model.idh_id == models[i].ID{
+//                return i
+//            }
+//        }
+    }
+    
     
     func getModel(_ exchange: HeatExchangeModel) -> heatModel? {
         let realm = try! Realm()
@@ -528,21 +455,6 @@ class ExchangerMixMonitorViewController: UIViewController {
     }
     
     func changeButtonState() {
-//        if models.count > 1 {
-//            if current == 0 {
-//                preButton?.isHidden = true
-//                nextButton?.isHidden = false
-//            }else if current == models.count - 1 {
-//                preButton?.isHidden = false
-//                nextButton?.isHidden = true
-//            }else{
-//                preButton?.isHidden = false
-//                nextButton?.isHidden = false
-//            }
-//        }else{
-//            preButton?.isHidden = true
-//            nextButton?.isHidden = true
-//        }
         if factoryMonitor {
             if facModels.count > 1 {
                 if current == 0 {
@@ -704,49 +616,190 @@ class ExchangerMixMonitorViewController: UIViewController {
     @objc func loadDatas() {
         if let heat = model {
             let realm = try! Realm()
-            if !realm.objects(heatModel.self).filter("parent_id == \(heat.area_id)").isEmpty{
-                Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": heat.path]).responseData(completionHandler: { reponse in
-                    if reponse.result.isSuccess{
-                        
-                        let doc = try! DDXMLDocument.init(data: reponse.value!, options: 0)
-                        if let back = doc.rootElement()?.elements(forName: "background").first{
-                            if let image = back.attribute(forName: "filename")?.stringValue{
-                                var arr = heat.path.components(separatedBy: "/")
-                                arr.removeLast()
-                                arr.append(image)
-                                let path = arr.joined(separator: "/")
-                                self.requestImage(path)
-                            }
-                        }
-                        let objects = try! doc.nodes(forXPath: "//objects/object") as! [DDXMLElement]
-                        for temp in objects{
-                            let model = LabelModel()
-                            model.text = (temp.attribute(forName: "name")?.stringValue)!
-                            if let location = temp.elements(forName: "location").first{
-                                if let x = location.attribute(forName: "x")?.stringValue{
-                                    model.x = percentToFloat(x)
-                                }
-                                if let y = location.attribute(forName: "y")?.stringValue{
-                                    model.y = percentToFloat(y)
-                                }
-                                if let width = location.attribute(forName: "width")?.stringValue{
-                                    model.width = percentToFloat(width)
-                                }
-                                if let height = location.attribute(forName: "height")?.stringValue{
-                                    model.height = percentToFloat(height)
-                                }
-                            }
-                            self.labelArr.append(model)
-                        }
-                    }
-                    self.drawLabels(true)
-                })
-            }else{
+//            if !realm.objects(heatModel.self).filter("parent_id == \(heat.area_id)").isEmpty{
+//                Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": heat.path]).responseData(completionHandler: { reponse in
+//                    if reponse.result.isSuccess{
+//                        do{
+//                            let doc = try DDXMLDocument.init(data: reponse.value!, options: 0)
+//                            if let back = doc.rootElement()?.elements(forName: "background").first{
+//                                if let image = back.attribute(forName: "filename")?.stringValue{
+//                                    var arr = heat.path.components(separatedBy: "/")
+//                                    arr.removeLast()
+//                                    arr.append(image)
+//                                    let path = arr.joined(separator: "/")
+//                                    self.requestImage(path)
+//                                }
+//                            }
+//                            let objects = try! doc.nodes(forXPath: "//objects/object") as! [DDXMLElement]
+//                            for temp in objects{
+//                                let model = LabelModel()
+//                                model.text = (temp.attribute(forName: "name")?.stringValue)!
+//                                if let location = temp.elements(forName: "location").first{
+//                                    if let x = location.attribute(forName: "x")?.stringValue{
+//                                        model.x = percentToFloat(x)
+//                                    }
+//                                    if let y = location.attribute(forName: "y")?.stringValue{
+//                                        model.y = percentToFloat(y)
+//                                    }
+//                                    if let width = location.attribute(forName: "width")?.stringValue{
+//                                        model.width = percentToFloat(width)
+//                                    }
+//                                    if let height = location.attribute(forName: "height")?.stringValue{
+//                                        model.height = percentToFloat(height)
+//                                    }
+//                                }
+//                                self.labelArr.append(model)
+//                            }
+//                            self.drawLabels(true)
+//                        }catch{
+//                            ToastView.instance.showToast(text: "暂无数据", pos: .Mid)
+//                        }
+//                    }else{
+//                        ToastView.instance.showToast(text: "请求数据失败", pos: .Mid)
+//                    }
+//
+////                        let doc = try! DDXMLDocument.init(data: reponse.value!, options: 0)
+////                        if let back = doc.rootElement()?.elements(forName: "background").first{
+////                            if let image = back.attribute(forName: "filename")?.stringValue{
+////                                var arr = heat.path.components(separatedBy: "/")
+////                                arr.removeLast()
+////                                arr.append(image)
+////                                let path = arr.joined(separator: "/")
+////                                self.requestImage(path)
+////                            }
+////                        }
+////                        let objects = try! doc.nodes(forXPath: "//objects/object") as! [DDXMLElement]
+////                        for temp in objects{
+////                            let model = LabelModel()
+////                            model.text = (temp.attribute(forName: "name")?.stringValue)!
+////                            if let location = temp.elements(forName: "location").first{
+////                                if let x = location.attribute(forName: "x")?.stringValue{
+////                                    model.x = percentToFloat(x)
+////                                }
+////                                if let y = location.attribute(forName: "y")?.stringValue{
+////                                    model.y = percentToFloat(y)
+////                                }
+////                                if let width = location.attribute(forName: "width")?.stringValue{
+////                                    model.width = percentToFloat(width)
+////                                }
+////                                if let height = location.attribute(forName: "height")?.stringValue{
+////                                    model.height = percentToFloat(height)
+////                                }
+////                            }
+////                            self.labelArr.append(model)
+////                        }
+////                    }
+//
+//                })
+//            }else{
                 activityIndicator.startAnimating()
                 print("\(heat.path)-----")
                 
                 Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": heat.path]).responseData(completionHandler: { reponse in
                     if reponse.result.isSuccess{
+                        do{
+                            let doc = try DDXMLDocument.init(data: reponse.value!, options: 0)
+                            if AppProvider.instance.appVersion == .homs03{
+                                var arr = heat.path.components(separatedBy: "/")
+                                arr.removeLast()
+                                if let hob = doc.rootElement()?.elements(forName: "hob").first{
+                                    if let name = hob.attribute(forName: "name")?.stringValue{
+                                        arr.append("\(name)/\(name).xml")
+                                        let str = arr.joined(separator: "/")
+                                        self.loadDataFor03(str)
+                                    }
+                                }
+                            }else{
+                                if let back = doc.rootElement()?.elements(forName: "background").first{
+                                    if let image = back.attribute(forName: "filename")?.stringValue{
+                                        var arr = heat.path.components(separatedBy: "/")
+                                        arr.removeLast()
+                                        arr.append(image)
+                                        let path = arr.joined(separator: "/")
+                                        self.requestImage(path)
+                                        self.activityIndicator.stopAnimating()
+                                    }
+                                }
+                                
+                                if let dataW = doc.rootElement()?.attribute(forName: "width")?.stringValue, let dataH = doc.rootElement()?.attribute(forName: "height")?.stringValue{
+                                    let H = (dataH as NSString).floatValue
+                                    let W = (dataW as NSString).floatValue
+                                    self.originalRatio = CGFloat(H/W)
+                                }else{
+                                    self.originalRatio = CGFloat(1028/853)
+                                }
+                                if let dataStrs = doc.rootElement()?.elements(forName: "datastr"){
+                                    if dataStrs.isEmpty{
+                                        self.activityIndicator.stopAnimating()
+                                        Toast.shareInstance().showView(self.view, title: "暂无数据")
+                                        Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
+                                    }else{
+                                        
+                                        for data in dataStrs{
+                                            let model = LabelModel()
+                                            if let location = data.elements(forName: "location").first{
+                                                let x = location.attribute(forName: "x")?.stringValue
+                                                let y = location.attribute(forName: "y")?.stringValue
+                                                let width = location.attribute(forName: "width")?.stringValue
+                                                let height = location.attribute(forName: "height")?.stringValue
+                                                let fixedW = location.attribute(forName: "fixedparentwidth")?.stringValue
+                                                let fixedH = location.attribute(forName: "fixedparentheight")?.stringValue
+                                                self.originalRatio = CGFloat((fixedH! as NSString).floatValue/(fixedW! as NSString).floatValue)
+                                                model.x = (x! as NSString).floatValue * 0.01
+                                                model.y = (y! as NSString).floatValue * 0.01
+                                                model.width = (width! as NSString).floatValue * 0.01
+                                                model.height = (height! as NSString).floatValue * 0.01
+                                            }
+                                            if let object = data.elements(forName: "object").first{
+                                                let text = try! object.nodes(forXPath: "text").first?.stringValue
+                                                if let objs = object.elements(forName: "text").first{
+                                                    let foreColor = objs.attribute(forName: "forecolor")?.stringValue
+                                                    let valueColor = objs.attribute(forName: "datacolor")?.stringValue
+                                                    let valuetrans = objs.attribute(forName: "valuetrans")?.stringValue
+                                                    let specialUnit = objs.attribute(forName: "specialunit")?.stringValue
+                                                    model.specialunit = specialUnit!
+                                                    model.text = text!
+                                                    model.foreColor = self.strToColor(foreColor!)
+                                                    model.dataColor = self.strToColor(valueColor!)
+                                                    model.valueTrans = valuetrans!
+                                                }
+                                                if let values = object.elements(forName: "values").first{
+                                                    let format = values.attribute(forName: "format")?.stringValue
+                                                    model.format = format!
+                                                }
+                                            }
+                                            if let dataSource = data.elements(forName: "datasource").first{
+                                                if let stationid = dataSource.attribute(forName: "stationid")?.stringValue{
+                                                    model.station_id = stationid
+                                                }
+                                                if let tagid = dataSource.attribute(forName: "datatagid")?.stringValue{
+                                                    model.tag_id = tagid
+                                                }
+                                                if let unit = dataSource.attribute(forName: "unit")?.stringValue{
+                                                    model.unit = unit
+                                                }
+                                                let tagid = dataSource.attribute(forName: "datatagid")?.stringValue
+                                                let unit = dataSource.attribute(forName: "unit")?.stringValue
+                                                
+//                                                model.tag_id = tagid!
+//                                                model.unit = unit!
+                                            }
+                                            //                      存起来所有的ID
+                                            if !self.stationIDArr.contains(model.station_id) && !model.station_id.isEmpty{
+                                                self.stationIDArr.append(model.station_id)
+                                                //                                            print("\(stationIDArr)")
+                                            }
+                                            self.labelArr.append(model)
+                                        }
+                                    }
+                                }
+                                self.archiverModels(self.labelArr)
+                                self.requestValues()
+                            }
+                        }catch{
+                            ToastView.instance.showToast(text: "暂无数据", pos: .Mid)
+                        }
+                        /*
                         let doc = try! DDXMLDocument.init(data: reponse.value!, options: 0)
                         if AppProvider.instance.appVersion == .homs03{
                             var arr = heat.path.components(separatedBy: "/")
@@ -838,13 +891,14 @@ class ExchangerMixMonitorViewController: UIViewController {
                             self.archiverModels(self.labelArr)
                             self.requestValues()
                         }
+ */
                     }else{
                         Toast.shareInstance().showView(self.view, title: "请求数据失败")
                         Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
                         print("error")
                     }
                 })
-            }
+//            }
         }else{
             Toast.shareInstance().showView(self.view, title: "暂无数据")
             Thread.detachNewThreadSelector(#selector(self.hidenThreadView), toTarget: self, with: nil)
@@ -855,17 +909,32 @@ class ExchangerMixMonitorViewController: UIViewController {
     func loadDataFor03(_ path: String) {
         Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": path]).responseData { reponse in
             if reponse.result.isSuccess{
-                let doc = try! DDXMLDocument.init(data: reponse.value!, options: 0)
-                if let back = doc.rootElement()?.elements(forName: "background").first{
-                    if let image = back.attribute(forName: "filename")?.stringValue{
-                        var arr = path.components(separatedBy: "/")
-                        arr.removeLast()
-                        arr.append(image)
-                        let path = arr.joined(separator: "/")
-                        self.requestImageFor03(path, doc)
-                        self.activityIndicator.stopAnimating()
+                do{
+                    let doc = try DDXMLDocument.init(data: reponse.value!, options: 0)
+                    if let back = doc.rootElement()?.elements(forName: "background").first{
+                        if let image = back.attribute(forName: "filename")?.stringValue{
+                            var arr = path.components(separatedBy: "/")
+                            arr.removeLast()
+                            arr.append(image)
+                            let path = arr.joined(separator: "/")
+                            self.requestImageFor03(path, doc)
+                            self.activityIndicator.stopAnimating()
+                        }
                     }
+                }catch{
+                    ToastView.instance.showToast(text: "请求数据失败", pos: .Mid)
                 }
+//                let doc = try! DDXMLDocument.init(data: reponse.value!, options: 0)
+//                if let back = doc.rootElement()?.elements(forName: "background").first{
+//                    if let image = back.attribute(forName: "filename")?.stringValue{
+//                        var arr = path.components(separatedBy: "/")
+//                        arr.removeLast()
+//                        arr.append(image)
+//                        let path = arr.joined(separator: "/")
+//                        self.requestImageFor03(path, doc)
+//                        self.activityIndicator.stopAnimating()
+//                    }
+//                }
                 
                 //                    let dataStrs = doc.rootElement()?.elements(forName: "datastr")
                 //                    if let dataW = doc.rootElement()?.attribute(forName: "width")?.stringValue, let dataH = doc.rootElement()?.attribute(forName: "height")?.stringValue{
@@ -925,7 +994,7 @@ class ExchangerMixMonitorViewController: UIViewController {
                 //                    self.archiverModels(self.labelArr)
                 //                    self.requestValues()
             }else{
-                print("\(path)---error")
+                ToastView.instance.showToast(text: "请求失败", pos: .Mid)
             }
         }
     }
@@ -945,8 +1014,6 @@ class ExchangerMixMonitorViewController: UIViewController {
     
     func requestValues(_ update: Bool = false) {
         var count = 1
-        
-        
         for index in 0..<stationLabelArr.count {
             let station = stationLabelArr[index].station
             print("\(station)")
@@ -954,33 +1021,37 @@ class ExchangerMixMonitorViewController: UIViewController {
             //请求
             Alamofire.request(StationURL, method: .get, parameters: ["stationid": station]).responseData(completionHandler: { reponse in
                 if reponse.result.isSuccess{
-                    let doc = try! DDXMLDocument.init(data: reponse.result.value!, options: 0)
-                    let data = doc.rootElement()?.elements(forName: "data")
-                    for tem in data!{
-                        if let tag = tem.elements(forName: "id").first?.stringValue{
-                            for model in self.stationLabelArr[index].modles{
-                                if tag == model.tag_id{
-                                    model.value = (tem.elements(forName: "value").first?.stringValue)!
-                                    print("\(model.station_id)---\(model.tag_id)---\(model.value)---\(model.text)")
-                                    if let time = tem.elements(forName: "time").first?.stringValue{
-                                        self.timeStamp = (self.timeStamp >= time) ? self.timeStamp : time
+                    do{
+                        let doc = try DDXMLDocument.init(data: reponse.result.value!, options: 0)
+                        let data = doc.rootElement()?.elements(forName: "data")
+                        for tem in data!{
+                            if let tag = tem.elements(forName: "id").first?.stringValue{
+                                for model in self.stationLabelArr[index].modles{
+                                    if tag == model.tag_id{
+                                        model.value = (tem.elements(forName: "value").first?.stringValue)!
+                                        print("\(model.station_id)---\(model.tag_id)---\(model.value)---\(model.text)")
+                                        if let time = tem.elements(forName: "time").first?.stringValue{
+                                            self.timeStamp = (self.timeStamp >= time) ? self.timeStamp : time
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    if count == self.stationLabelArr.count{
-                        self.getDate(fromStamp: self.timeStamp)
-                        self.getlabelArrs()
-                        if update{
-                            self.reWriteData()
-                        }else{
-                            self.drawLabels()
+                        if count == self.stationLabelArr.count{
+                            self.getDate(fromStamp: self.timeStamp)
+                            self.getlabelArrs()
+                            if update{
+                                self.reWriteData()
+                            }else{
+                                self.drawLabels()
+                            }
                         }
+                        count += 1
+                    }catch{
+                        ToastView.instance.showToast(text: "数据错误", pos: .Mid)
                     }
-                    count += 1
                 }else{
-                    print("error")
+                    ToastView.instance.showToast(text: "请求失败", pos: .Mid)
                 }
             })
         }
@@ -1080,15 +1151,14 @@ class ExchangerMixMonitorViewController: UIViewController {
                 //                label.backgroundColor = UIColor.white
                 let textAttribute = [NSAttributedStringKey.foregroundColor: temp.foreColor]
                 let valueAttribute = [NSAttributedStringKey.foregroundColor: temp.dataColor, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 9, weight: .thin)] as [NSAttributedStringKey : Any]
-                let text = NSMutableAttributedString.init(string: temp.text, attributes: textAttribute)
+                var text = NSMutableAttributedString.init(string: temp.text, attributes: textAttribute)
                 
-                var unitAttribute = NSAttributedString.init(string: temp.unit)
+                var unitAttribute = NSAttributedString.init(string: temp.unit, attributes: textAttribute)
                 if !temp.specialunit.isEmpty{
-                    unitAttribute = NSAttributedString.init(string: temp.specialunit)
+                    unitAttribute = NSAttributedString.init(string: temp.specialunit, attributes: textAttribute)
                 }
                 if temp.valueTrans.isEmpty{
                     let num = (temp.value as NSString).floatValue
-                    
                     let format = self.valueLength(temp.format)
                     let value = NSAttributedString.init(string: String(format: "%.\(format)f", num), attributes: valueAttribute)
                     text.append(value)
@@ -1111,15 +1181,25 @@ class ExchangerMixMonitorViewController: UIViewController {
         dateView.text = "数据时间:" + formatt.string(from: self.dataDate)
         dateView.textAlignment = .center
         dateView.font = UIFont.systemFont(ofSize: 9)
-        dateView.textColor = UIColor.blue
+        dateView.textColor = labelArr.first?.foreColor
         dateView.frame = CGRect.init(x: imageView.bounds.width/2 - 100, y: 5, width: 200, height: 20)
         dateView.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
+        if group_name == "西安市热力" {
+            
+            nameLabel.frame = CGRect.init(x: 0, y: 0, width: 80, height: 40)
+            nameLabel.text = titleName.text
+            nameLabel.adjustsFontSizeToFitWidth = true
+            nameLabel.textColor = labelArr.first?.foreColor
+            imageView.addSubview(nameLabel)
+        }else{
+            
+        }
         imageView.addSubview(dateView)
         
         //启用定时器，每30秒执行一次showRecentData方法
         //        Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { (timer) in
         //
-        self.timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(startUpdate), userInfo: nil, repeats: true)
+        self.timer = Timer.scheduledTimer(timeInterval: 90, target: self, selector: #selector(startUpdate), userInfo: nil, repeats: true)
         
         //        }
         //        Timer.perform(#selector(startUpdate), with: self, afterDelay: 10)
@@ -1152,6 +1232,7 @@ class ExchangerMixMonitorViewController: UIViewController {
     }
     
     //not common function ,just for xml file color(like R:,G:,B: )
+    
     func strToColor(_ str: String) -> UIColor{
         var numArr: [Float] = []
         let arr = str.components(separatedBy: ",")
@@ -1160,7 +1241,8 @@ class ExchangerMixMonitorViewController: UIViewController {
             let num = (str! as NSString).floatValue
             numArr.append(num)
         }
-        return UIColor(red: CGFloat(numArr.first!), green: CGFloat(numArr[1]), blue: CGFloat(numArr.last!), alpha: 1.0)
+        print("------\(numArr)-------\(UIColor(red: CGFloat(numArr.first!), green: CGFloat(numArr[1]), blue: CGFloat(numArr.last!), alpha: 1.0))")
+        return UIColor(red: CGFloat(numArr.first!/255), green: CGFloat(numArr[1]/255), blue: CGFloat(numArr.last!/255), alpha: 1.0)
     }
     
     @objc func back() {

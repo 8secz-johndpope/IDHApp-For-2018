@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" restorationIdentifier="TrendCell" id="gTV-IL-0wX" customClass="TrendCollectionViewCell" customModule="IDHApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="409" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="409" height="50"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yGZ-hC-Jja">
+                        <rect key="frame" x="0.0" y="0.0" width="245.5" height="50"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="value" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fOz-p0-WA8">
+                        <rect key="frame" x="245.5" y="0.0" width="122.5" height="50"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.10450311750000001" green="0.81752300259999999" blue="0.81121230129999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="unit" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DT7-rc-Ua7">
+                        <rect key="frame" x="368" y="0.0" width="41" height="50"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="yGZ-hC-Jja" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="27R-I1-fnX"/>
+                <constraint firstItem="fOz-p0-WA8" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="2aw-Sr-wOI"/>
+                <constraint firstAttribute="bottom" secondItem="fOz-p0-WA8" secondAttribute="bottom" id="2hK-sW-Fuo"/>
+                <constraint firstItem="fOz-p0-WA8" firstAttribute="leading" secondItem="yGZ-hC-Jja" secondAttribute="trailing" id="7XV-Pd-iX8"/>
+                <constraint firstItem="DT7-rc-Ua7" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Feq-Ep-f3Q"/>
+                <constraint firstAttribute="bottom" secondItem="DT7-rc-Ua7" secondAttribute="bottom" id="Pjx-K6-pHc"/>
+                <constraint firstItem="fOz-p0-WA8" firstAttribute="width" secondItem="gTV-IL-0wX" secondAttribute="width" multiplier="0.3" id="Rff-hk-H6l"/>
+                <constraint firstItem="DT7-rc-Ua7" firstAttribute="width" secondItem="gTV-IL-0wX" secondAttribute="width" multiplier="0.1" id="T22-lA-aW9"/>
+                <constraint firstAttribute="trailing" secondItem="DT7-rc-Ua7" secondAttribute="trailing" id="dWb-4h-NbO"/>
+                <constraint firstItem="yGZ-hC-Jja" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="tOR-gv-FRI"/>
+                <constraint firstItem="yGZ-hC-Jja" firstAttribute="width" secondItem="gTV-IL-0wX" secondAttribute="width" multiplier="0.6" id="uNQ-j9-JxT"/>
+                <constraint firstAttribute="bottom" secondItem="yGZ-hC-Jja" secondAttribute="bottom" id="xLw-RK-udO"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <size key="customSize" width="409" height="50"/>
+            <connections>
+                <outlet property="number" destination="fOz-p0-WA8" id="6vg-jJ-tTJ"/>
+                <outlet property="title" destination="yGZ-hC-Jja" id="MTa-6a-9Pf"/>
+                <outlet property="unit" destination="DT7-rc-Ua7" id="edS-nt-182"/>
+            </connections>
+            <point key="canvasLocation" x="73.5" y="76"/>
+        </collectionViewCell>
+    </objects>
+</document>

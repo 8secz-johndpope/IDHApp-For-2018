@@ -124,7 +124,7 @@ class HeatExchangerSurveyViewController: UIViewController {
     
     func getData() {
         let url = ExchangerSurvey + "\(heatExchangerID)"
-
+        
         Alamofire.request(url).responseJSON { (reponse) in
             if reponse.result.isSuccess{
                 if let data = reponse.result.value{
@@ -142,7 +142,11 @@ class HeatExchangerSurveyViewController: UIViewController {
                     self.leaderFac.setTitle(model.ParentName, for: .normal)
                     
                     self.showMap(model.Longitude!, lati: model.Latitude!, address: model.Address, name: model.Name)
+                }else{
+                    ToastView.instance.showToast(text: "暂无数据", pos: .Bottom)
                 }
+            }else{
+                ToastView.instance.showToast(text: "请求数据失败", pos: .Bottom)
             }
         }
     }

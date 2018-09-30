@@ -27,9 +27,7 @@ class GlobalMenuViewController: UIViewController {
     
     //2018.4.2
     //    var facModelArr:[TreeGroupModel] = []
-    
     //    var arr:[(TreeGroupModel, group)]
-    
     
     var closeArr: [Bool] = []
     

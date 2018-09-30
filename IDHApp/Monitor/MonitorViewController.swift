@@ -64,9 +64,18 @@ class MonitorViewController: BaseViewController {
         self.view.backgroundColor = UIColor.white
         setUpViews()
     }
-    override func viewDidAppear(_ animated: Bool) {
-        
-    }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        if let name = model?.area_name {
+//            var newName = ""
+//            for char in name {
+//                newName.append(char)
+//                newName.append("\n")
+//            }
+//            titleName.text = model?.area_name
+//        }
+//    }
     
 //    func getIndex() {
 //
@@ -88,7 +97,7 @@ class MonitorViewController: BaseViewController {
     func setUpViews() {
         let editorView = LayoutableView()
         editorView.layout = WeightsLayout.init(horizontal: false)
-        editorView.layout?.weights = [1,1,1,4,1,1,1]
+        editorView.layout?.weights = [1,1,1,8,1,1,1]
         editorView.frame = CGRect.init(x: 0, y: 0, width: 48, height: self.view.bounds.width)
         editorView.backgroundColor = UIColor.gray
         
@@ -117,32 +126,29 @@ class MonitorViewController: BaseViewController {
         titleName.lineBreakMode = .byCharWrapping
         titleName.textAlignment = .center
         var newName = ""
-//        if models.isEmpty {
-//            for char in (model?.area_name)!{
-//                newName.append(char)
-//                newName.append("\n")
-//            }
-//            preButton?.isHidden = true
-//            nextButton?.isHidden = true
-//        }else{
-//            if models.count == 1 {
-//                preButton?.isHidden = true
-//                nextButton?.isHidden = true
-//            }else{
-//                if current == 0 {
-//                    preButton?.isHidden = true
-//                }else if current == (models.count) - 1{
-//                    nextButton?.isHidden = true
-//                }
-//            }
-//            for char in models[current].Name {
-//                newName.append(char)
-//                newName.append("\n")
-//            }
-//        }
-//        print(newName)
-        print(model?.area_name)
-        titleName.text = model?.area_name
+        if models.isEmpty {
+            preButton?.isHidden = true
+            nextButton?.isHidden = true
+        }else{
+            if models.count == 1 {
+                preButton?.isHidden = true
+                nextButton?.isHidden = true
+            }else{
+                if current == 0 {
+                    preButton?.isHidden = true
+                }else if current == (models.count) - 1{
+                    nextButton?.isHidden = true
+                }
+            }
+        }
+        if let name = model?.area_name {
+            var newName = ""
+            for char in name {
+                newName.append(char)
+                newName.append("\n")
+            }
+            titleName.text = newName
+        }
         titleName.textColor = UIColor.white
         editorView.addSubview(home)
         editorView.addSubview(UIView())
@@ -167,6 +173,7 @@ class MonitorViewController: BaseViewController {
         imageActivity = UIActivityIndicatorView.init(activityIndicatorStyle: .gray)
         imageActivity.center.x = self.view.center.y
         imageActivity.center.y = self.view.center.x
+        
         
         let backView = LayoutableView()
             backView.layout = WeightsLayout.init(horizontal: false)
@@ -197,7 +204,7 @@ class MonitorViewController: BaseViewController {
         if AppProvider.instance.appVersion == .homs03 && AppProvider.instance.appVersion == .homsOther{
             backView.isHidden = true
         }
-        self.view.addSubview(backView)
+//        self.view.addSubview(backView)
         self.view.addSubview(imageView)
         self.view.addSubview(editorView)
         self.view.addSubview(activityIndicator)
@@ -945,7 +952,7 @@ class MonitorViewController: BaseViewController {
             let num = (str! as NSString).floatValue
             numArr.append(num)
         }
-        return UIColor(red: CGFloat(numArr.first!), green: CGFloat(numArr[1]), blue: CGFloat(numArr.last!), alpha: 1.0)
+        return UIColor(red: CGFloat(numArr.first!/255), green: CGFloat(numArr[1]/255), blue: CGFloat(numArr.last!/255), alpha: 1.0)
     }
     
     @objc func back() {

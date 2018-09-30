@@ -74,12 +74,19 @@ class TreeStructureViewController: UIViewController {
     }
     
     @objc func getFirstData() {
-        print("1111")
         datas = (realm?.objects(heatModel.self).filter("parent_name = 'topviews'").toArray(of: heatModel.self))!
+        datas.sort { (model1, model2) -> Bool in
+            return model1.area_name < model2.area_name
+        }
         for _ in datas {
             self.isopen.append(false)
         }
-        treeTable.reloadData()
+        if datas.isEmpty {
+            ToastView.instance.showToast(text: "暂无数据", pos: .Mid)
+        }else{
+            
+            treeTable.reloadData()
+        }
     }
     
     func hasChild(_ model:heatModel) -> Bool {

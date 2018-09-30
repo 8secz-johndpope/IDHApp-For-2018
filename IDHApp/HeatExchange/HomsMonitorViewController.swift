@@ -98,15 +98,15 @@ class HomsMonitorViewController: UIViewController, UITabBarDelegate {
         super.viewWillDisappear(animated)
         
         appDelegate.landscape = false
+        self.parent?.navigationController?.isNavigationBarHidden = false
+        self.tabBarController?.tabBar.isHidden = false
         let value = UIInterfaceOrientation.portrait.rawValue
         UIDevice.current.setValue(value, forKey: "orientation")
-        
+//        fromMonitor = true
         if timer != nil{
             timer.invalidate()
         }
         update = false
-        self.parent?.navigationController?.isNavigationBarHidden = false
-                self.tabBarController?.tabBar.isHidden = false
     }
     
     //设置换热站监控画面上要显示的参数
@@ -225,7 +225,6 @@ class HomsMonitorViewController: UIViewController, UITabBarDelegate {
 //                        lblData.tag = Int(commno)!*100000 + Int(tagno)!
                         lblData1.tag = Int(commno)!*100000 + Int(tagno)!
                     }
-                    
                     labelShowArr.append(lblShow)
                     labelShowArr.append(lblData1)
                 }

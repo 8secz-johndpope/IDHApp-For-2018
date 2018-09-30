@@ -31,7 +31,8 @@ class TypeindexViewController: UIViewController {
     
     @IBOutlet weak var lineChart: LineChartView!
     
-    @IBOutlet weak var detailsView: UIView!
+    @IBOutlet weak var detailsView: UIScrollView!
+    
     var heatView: HeatViewDeatils!
     var water_eleView: Water_EleView!
     var gas_coalView:Gas_CoalView!
@@ -55,9 +56,12 @@ class TypeindexViewController: UIViewController {
     
     @objc func toTrans() {
         globalFromVC = .energyTypeIndex
+        globalType = .heat
+        globalTrendType = .temperature
         let transSB = UIStoryboard(name: "Transfer", bundle: nil)
         let trans = transSB.instantiateViewController(withIdentifier: "transfer")
         let nav = UINavigationController.init(rootViewController: trans)
+        outsideToTrans = true
         self.present(nav, animated: true, completion: nil)
         
 //        self.navigationController?.pushViewController(trans, animated: true)
@@ -312,7 +316,6 @@ class TypeindexViewController: UIViewController {
     func buttonFunc(_ factory:HeatFactoryModel?, exchanger:HeatExchangeModel?) {
         if let fac = factory {
             //jump to factory
-            
         }else if let exc = exchanger{
             //jump to exchanger
         }else{

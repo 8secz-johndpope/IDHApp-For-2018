@@ -114,13 +114,15 @@ class HeatExchangerMonitorViewController: UIViewController, UITabBarDelegate {
         appDelegate.landscape = false
         let value = UIInterfaceOrientation.portrait.rawValue
         UIDevice.current.setValue(value, forKey: "orientation")
+        self.parent?.navigationController?.isNavigationBarHidden = false
+        self.tabBarController?.tabBar.isHidden = false
+        
+        fromMonitor = true
         
         if timer != nil{
             timer.invalidate()
         }
         update = false
-        self.parent?.navigationController?.isNavigationBarHidden = false
-        self.tabBarController?.tabBar.isHidden = false
     }
     
     //设置换热站监控画面上要显示的参数

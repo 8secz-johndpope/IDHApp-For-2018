@@ -50,6 +50,15 @@ class heatModel: Object {
     
 }
 
+
+class GroupIPModel:Object{
+    @objc dynamic var ip_port: String = ""
+    @objc dynamic var group_name: String = ""
+    override static func primaryKey() -> String?{
+        return "ip_port"
+    }
+}
+
 class HFModel{
         var ID = ""
         var Name = ""
@@ -231,6 +240,67 @@ class LabelModel: NSObject {
     
     
 }
+
+
+class EchartsModel {
+    var xArr:[String] = []
+    var YaxisList:[Yaxis] = []
+    var parmesList:[ParmesList] = []
+    
+    init(data:JSON) {
+        self.xArr = data["Xaxis"].arrayObject as! [String]
+        for temp in data["YaxisList"].arrayValue {
+            self.YaxisList.append(Yaxis.init(data: temp))
+        }
+        for temp in data["parmesList"].arrayValue {
+            self.parmesList.append(ParmesList.init(data: temp))
+        }
+    }
+    
+}
+
+class Yaxis {
+    var name:String = ""
+    var chartsDataList:[yData] = []
+    var unit:String = ""
+    init(data:JSON) {
+        self.name = data["name"].stringValue
+        self.unit = data["unit"].stringValue
+        for temp in data["chartsDataList"].arrayValue {
+            self.chartsDataList.append(yData.init(data: temp))
+        }
+    }
+}
+
+class yData {
+    var name = ""
+    var unit = ""
+    var data:[String] = []
+    
+    init(data:JSON) {
+        self.name = data["name"].stringValue
+        self.unit = data["unit"].stringValue
+        for temp in data["data"].arrayValue {
+        self.data.append(temp.stringValue)
+        }
+    }
+    
+}
+
+class ParmesList {
+    var name = ""
+    var unit = ""
+    var value = ""
+    
+    init(data:JSON) {
+        self.name = data["name"].stringValue
+        self.unit = data["unit"].stringValue
+            self.value = data["value"].stringValue
+    }
+    
+}
+
+
 
 
 class RealmUtil {

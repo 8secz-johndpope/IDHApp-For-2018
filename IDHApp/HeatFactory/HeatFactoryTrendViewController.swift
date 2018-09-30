@@ -11,10 +11,10 @@ import Charts
 import Alamofire
 import SwiftyJSON
 
-enum TrendEnum {
-    case temperature
+enum TrendEnum:Int {
+    case flux = 1
     case pressure
-    case flux
+    case temperature
     case ValveGiven
 }
 

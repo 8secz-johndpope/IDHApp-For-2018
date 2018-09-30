@@ -13,27 +13,27 @@ import Charts
 class Chart{
     
     //显示饼图
-    class func setPieChart(_ pieChartView: PieChartView, dataPoints: [String], values: [Double], legendColor: [UIColor], showPie: Bool){
+    class func setPieChart(_ pieChartView: PieChartView, dataPoints: [String], values: [Double], legendColor: [UIColor], showPie: Bool, color:UIColor = #colorLiteral(red: 0.00319302408, green: 0.6756680012, blue: 0.6819582582, alpha: 1)){
         var dataEntries: [ChartDataEntry] = []
-        
         for i in 0..<dataPoints.count {
             //\(dataPoints[i]):\(Int(values[i]))
-            let dataEntry = PieChartDataEntry(value: values[i], label: "")
+            let dataEntry = PieChartDataEntry(value: values[i], label: dataPoints[i] + ":\(Int(values[i]))")
             dataEntries.append(dataEntry)
         }
-        
         let pieChartDataSet = PieChartDataSet(values: dataEntries, label: "")
-        pieChartDataSet.sliceSpace = 2
+        pieChartDataSet.sliceSpace = 0
         pieChartDataSet.colors = legendColor
         let pieChartData = PieChartData(dataSet: pieChartDataSet)
-        
         //设置显示百分比及百分比小数位
         let myFormatter = NumberFormatter()
         myFormatter.numberStyle = .percent
         myFormatter.multiplier = 1.0
+        myFormatter.roundingIncrement = 0.01
+//        myFormatter.roundingMode = .halfEven
         pieChartData.setValueFormatter(DefaultValueFormatter.init(formatter: myFormatter))
         pieChartView.data = pieChartData
-        pieChartView.chartDescription?.text = "供热质量饼图"
+        pieChartView.chartDescription?.text = ""
+//        pieChartView.noDataText = "暂无数据"
         
         //隐藏饼图自带的图例
         pieChartView.legend.enabled = false
@@ -46,14 +46,14 @@ class Chart{
         
         //折线数据
 //        pieChartDataSet.xValuePosition = .outsideSlice
-//        pieChartDataSet.yValuePosition = .outsideSlice
+        pieChartDataSet.yValuePosition = .outsideSlice
         
 //        pieChartDataSet.valueLinePart1OffsetPercentage = 0.5
 //        pieChartDataSet.valueLinePart1Length = 0.5
 //        pieChartDataSet.valueLinePart2Length = 0.3
 //        pieChartDataSet.valueLineWidth = 1
-//        pieChartDataSet.valueLineColor = UIColor.black
-//        pieChartDataSet.valueColors = [UIColor.black, UIColor.black]
+        pieChartDataSet.valueLineColor = UIColor.black
+        pieChartDataSet.valueColors = [UIColor.black, UIColor.black]
         
         if showPie {
             pieChartView.centerText = ""
@@ -61,6 +61,8 @@ class Chart{
         else {
             pieChartView.centerText = "暂无数据可显示！"
         }
+        pieChartView.backgroundColor = color
+        pieChartView.animate(xAxisDuration: 1)
     }
     
     

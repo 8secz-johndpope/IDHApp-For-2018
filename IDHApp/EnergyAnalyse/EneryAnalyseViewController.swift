@@ -44,8 +44,6 @@ class EneryAnalyseViewController: UIViewController {
     
 //    var groupingType = "-1"
 //    var groupID = "-1"
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "quality_ico_home"), style: .plain, target: self, action: #selector(ToHome))
@@ -177,6 +175,8 @@ class EneryAnalyseViewController: UIViewController {
                         let model = AnalyseModel(modelArr[i])
                         self.setLabels(model, labels: self.labelArr[i], units: self.unitArr[i])
                     }
+                }else{
+                ToastView.instance.showToast(text: "暂无数据", pos: .Bottom)
                 }
             }else{
                 ToastView.instance.showToast(text: "请求失败", pos: .Bottom)
@@ -197,6 +197,7 @@ class EneryAnalyseViewController: UIViewController {
             
             labels.0.attributedText = data1
             labels.1.attributedText = data2
+            labels.1.adjustsFontSizeToFitWidth = true
             labels.2.attributedText = data3
             labels.3.attributedText = data4
         }else{
@@ -209,6 +210,7 @@ class EneryAnalyseViewController: UIViewController {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        print("ana")
         // Dispose of any resources that can be recreated.
     }
     

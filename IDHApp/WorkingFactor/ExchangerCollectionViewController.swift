@@ -28,7 +28,7 @@ class ExchangerCollectionViewController: UICollectionViewController{
     
     var refreshTimer:Timer?
     
-    var current: Int = 0
+    var thisCurrent: Int = 0
     
     var delegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -83,9 +83,8 @@ class ExchangerCollectionViewController: UICollectionViewController{
         reveal?.panGestureRecognizer()
         reveal?.tapGestureRecognizer()
         if needGroup {
-
             let menu = reveal?.rightViewController as! MenuViewController
-            menu.updateFromMenu = {(isFactor,hfid,groupid) in
+            menu.updateFromMenu = {[unowned self](isFactor,hfid,groupid) in
                 self.isFactor = isFactor
                 if isFactor {
                     self.bgView?.isHidden = false
@@ -97,6 +96,7 @@ class ExchangerCollectionViewController: UICollectionViewController{
                     self.groupid = groupid
                     self.hfid = hfid
                 }
+                ToastView.instance.showLoadingDlg()
                 self.getData()
             }
         }
@@ -109,7 +109,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
         self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "back").withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(back))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "menu"), style: .done, target: reveal, action: #selector(reveal?.rightRevealToggle(_:)))
         if !needGroup {
-            
                     NotificationCenter.default.addObserver(self, selector: #selector(sendData(_:)), name: NSNotification.Name(rawValue: "changeData"), object: nil)
             
                     NotificationCenter.default.addObserver(self, selector: #selector(changeFactor(_:)), name: NSNotification.Name(rawValue: "changeFactory"), object: nil)
@@ -132,6 +131,7 @@ class ExchangerCollectionViewController: UICollectionViewController{
         }else{
             url = "http://124.114.131.38:6099/Analyze.svc/GetRunningDataByHeatFactoryID/\(self.hfid!)"
         }
+        print("huanrezhan--------\(url)")
         Alamofire.request(url, method: .get).responseJSON { (reponse) in
             ToastView.instance.hide()
             if reponse.result.isSuccess{
@@ -157,8 +157,12 @@ class ExchangerCollectionViewController: UICollectionViewController{
         if let _ = self.refreshTimer{
             return
         }
-        self.refreshTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getData), userInfo: nil, repeats: true)
+        self.refreshTimer = Timer.scheduledTimer(timeInterval: 90, target: self, selector: #selector(getData), userInfo: nil, repeats: true)
         RunLoop.main.add(self.refreshTimer!, forMode: .commonModes)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        self.refreshTimer?.invalidate()
     }
     
     @objc func changeFactor(_ sender: Notification) {
@@ -169,7 +173,7 @@ class ExchangerCollectionViewController: UICollectionViewController{
         }else{
             for index in 0..<heatExchangeArr.count {
                 if heatExchangeArr[index].heatFactory.ID == factory?.GroupingID{
-                    current = index
+                    thisCurrent = index
                     self.datas = heatExchangeArr[index]
                     self.navigationItem.title = datas?.heatFactory.Name
                     self.collectionView?.reloadData()
@@ -179,7 +183,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
         
 //        let info = sender.userInfo as! [String: String]
 //        var url = ""
-//
 //        if let hf = info["hfid"]{
 //            //厂+分区
 //            url = "http://124.114.131.38:6099/Analyze.svc/GetRunningDataByHeatFactoryIDAndGroupID/\(hf)/\(info["ID"]))"
@@ -204,7 +207,7 @@ class ExchangerCollectionViewController: UICollectionViewController{
     
     
     @objc func sendData(_ sender: Notification) {
-        let array = heatExchangeArr[current]
+        let array = heatExchangeArr[thisCurrent]
         print("\(array.heatFactory.Name)")
         self.datas = array
         self.collectionView?.reloadData()
@@ -245,8 +248,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
         bgView?.addSubview(searchTxt)
     }
     
-    
-
     @objc func back() {
         self.dismiss(animated: true, completion: nil)
     }
@@ -256,7 +257,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
         if let text = searchTxt.text {
             if !text.isEmpty{
                 if needGroup{
-                    
                 Alamofire.request("http://124.114.131.38:6099/Analyze.svc/SearchByHeatFactoryIDAndName/4/\(text)", method: .get).responseJSON(completionHandler: { (reponse) in
                     if reponse.result.isSuccess{
                         if let value = reponse.result.value{
@@ -312,8 +312,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
             
             self.present(nav, animated: true, completion: nil)
         }
-        
-        
 //        getSearchData()
 //        let resultController = resultCollectionViewController()
 //        resultController.models = result
@@ -332,8 +330,8 @@ class ExchangerCollectionViewController: UICollectionViewController{
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
     // MARK: UICollectionViewDataSource
-
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         if needGroup {
             if isFactor {
@@ -346,7 +344,7 @@ class ExchangerCollectionViewController: UICollectionViewController{
             return 1
         }
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Identify.header, for: indexPath) as! CollectionReusableView
@@ -371,7 +369,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
         // #warning Incomplete implementation, return the number of items
         var num = 0
         if needGroup {
-            
             if isFactor {
                 if let fac = self.factor {
                     num = fac.isHaveGroup ? fac.groups[section].exchangers.count : fac.heatExchangers.count
@@ -412,11 +409,9 @@ class ExchangerCollectionViewController: UICollectionViewController{
             
             let exc = HeatExchangerTabBarController()
             exc.selectedIndex = 0
+            let nav = UINavigationController.init(rootViewController: exc)
             heatExchangerID = (datas?.heatExchangerList[indexPath.row].ID)!
             heatExchangerName = (datas?.heatExchangerList[indexPath.row].Name)!
-//            print(<#T##items: Any...##Any#>)
-//            let storyBoard = UIStoryboard.init(name: "HomsExchanger", bundle: nil)
-//            let monitor = storyBoard.instantiateViewController(withIdentifier: "HomsMonitor") as! HomsMonitorViewController
             
             if let fac = self.factor{
                 if fac.isHaveGroup{    
@@ -425,31 +420,31 @@ class ExchangerCollectionViewController: UICollectionViewController{
 //              monitor.dataModel = factor?.heatExchangers
                 }
             }else{
-                //
-                
             }
 //            heatExchangerID =
 //            monitor.dataModel = (datas?.heatExchangerList)!
 //            monitor.currentIndex = indexPath.row
-            self.present(exc, animated: true, completion: nil)
+            self.present(nav, animated: true, completion: nil)
         }else{
 //            model = getExchangerModel(indexPath)
             if needGroup{
-                
-//                monitor.model = getExchangerModel(indexPath)
-//                monitor.groupModels = getModels(indexPath)
+                let md = self.factor?.groups[indexPath.section].exchangers[indexPath.row]
+                heatExchangerID = (md?.ID)!
+                heatExchangerName = (md?.Name)!
+                if let fac = factor{
+                    let a = fac.groups[indexPath.section].exchangers
+                    print(indexPath)
+                    model = getExchangerModel(indexPath)
+                    models = []
+                    current = indexPath.item
+                    for temp in a{
+                        models.append(HeatExchangeModel.init(id: temp.ID, name: temp.Name))
+                    }
+                }
             }else{
-                
-                
                 heatExchangerID = (datas?.heatExchangerList[indexPath.row].ID)!
                 heatExchangerName = (datas?.heatExchangerList[indexPath.row].Name)!
-                
-            Tools.setMonitors((datas?.heatExchangerList[indexPath.row].ID)!)
-//                model = getModel(indexPath)
-//                if let data = datas {
-//                    let exchangers = data.heatExchangerList
-//                    models = exchangers
-//                }
+//                Tools.setMonitors((datas?.heatExchangerList[indexPath.row].ID)!)
             }
             let root = HeatExchangerTabBarController()
             root.selectedIndex = 0
@@ -506,7 +501,6 @@ class ExchangerCollectionViewController: UICollectionViewController{
         }
     }
 
-    
     //create for new working factor
     func getExchangerModel(_ index:IndexPath) -> heatModel? {
         realm = try! Realm()

@@ -20,6 +20,8 @@ class FactoryTableViewCell: UITableViewCell {
     var datatime = UILabel()
     var labelArr:[UILabel] = []
     var pieChart = PieChartView()
+    var view = UIView()
+    
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -30,13 +32,14 @@ class FactoryTableViewCell: UITableViewCell {
         self.contentView.addSubview(titleLabel)
         self.contentView.addSubview(datatime)
         if needGroup {
-            
-            pieChart.backgroundColor = UIColor.white
+            pieChart.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
             self.contentView.addSubview(pieChart)
         }
         for temp in labelArr {
             self.contentView.addSubview(temp)
         }
+        view.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        self.contentView.addSubview(view)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -48,7 +51,6 @@ class FactoryTableViewCell: UITableViewCell {
         titleLabel.text = factoryModel?.Name
         datatime.text = factoryModel?.datatime
         if needGroup {
-            
             showPieChart()
         }
         if let facModel = factoryModel {
@@ -74,17 +76,19 @@ class FactoryTableViewCell: UITableViewCell {
     }
     
     func showPieChart() {
-        let titleArr = ["在线", "不在线"]
-        let colorArr = [UIColor.blue, UIColor.gray]
+        let titleArr = ["在线", "离线"]
+        let colorArr = [#colorLiteral(red: 0.00319302408, green: 0.6756680012, blue: 0.6819582582, alpha: 1), #colorLiteral(red: 0, green: 0.9810667634, blue: 0.5736914277, alpha: 0.7666075537)]
 //        let unitSold = [(factoryModel?.online as! NSString).doubleValue , (factoryModel?.offline as! NSString).doubleValue]
-        let unitSold = [Double(2), Double(8)]
+        let unitSold = [(factoryModel?.online as! NSString).doubleValue, (factoryModel?.offline as! NSString).doubleValue]
         
-        Chart.setPieChart(pieChart, dataPoints: titleArr, values: unitSold, legendColor: colorArr, showPie: true)
+        Chart.setPieChart(pieChart, dataPoints: titleArr, values: unitSold, legendColor: colorArr, showPie: true, color: #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1))
         
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        view.frame = CGRect.init(x: 0, y: self.contentView.bounds.height-5, width: self.contentView.bounds.width, height: 5)
+        
         titleLabel.frame = CGRect.init(x: 10, y: 10, width: self.contentView.bounds.width/2, height: 20)
         textLabel?.font = UIFont.systemFont(ofSize: 14)
         titleLabel.adjustsFontSizeToFitWidth = true

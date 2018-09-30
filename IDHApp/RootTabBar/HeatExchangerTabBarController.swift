@@ -103,8 +103,10 @@ class HeatExchangerTabBarController: UITabBarController {
             //                heatExchangerID = exchangersArr[0].ID
             //                heatExchangerName = exchangersArr[0].Name
             //            }
-            
-            Tools.setMonitors(heatExchangerID,isFactor: false)
+            if group_name == "西安市热力"{
+            }else{
+                Tools.setMonitors(heatExchangerID,isFactor: false)
+            }
             //            let monitorIdhAndHoms = heatFactoryStoryBoard.instantiateViewController(withIdentifier: "EMixMonitor")
             //            monitorIdhAndHoms.tabBarItem = UITabBarItem(title: "监控画面", image: UIImage(named: "heat_btn_look_unselect"), selectedImage: UIImage(named: "heat_btn_look_select"))
             ////            Tools.setMonitors(heatExchangerID, myVC: monitorIdhAndHoms)

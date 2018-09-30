@@ -11,30 +11,43 @@ import Charts
 import Alamofire
 import SwiftyJSON
 
-class HeatExchangerTrendViewController: UIViewController {
 
-    @IBOutlet weak var seg: UISegmentedControl!
-    @IBOutlet weak var lineView: LineChartView!
-    @IBOutlet weak var lab1: UILabel!
-    @IBOutlet weak var lab2: UILabel!
-    @IBOutlet weak var lab1Data: UILabel!
-    @IBOutlet weak var lab2Data: UILabel!
-    @IBOutlet weak var second2View: UIView!
-    @IBOutlet weak var s2lab1: UILabel!
-    @IBOutlet weak var s2lab2: UILabel!
-    @IBOutlet weak var s2lab1Data: UILabel!
-    @IBOutlet weak var s2lab2Data: UILabel!
+class HeatExchangerTrendViewController: UIViewController {
+    let CellIdentifier = "TrendCell"
+    @IBOutlet weak var chartView: PYZoomEchartsView!
+    
+    @IBOutlet weak var collection: UICollectionView!
+//    @IBOutlet weak var lineView: LineChartView!
+//    @IBOutlet weak var lab1: UILabel!
+//    @IBOutlet weak var lab2: UILabel!
+//    @IBOutlet weak var lab1Data: UILabel!
+//    @IBOutlet weak var lab2Data: UILabel!
+//    @IBOutlet weak var second2View: UIView!
+//    @IBOutlet weak var s2lab1: UILabel!
+//    @IBOutlet weak var s2lab2: UILabel!
+//    @IBOutlet weak var s2lab1Data: UILabel!
+//    @IBOutlet weak var s2lab2Data: UILabel!
     var currentIndex = 0
     var type:TrendEnum = .temperature
+    var echartModel:EchartsModel?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        self.lineView.backgroundColor = #colorLiteral(red: 0.003921568627, green: 0.6745098039, blue: 0.6823529412, alpha: 1)
-        setLabel()
+        
+//        self.lineView.backgroundColor = #colorLiteral(red: 0.003921568627, green: 0.6745098039, blue: 0.6823529412, alpha: 1)
+        
+        Tools.setDataPickerDate(datePicker, checkedDate: globalDate)
+//        setLabel()
         setUpNav()
 //        self.parent?.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "back_factory"), style: .done, target: self, action: #selector(toTrans))
         setSegment()
+        chartView.backgroundColor = #colorLiteral(red: 0.8242912889, green: 0.9481970072, blue: 0.9456497431, alpha: 1)
+        
+        self.collection.register(UINib(nibName:"TrendCollectionViewCell",bundle:nil), forCellWithReuseIdentifier: CellIdentifier)
+        self.collection.delegate = self
+        self.collection.dataSource = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,13 +69,13 @@ class HeatExchangerTrendViewController: UIViewController {
     func setSegment() {
         switch globalTrendType {
         case .temperature:
-            seg.selectedSegmentIndex = 0
+            changeType.selectedSegmentIndex = 0
         case .pressure:
-            seg.selectedSegmentIndex = 1
+            changeType.selectedSegmentIndex = 1
         case .flux:
-            seg.selectedSegmentIndex = 2
+            changeType.selectedSegmentIndex = 2
         case .ValveGiven:
-            seg.selectedSegmentIndex = 3
+            changeType.selectedSegmentIndex = 3
         }
     }
 //
@@ -75,7 +88,6 @@ class HeatExchangerTrendViewController: UIViewController {
     }
     
     func setUpNav() {
-        //
         if exchangersArr.count > 0 {
             //根据显示文本多少及字体大小动态计算标题的宽度
             let lblTitle = UILabel(frame: CGRect(x: 24, y: 0, width: 0, height: 20))
@@ -97,7 +109,6 @@ class HeatExchangerTrendViewController: UIViewController {
                     break
                 }
             }
-            
             //上一个按钮
             let prevButton = UIButton(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
             
@@ -129,7 +140,6 @@ class HeatExchangerTrendViewController: UIViewController {
             viewMiddle.addSubview(nextButton)
             
             self.parent?.navigationItem.titleView = viewMiddle
-            
             //重新显示数据
             getData()
         }
@@ -173,14 +183,16 @@ class HeatExchangerTrendViewController: UIViewController {
         default:
             type = .ValveGiven
         }
-        setLabel()
+        globalTrendType = type
+//        setLabel()
+        getData()
         
     }
     @IBAction func changeDate(_ sender: UIDatePicker) {
         globalDate = Tools.getSelectedDateString(sender)
         getData()
     }
-    
+    /*
     func setLabel() {
         switch type {
         case .temperature:
@@ -218,27 +230,38 @@ class HeatExchangerTrendViewController: UIViewController {
         }
         getData()
     }
+ */
     
     
     func getData() {
-        var urlType = ""
+        ToastView.instance.showLoadingDlg()
         
-        switch type {
-        case .temperature:
-            urlType = "Temp"
-        case .pressure:
-            urlType = "Press"
-        case .flux:
-            urlType = "Flow"
-        case .ValveGiven:
-            urlType = "ValveGiven"
-        }
-        let url = ExchangerTrendURL + urlType + "Trend/\(heatExchangerID)/\(globalDate)"
+        //API fixed by echarts demo  change type string --> int value
+        // * temperature -> 3   flux -> 1  perssure -> 2 valveGiven -> 4
+        //2018-9-25
         
+//        var urlType = ""
+//        switch type {
+//        case .temperature:
+//            urlType = "Temp"
+//        case .pressure:
+//            urlType = "Press"
+//        case .flux:
+//            urlType = "Flow"
+//        case .ValveGiven:
+//            urlType = "ValveGiven"
+//        }
+        
+        let url = ExchangerTrendURL + "\(heatExchangerID)" + "/\(globalDate)/\(type.rawValue)"
+//        let url = ExchangerTrendURL + urlType + "Trend/\(heatExchangerID)/\(globalDate)"
         Alamofire.request(url).responseJSON { (reponse) in
             if reponse.result.isSuccess{
                 if let value = reponse.result.value{
                     let data = JSON(value)
+//                    let data = JSON.init(parseJSON: str)
+                    self.echartModel = EchartsModel.init(data: data)
+                    ToastView.instance.hide()
+/*
                     switch self.type {
                     case .temperature:
                         let model = TrendHeatModel.init(data)
@@ -253,6 +276,14 @@ class HeatExchangerTrendViewController: UIViewController {
                         let model = TrendValveGivenModel.init(data)
                         self.setData(model: model)
                     }
+ */
+                    self.chartView.setOption(ChartsOption.standardLineOption(chartDatas: self.echartModel!))
+                    self.chartView.layoutMargins = UIEdgeInsetsMake(5, 5, 10, 5)
+//                    self.chartView
+                    self.chartView.loadEcharts()
+                    self.collection.reloadData()
+                }else{
+                    ToastView.instance.showToast(text: "暂无数据", pos: .Bottom)
                 }
             }else{
                 ToastView.instance.showToast(text: "请求失败", pos: .Bottom)
@@ -260,6 +291,7 @@ class HeatExchangerTrendViewController: UIViewController {
         }
     }
     
+    /*
     func setData(model:Any) {
         var values:[[Double]] = []
         var title:[String] = []
@@ -337,6 +369,8 @@ class HeatExchangerTrendViewController: UIViewController {
             }
         }
     }
+ 
+ */
     
     /*
     // MARK: - Navigation
@@ -349,3 +383,49 @@ class HeatExchangerTrendViewController: UIViewController {
     */
 
 }
+
+
+extension HeatExchangerTrendViewController:UICollectionViewDelegate,UICollectionViewDataSource{
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if let ec = self.echartModel {
+            return ec.parmesList.count
+        }
+        return 0
+//        return (self.echartModel?.parmesList.count)!
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = self.collection.dequeueReusableCell(withReuseIdentifier: CellIdentifier, for: indexPath) as! TrendCollectionViewCell
+        if let ec = self.echartModel {
+            cell.setItemValue(data: (ec.parmesList[indexPath.item]))
+        }
+        return cell
+    }
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+}
+
+extension HeatExchangerTrendViewController: UICollectionViewDelegateFlowLayout{
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsetsMake(5, 5, 5, 5)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = UIScreen.main.bounds.width > UIScreen.main.bounds.height ? UIScreen.main.bounds.height : UIScreen.main.bounds.width
+        return CGSize.init(width: width/2 - 10, height: 30)
+    }
+}
+

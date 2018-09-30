@@ -44,12 +44,14 @@ class HeatExchangerQualityViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+                Tools.setPFrame(self)
         setUpNav()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.view.frame = CGRect(x: 0, y: 0, width: globalWidth, height: globalHeight-48)
+
+//        self.view.frame = CGRect(x: 0, y: 0, width: globalWidth, height: globalHeight)
 //        self.view.layoutIfNeeded()
     }
     
@@ -207,55 +209,19 @@ class HeatExchangerQualityViewController: UIViewController {
                         }
                     }
                     
-                    
-                    //                    let colorArr = [UIColor(red: 131/255.0, green: 229/255.0, blue: 161/255.0, alpha: CGFloat(1.0)),
-                    //                                    UIColor(red: 244/255.0, green: 185/255.0, blue: 113/255.0, alpha: CGFloat(1.0)),
-                    //                                    UIColor(red: 129/255.0, green: 236/255.0, blue: 234/255.0, alpha: CGFloat(1.0)),
-                    //                                    UIColor(red: 247/255.0, green: 137/255.0, blue: 247/255.0, alpha: CGFloat(1.0)),
-                    //                                    UIColor(red: 246/255.0, green: 249/255.0, blue: 140/255.0, alpha: CGFloat(1.0)),
-                    //                                    UIColor(red: 249/255.0, green: 105/255.0, blue: 105/255.0, alpha: CGFloat(1.0))]
-                    
-                    //                    let titleArr:[String] = ["<16℃", "16℃-18℃", "18℃-20℃", "20℃-22℃", "22℃-24℃", ">24℃"]
-                    //                    var unitsSold:[Double] = []
-                    //                    let url = "http://219.145.102.165:6099/Analyze.svc/GetTemperatureChart/1/1/-1/-1/2017-11-7"
-                    
-                    //        Alamofire.request(url).responseJSON { reponse in
-                    //            if reponse.result.isSuccess{
-                    //                if let data = reponse.result.value{
-                    //                    let json = JSON(data)
-                    //                    let arr = json["ArrayData"].arrayValue
-                    //
-                    //                    for i in 0..<arr.count {
-                    //                        let sold = arr[i]["Count"].stringValue
-                    //                        unitsSold.append((sold as NSString).doubleValue)
-                    //                    }
-                    //                }
-                    //            }
-                    //
-                    //        }
-                    
-                    //        Alamofire.request(<#T##url: URLConvertible##URLConvertible#>)
-                    
-                    
-                    let str = "{\"ArrayData\":[{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"<16\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"16~18\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"18~20\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"20~22\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"22~24\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\">24\"}]}"
-                    let adata = str.data(using: .utf8)
-                    
-                    let json = JSON(adata)
+                    let json = JSON(data)
                     let aarr = json["ArrayData"].arrayValue
                     
                     for i in 0..<aarr.count {
                         let sold = aarr[i]["Count"].stringValue
                         unitsSold.append((sold as NSString).doubleValue)
                     }
-                    //                    let color = #colorLiteral(red: 0.00319302408, green: 0.6756680012, blue: 0.6819582582, alpha: 1)
-                    //
-                    //                    pieView.backgroundColor = color
-                    //
-                    //                    Chart.setPieChart(pieView, dataPoints: titleArr, values: unitsSold, legendColor: colorArr, showPie: true)
                     Chart.setPieChart(self.pieView, dataPoints: titleArr, values: unitsSold, legendColor: colorArr, showPie: true)
+                }else{
+                    ToastView.instance.showToast(text: "暂无数据", pos: .Bottom)
                 }
             }else{
-                
+                    ToastView.instance.showToast(text: "请求数据失败", pos: .Bottom)
             }
         }
     }

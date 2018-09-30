@@ -10,10 +10,12 @@ import UIKit
 import RealmSwift
 import KissXML
 import Alamofire
+import SwiftyJSON
 
 var document:DDXMLDocument?
 var mappingArr: [MappingModel] = []
-var queue = DispatchQueue(label: "loadData", qos: .default, attributes: .concurrent)
+var queue = DispatchQueue(label: "loadData", qos: .background, attributes: .concurrent)
+var queue1 = DispatchQueue.init(label: "load")
 
 class IDH{
     var originalID = 1
@@ -23,11 +25,7 @@ class IDH{
         
 //         {"idh_ip_port":"http://221.2.85.190:6099","homs_ip_port":"http://221.2.85.190:8000","homs_mapping_ip_port":"http://221.2.85.190:8010","group_id":"1","weather_id":"101110101","city":"西安","version":"1","group_name":"西安市热力"}
 //         http://192.168.2.134:6099/Analyze.svc
-//        西安高新热力（idh）
-//            {"idh_ip_port":"113.140.66.34:6099","homs_ip_port":"","homs_mapping_ip_port":"","idh_monitor_ip_port":"113.140.66.34:8000","group_id":"2","weather_id":"101110101","city":"西安","version":"1","group_name":"西安高新热力"}
-        
-
-
+//        西安高新热力（idh） {"idh_ip_port":"113.140.66.34:6099","homs_ip_port":"","homs_mapping_ip_port":"","idh_monitor_ip_port":"113.140.66.34:8000","group_id":"2","weather_id":"101110101","city":"西安","version":"1","group_name":"西安高新热力"}
         
 //        homs_mapping_ip_port = "219.145.102.165:8010"
 //        homs_ip_port = "222.169.194.218:9000"
@@ -86,7 +84,9 @@ class IDH{
 //        group_name = "西安市热力"
         
          let myDic = user as! [String:String]
-         print("\(myDic)")
+        print("setupcore+++++\(user)")
+//        let myDic = JSON.init(parseJSON: user as! String)
+         print("setupcore+++++\(myDic)")
         homs_mapping_ip_port = myDic["homs_mapping_ip_port"]!
          homs_ip_port = myDic["homs_ip_port"]!
          idh_ip_port = myDic["idh_ip_port"]!
@@ -95,11 +95,61 @@ class IDH{
          city = myDic["city"]!
          weatherid = myDic["weather_id"]!
          currentVersion = myDic["version"]!
-//        currentVersion = "1"
          idh_monitor_ip_port = myDic["idh_monitor_ip_port"]!
          group_name = myDic["group_name"]!
-         needGroup = false
+        if group_name == "西安市热力" {
+            needGroup = true
+        }else{
+            needGroup = false
+        }
+        if group_name == "秦元热力"{
+            needAdvice = true
+        }else{
+            needAdvice = false
+        }
         
+        
+        MonitorURL = "http://\(homs_ip_port)/DataCenter/Config/HobConfig.aspx"
+        MappingURL = "http://\(homs_mapping_ip_port)/mapping.xml"
+        StationURL = "http://\(homs_ip_port)/datacenter/dataservice/RecentData.aspx"
+        workingURL = "http://\(idh_ip_port)/Analyze.svc/GetRunningState/\(groupid)/\(role_id)/-1/-1"
+        weatherURL = "http://\(idh_ip_port)/Analyze.svc/GetCurrentWeather/\(weatherid)"
+        factoryURL = "http://\(idh_ip_port)/Analyze.svc/GetGroupingInfo/\(groupid)/\(role_id)"
+        
+        //ana
+        GroupANA = "http://\(idh_ip_port)/Analyze.svc/GetEnergySum/\(groupid)/\(role_id)/"
+        
+        GroupAnaURL = "http://\(idh_ip_port)/Analyze.svc/GetRunningState/\(groupid)/\(role_id)/\(groupingType)/\(groupingID)"
+        GroupAnaLineURL = "http://\(idh_ip_port)/Analyze.svc/"
+        
+        NewFactorURL = "http://\(idh_ip_port)/Analyze.svc/GetFactoryList"
+        NewExchangerURL = "http://\(idh_ip_port)/Analyze.svc/GetRunningDataByHeatFactoryIDAndGroupID"
+        NewResultByFactorURL = ""
+        NewResultByFAndGroupURL = ""
+        NewSideMenuURL = ""
+        
+        GroupQualityData = "http://\(idh_ip_port)/Analyze.svc/GetTemperatureSum/\(groupid)/\(role_id)/\(groupingType)/\(groupingID)"
+        GroupQuality = "http://\(idh_ip_port)/Analyze.svc/GetTemperatureChart/\(groupid)/\(role_id)/\(groupingType)/\(groupingID)"
+        
+        
+        //heatFactory
+        FactoryHeatQuality = "http://\(idh_ip_port)/Analyze.svc/GetHeatFactoryTemperature/"
+        FactorySurvey = "http://\(idh_ip_port)/Analyze.svc/GetHeatFactoryInformation/\(groupid)/"
+        FactoryEneryURL = "http://\(idh_ip_port)/Analyze.svc/GetHeatFactory"
+        FactoryEneryChart = "http://\(idh_ip_port)/Analyze.svc/GetHeatFactory"
+        FactoryTrendURL = "http://\(idh_ip_port)/Analyze.svc/GetHeatFactory"
+        
+        
+        //heatExchange
+        ExchangerEneryURL = "http://\(idh_ip_port)/Analyze.svc/GetHeatExchanger"
+        ExchangerEneryChart = "http://\(idh_ip_port)/Analyze.svc/GetHeatExchanger"
+        ExchangerTrendURL = "http://\(idh_ip_port)/Analyze.svc/GetHeatExchangerTempTrendByXML/"
+        ExchangerSurvey = "http://\(idh_ip_port)/Analyze.svc/GetHeatExchangerInformation/\(groupid)/"
+        ExchangerHeatQuality = "http://\(idh_ip_port)/Analyze.svc/GetHeatExchangerTemperature/"
+        //alarm
+        AlarmURL = "http://\(idh_ip_port)/GetAlarmInformation/\(role_id)"
+        //
+        TransFerURL = "http://\(idh_ip_port)/Analyze.svc/GetNavigation/\(groupid)/\(role_id)"
     }
     
     class func getVCFromStr(_ str: String) -> UIViewController {
@@ -127,7 +177,6 @@ class IDH{
 //        weatherid = myDic!["weatherid"] as! String
 //        port = myDic!["port"] as! String
 //        currentVersion = myDic!["version"] as! String
-        
     }
 
     class func getMapping(){
@@ -145,7 +194,7 @@ class IDH{
                             mappingArr.append(model)
                         }
                     }
-                    IDH.getTreeDataSource("topviews.xml", 1)
+                        IDH.getTreeDataSource("topviews.xml", 1)
                 }catch{
                     print("no xml mapping")
                 }
@@ -156,16 +205,17 @@ class IDH{
     }
     
     class func getType(_ str: String, parentName: String) -> MappingModel?{
+        
+        
+        
+        
         for model in mappingArr {
             if model.name.contains("."){
                 var arr = model.name.components(separatedBy: ".")
                 
                 if str == arr.last && parentName == arr[arr.count - 2]{
-                    
                     return model
                 }
-//                if model.name == "\(parentName).\(str)"{
-//                }
             }else{
                 if model.name == str{
                     return model
@@ -176,6 +226,7 @@ class IDH{
     }
     
     class func getTreeDataSource(_ path: String, _ parentID: Int) {
+
         Alamofire.request(MonitorURL, method: .get, parameters: ["action": "get", "path": path]).responseData { reponse in
             if reponse.result.isSuccess{
                 if let data = reponse.value{
@@ -185,8 +236,13 @@ class IDH{
                         let root = doc.rootElement()
                         
                         for i in 0..<objects.count{
+                            if loginOut{
+                                return
+                            }
+                            
                             if let name = objects[i].attribute(forName: "name")?.stringValue{
-                                if name.lowercased().hasPrefix("ob".lowercased()){
+                                //参数设置  专门针对瓦房店热力 homs解析方式处理
+                                if name.lowercased().hasPrefix("ob".lowercased()) || name == "参数设置"{
                                 }else{
                                     let model = heatModel()
                                     let obj = objects[i]
@@ -204,7 +260,6 @@ class IDH{
                                             model.height = percentToFloat(height)
                                         }
                                     }
-                                    
                                     model.parent_name = (root?.attribute(forName: "name")?.stringValue)!
                                     if let back = root?.elements(forName: "background").first, let file = back.attribute(forName: "filename")?.stringValue{
                                         model.image_path = file
@@ -219,28 +274,25 @@ class IDH{
                                     arr.append("\(name)/\(name).xml")
                                     let str = arr.joined(separator: "/")
                                     model.path = str
-                                    if let mappingModel = IDH.getType(name, parentName: model.parent_name){
-                                        model.idh_id = mappingModel.ID
-                                        model.type = mappingModel.type
-                                    }
-                                    
+//                                    print(str+"\(loginOut)")
                                     model.area_id = parentID * 100 + i
                                     model.parent_id = parentID
-                                    
-                                    print("----\(model.area_id)---\(model.parent_id)---\(model.idh_id)-----\(model.area_name)-----\(model.parent_name)")
-                                    //queue
                                     queue.async {
+                                        if let mappingModel = IDH.getType(name, parentName: model.parent_name){
+                                            print(name,model.parent_name)
+                                            model.idh_id = mappingModel.ID
+                                            model.type = mappingModel.type
+                                        }
                                         let realm = try! Realm()
                                         realm.beginWrite()
-                                        if realm.objects(heatModel.self).filter("area_name = '\(model.area_name)' AND parent_name = '\(model.parent_name)'").isEmpty{
-                                            realm.add(model)
-                                        }else{
-                                            //更新
-//                                            let mo = realm.objects(heatModel.self).filter("area_name = '\(model.area_name)' AND parent_name = '\(model.parent_name)'").first
-//                                            mo?.update(model)
-                                            }
+//                                        if realm.objects(heatModel.self).filter("area_name = '\(model.area_name)' AND parent_name = '\(model.parent_name)'").isEmpty{
+                                            realm.add(model,update: true)
+//                                        }else{
+//                                            }
                                         try! realm.commitWrite()
                                     }
+                                    print("-----------")
+                                    print(str)
                                     self.getTreeDataSource(str, model.area_id)
                                 }
                             }
@@ -253,6 +305,7 @@ class IDH{
                         print("error---\(path)")
                     }
                 }
+//                                    }
             }else{
                 print(reponse.error!)
             }

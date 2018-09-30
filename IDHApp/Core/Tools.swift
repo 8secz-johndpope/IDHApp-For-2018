@@ -63,11 +63,9 @@ class Tools {
         print("idh_id = '\(id)' AND type = '换热站'")
 //        let model = realm.objects(heatModel.self).filter("idh_id = '\(id)' AND type = '换热站'").first
         if isFactor{
-            
             let model = realm.objects(heatModel.self).filter("idh_id = '\(id)'").filter("type = '热源厂'").first
             return model
         }else{
-            
             let model = realm.objects(heatModel.self).filter("idh_id = '\(id)'").filter("type = '换热站'").first
             return model
         }
@@ -77,7 +75,6 @@ class Tools {
     
     class func getarrs(_ id:String) -> [HeatExchangeModel] {
         for excs in heatExchangeArr {
-            
             for temp in excs.heatExchangerList{
                 if id == temp.ID{
                     return excs.heatExchangerList
@@ -130,7 +127,6 @@ class Tools {
     
     class func setMonitors(_ id:String, isFactor:Bool = false) {
 //        let moni = myVC as! ExchangerMixMonitorViewController
-
         model = getHeatModel(id, isFactor: isFactor)
         if isFactor{
             facModels = getFacArr(id: id)
@@ -139,6 +135,17 @@ class Tools {
         }
 //        models = getarrs(id)
         current = getIndex(id, isFactor: isFactor)
+    }
+    
+    class func setPFrame(_ vc:UIViewController) {
+        let widthV = vc.view.frame.width
+        let heightV = vc.view.frame.height
+        if fromMonitor {
+            vc.view.frame = CGRect.init(x: 0, y: 0, width: widthV > heightV ? heightV : widthV, height: widthV > heightV ? widthV-48 : heightV)
+            fromMonitor = false
+        }else{
+            vc.view.frame = CGRect.init(x: 0, y: 0, width: widthV > heightV ? heightV : widthV, height: widthV > heightV ? widthV : heightV)
+        }
     }
     
     

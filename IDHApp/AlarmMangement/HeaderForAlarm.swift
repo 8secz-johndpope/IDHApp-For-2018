@@ -63,7 +63,7 @@ class HeaderForAlarmOne: UIView {
     
     private func initViewFromNib(){
         let bundle = Bundle(for: type(of: self))
-        let nib = UINib(nibName: "HeaderForAlarmOne", bundle: bundle)
+        let nib = UINib(nibName: "HeaderOneForAlarm", bundle: bundle)
         self.contentView = nib.instantiate(withOwner: self, options: nil)[0] as! UIView
         self.contentView.frame = bounds
         self.addSubview(contentView)

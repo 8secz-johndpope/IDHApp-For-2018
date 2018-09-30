@@ -46,7 +46,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="D4E-rz-t1C"/>
                                         </constraints>
-                                        <state key="normal" title="Button" image="next"/>
+                                        <state key="normal" image="next"/>
                                         <connections>
                                             <action selector="changeExc:" destination="Ufw-9y-lAM" eventType="touchUpInside" id="Mzn-RT-UV5"/>
                                         </connections>
@@ -56,7 +56,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="31o-cK-3Jc"/>
                                         </constraints>
-                                        <state key="normal" title="Button" image="pre"/>
+                                        <state key="normal" image="pre"/>
                                         <connections>
                                             <action selector="changeExc:" destination="Ufw-9y-lAM" eventType="touchUpInside" id="3iv-0B-DJU"/>
                                         </connections>

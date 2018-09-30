@@ -14,9 +14,6 @@ import RealmSwift
 import AVFoundation
 
 class HomeViewController: UIViewController {
-    
-
-
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var temperatureWeature: UILabel!
     @IBOutlet weak var windDirection: UILabel!
@@ -43,20 +40,21 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpcityInfo()
         getInfo()
+        setUpcityInfo()
         getWeatherInfo()
         setUpViews()
-        getFactoryGroup()
+        if needGroup {
+        }else{
+            getFactoryGroup()
+        }
         
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.black]
         self.navigationController?.navigationBar.tintColor = UIColor.white
-
         self.navigationController?.navigationBar.isTranslucent = true
-        
         self.navigationController?.navigationBar.setBackgroundImage(UIImage.init(), for: .compact)
         self.navigationController?.navigationBar.shadowImage = UIImage()
-        // Do any additional setup after loading the view.
+        
     }
     
     func setUpcityInfo() {
@@ -66,7 +64,10 @@ class HomeViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         timer = Timer.scheduledTimer(timeInterval: 1800, target: self, selector: #selector(getWeatherInfo), userInfo: nil, repeats: true)
-        dataTimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
+        if needGroup {
+        }else{
+            dataTimer = Timer.scheduledTimer(timeInterval: 90, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
+        }
         
     }
     
@@ -74,6 +75,9 @@ class HomeViewController: UIViewController {
         super.viewDidDisappear(animated)
         if timer != nil{
             timer.invalidate()
+        }
+        if dataTimer != nil{
+            dataTimer.invalidate()
         }
     }
     
@@ -93,12 +97,12 @@ class HomeViewController: UIViewController {
     //设置四个视图块单击手势执行的方法
     @objc func handleEnergyGesture(_ sender:UITapGestureRecognizer)
     {
-        setViewAnimation(EneryAnalyse,currentViewControllerIndex:0)
+        setViewAnimation(EneryAnalyse,currentViewControllerIndex:1)
     }
     
     @objc func handleFactorGesture(_ sender:UITapGestureRecognizer)
     {
-        setViewAnimation(factory,currentViewControllerIndex:1)
+        setViewAnimation(factory,currentViewControllerIndex:0)
     }
     
     @objc func handleQualityGesture(_ sender:UITapGestureRecognizer)
@@ -141,8 +145,7 @@ class HomeViewController: UIViewController {
     }
     
     @objc func getFactoryGroup() {
-        
-        Alamofire.request(workingURL, method: .get).responseJSON { reponse in
+         Alamofire.request(workingURL, method: .get).responseJSON { reponse in
             if reponse.result.isSuccess{
                 if let value = reponse.result.value{
                     heatFactorArr = []
@@ -170,6 +173,7 @@ class HomeViewController: UIViewController {
                         var exchModelArr:[HeatExchangeModel] = []
                         
                         for item in heatExchangeerArrJson{
+                            if !item.isEmpty{
                             let id = item["ID"].stringValue
                             let name = item["Name"].stringValue
                             let flag = item["Flag"].stringValue
@@ -186,6 +190,7 @@ class HomeViewController: UIViewController {
                             let exchangerModel = HeatExchangeModel(id: id, name: name, flag: flag, datatime: datatime, tagArr: tagArr)
                             exchModelArr.append(exchangerModel)
                             exchangersArr.append(exchangerModel)
+                            }
                         }
                         heatExchangeArr.append((facModel, exchModelArr))
                     }
@@ -212,18 +217,20 @@ class HomeViewController: UIViewController {
     }
     
     func getInfo() {
+        print(idh_ip_port)
+        print(factoryURL)
+        groupList = []
             Alamofire.request(factoryURL, method: .get).responseJSON(completionHandler: { reponse in
                 if reponse.result.isSuccess{
                     let myResult = reponse.result.value as? NSArray
                     if let myResult = myResult{
-                        groupList = []
                         for item in myResult{
                                 let groupInfo = GroupingInfo.init(dic: item as! NSDictionary)
                                 groupList.append(groupInfo)
                             if groupInfo.GroupingType == "group"{
                                 globalGrouping = groupInfo
                                 grouping = groupInfo
-                                groupingType = (grouping?.GroupingType)!
+//                                groupingType = (grouping?.GroupingType)!
                                 groupingID = (grouping?.GroupingID)!
                             }
                             print("\(groupInfo.GroupingName)----\(groupInfo.GroupingID)---\(groupInfo.GroupingType)")
@@ -362,19 +369,18 @@ class HomeViewController: UIViewController {
 //        try! realm.write {
 //            realm.deleteAll()
 //        }
-
         let login = UIStoryboard.init(name: "Login", bundle: nil)
         let logonVC = login.instantiateViewController(withIdentifier: "login")
-        //
-        
         
         self.present(logonVC, animated: true) {
-//            Defaults.instance.removeValue(key: "userInfo")
+            Defaults.instance.removeValue(key: "userInfo")
             UserDefaults.standard.removeObject(forKey: "roleID")
+            loginOut = true
         }
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        print("home")
         // Dispose of any resources that can be recreated.
     }
     

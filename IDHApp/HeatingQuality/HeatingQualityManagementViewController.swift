@@ -35,6 +35,7 @@ class HeatingQualityManagementViewController: UIViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        print("qua")
         // Dispose of any resources that can be recreated.
     }
     

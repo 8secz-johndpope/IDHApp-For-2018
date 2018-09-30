@@ -192,7 +192,6 @@ class TransferViewController: UIViewController,UITextFieldDelegate {
                     }
                     self.datas.append((fac,excModelArr))
                     
-
                     if globalFromVC == .energyTypeIndex || globalFromVC == .heatFactoryEnergy {
                         if globalType == .gas || globalType == .coal{
                             self.closeArr.append(true)
@@ -323,6 +322,13 @@ extension TransferViewController:UITableViewDelegate, UITableViewDataSource{
             myButton.isEnabled = true
             //设置Label可被点击
             myLabel.isUserInteractionEnabled = true
+        }
+        
+        //
+        if globalFromVC == .heatExchangerTrend {
+            if globalTrendType == .ValveGiven{
+                transferButton.isEnabled = false
+            }
         }
         
         //跳转按钮

@@ -57,6 +57,8 @@ class HeatQualityViewController: UIViewController {
         }else{
             self.navigationItem.title = groupList[0].GroupingName
         }
+        let color = #colorLiteral(red: 0.00319302408, green: 0.6756680012, blue: 0.6819582582, alpha: 1)
+        self.pieView.backgroundColor = color
         buttonArr = [minExchanger, maxExchanger, lowerThan16Exchanger, higherThan24Exchanger, interval18To22Max, interval18To22Min]
         labelArr = [textLow16, texthigh24, textmaxlower16, textmaxhigher24, text18To22, text18To22Min]
         let reveal = self.revealViewController()
@@ -86,7 +88,7 @@ class HeatQualityViewController: UIViewController {
         Tools.setDataPickerDate(datePicker, checkedDate: globalDate)
         
         showPieChart(groupType, groupID: groupID, date: globalDate)
-        
+        setTableData(groupType, groupID: groupID, date: globalDate)
         datePicker.addTarget(self, action: #selector(changeDate), for: .valueChanged)
     }
     
@@ -104,6 +106,7 @@ class HeatQualityViewController: UIViewController {
     @objc func goToTrans() {
 //        self.tabBarController?.tabBar.isHidden = true
         globalFromVC = .heatingQuality
+        globalType = .heat
         let transSB = UIStoryboard(name: "Transfer", bundle: nil)
         let trans = transSB.instantiateViewController(withIdentifier: "transfer")
         let nav = UINavigationController.init(rootViewController: trans)
@@ -117,7 +120,9 @@ class HeatQualityViewController: UIViewController {
     }
     
     func setTableData(_ groupType:String, groupID:String, date:String) {
-        Alamofire.request("").responseJSON { (reponse) in
+        let url = GroupQualityData + "/\(globalDate)"
+        
+        Alamofire.request(url).responseJSON { (reponse) in
             if reponse.result.isSuccess{
                 if let data = reponse.result.value{
                     let json = JSON(data)
@@ -142,9 +147,11 @@ class HeatQualityViewController: UIViewController {
                         self.adaptButton(button: self.buttonArr[i], model: ModelArr[i], label: self.labelArr[i])
                     }
                     
+                }else{
+                    ToastView.instance.showToast(text: "暂无数据", pos: .Mid)
                 }
             }else{
-                
+                ToastView.instance.showToast(text: "请求失败", pos: .Mid)
             }
         }
     }
@@ -174,7 +181,6 @@ class HeatQualityViewController: UIViewController {
     }
     
     func showPieChart(_ groupType:String, groupID:String, date:String) {
-        
         let colorArr = [UIColor(red: 131/255.0, green: 229/255.0, blue: 161/255.0, alpha: CGFloat(1.0)),
                         UIColor(red: 244/255.0, green: 185/255.0, blue: 113/255.0, alpha: CGFloat(1.0)),
                         UIColor(red: 129/255.0, green: 236/255.0, blue: 234/255.0, alpha: CGFloat(1.0)),
@@ -184,41 +190,45 @@ class HeatQualityViewController: UIViewController {
         
         let titleArr:[String] = ["<16℃", "16℃-18℃", "18℃-20℃", "20℃-22℃", "22℃-24℃", ">24℃"]
         var unitsSold:[Double] = []
-        let url = "http://219.145.102.165:6099/Analyze.svc/GetTemperatureChart/1/1/-1/-1/2017-11-7"
+        let url = GroupQuality + "/\(globalDate)"
         
-//        Alamofire.request(url).responseJSON { reponse in
-//            if reponse.result.isSuccess{
-//                if let data = reponse.result.value{
-//                    let json = JSON(data)
-//                    let arr = json["ArrayData"].arrayValue
-//
-//                    for i in 0..<arr.count {
-//                        let sold = arr[i]["Count"].stringValue
-//                        unitsSold.append((sold as NSString).doubleValue)
-//                    }
-//                }
-//            }
-//
-//        }
-        
-//        Alamofire.request(<#T##url: URLConvertible##URLConvertible#>)
-        
-        
-        let str = "{\"ArrayData\":[{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"<16\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"16~18\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"18~20\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"20~22\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"22~24\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\">24\"}]}"
-        let data = str.data(using: .utf8)
-        
-        let json = JSON(data)
-        let arr = json["ArrayData"].arrayValue
-        
-        for i in 0..<arr.count {
-            let sold = arr[i]["Count"].stringValue
-            unitsSold.append((sold as NSString).doubleValue)
+        Alamofire.request(url).responseJSON { reponse in
+            if reponse.result.isSuccess{
+                if let data = reponse.result.value{
+                    let json = JSON(data)
+                    let arr = json["ArrayData"].arrayValue
+
+                    for i in 0..<arr.count {
+                        let sold = arr[i]["Count"].stringValue
+                        unitsSold.append((sold as NSString).doubleValue)
+                    }
+                    let color = #colorLiteral(red: 0.00319302408, green: 0.6756680012, blue: 0.6819582582, alpha: 1)
+                    Chart.setPieChart(self.pieView, dataPoints: titleArr, values: unitsSold, legendColor: colorArr, showPie: true)
+                }else{
+                    ToastView.instance.showToast(text: "暂无数据", pos: .Mid)
+                }
+            }else{
+                ToastView.instance.showToast(text: "请求失败", pos: .Mid)
+            }
+
         }
-        let color = #colorLiteral(red: 0.00319302408, green: 0.6756680012, blue: 0.6819582582, alpha: 1)
         
-        pieView.backgroundColor = color
         
-        Chart.setPieChart(pieView, dataPoints: titleArr, values: unitsSold, legendColor: colorArr, showPie: true)
+//        let str = "{\"ArrayData\":[{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"<16\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"16~18\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"18~20\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"20~22\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\"22~24\"},{\"Count\":\"1\",\"Percent\":\"\",\"Scope\":\">24\"}]}"
+//        let data = str.data(using: .utf8)
+        
+//        let json = JSON(data)
+//        let arr = json["ArrayData"].arrayValue
+//
+//        for i in 0..<arr.count {
+//            let sold = arr[i]["Count"].stringValue
+//            unitsSold.append((sold as NSString).doubleValue)
+//        }
+//        let color = #colorLiteral(red: 0.00319302408, green: 0.6756680012, blue: 0.6819582582, alpha: 1)
+//
+//        pieView.backgroundColor = color
+//
+//        Chart.setPieChart(pieView, dataPoints: titleArr, values: unitsSold, legendColor: colorArr, showPie: true)
         
     }
     

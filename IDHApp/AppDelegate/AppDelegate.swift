@@ -28,32 +28,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //    let notificationHandler = NotificationHandler()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        requestNotification()
+//        requestNotification()
         
-        openDB()
+//        openDB()
+        
         RealmUtil.configurRealm()
         setupAppearance()
         registWX()
         
-        if let user = Defaults.instance.getForKey(key: "userInfo") {
-        IDH.setupCore(user)
-        provider.setVersion()
-        registWX()
-        checkVersion()
-        if UserDefaults.standard.value(forKey: "roleID") != nil {
-            let str = provider.providerLogin()
-            role_id = UserDefaults.standard.value(forKey: "roleID") as! String
-            if provider.appVersion == .homs03 || provider.appVersion == .homsOther{
-                let nav = UINavigationController.init(rootViewController: IDH.getVCFromStr(str))
-                self.window?.rootViewController = nav
-            }else{
-                toHome()
+//        if let user = Defaults.instance.getForKey(key: "userInfo") {
+//        IDH.setupCore(user)
+//        provider.setVersion()
+//        registWX()
+//        checkVersion()
+
+        if let user = Defaults.instance.getForKey(key: "userInfo"){
+            if UserDefaults.standard.value(forKey: "roleID") != nil{
+                IDH.setupCore(user)
+                provider.setVersion()
+                let str = provider.providerLogin()
+                role_id = UserDefaults.standard.value(forKey: "roleID") as! String
+                if provider.appVersion == .homs03 || provider.appVersion == .homsOther{
+                    let nav = UINavigationController.init(rootViewController: IDH.getVCFromStr(str))
+                    self.window?.rootViewController = nav
+                }else{
+                    toHome()
+                }
             }
         }
-                }else{
-                    self.window?.rootViewController = AlertViewController()
-                }
-        
+//                }else{
+//                    self.window?.rootViewController = AlertViewController()
+//                }
         UNUserNotificationCenter.current().delegate = self
         return true
     }
@@ -68,7 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             case .notDetermined:
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (accepted, error) in
                     if !accepted{
-                        ToastView.instance.showToast(text: "通知", pos: .Mid)
+//                        ToastView.instance.showToast(text: "通知", pos: .Mid)
                     }
                 }
             case .denied:
@@ -82,7 +87,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                 
                             })
                         }
-                        
                     })
                     
                     alert.addAction(cancel)
@@ -176,6 +180,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().backgroundColor = UIColor.gray
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
         brightnessValue = UIScreen.main.brightness
+        UIApplication.shared.statusBarStyle = .default
+        #if Debug
+            print("debug")
+        #else
+            print("release")
+        #endif
     }
     
     func registWX() {

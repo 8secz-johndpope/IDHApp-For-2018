@@ -82,9 +82,10 @@ class AlarmViewController: UIViewController {
     
     
     @objc func getAlarmInfo() {
-        ToastView.instance.showLoadingView()
-        let url = "http://113.140.66.34:6099/Analyze.svc/GetAlarmInformation/1"
-        Alamofire.request(url).responseJSON { (data) in
+        ToastView.instance.showLoadingDlg()
+//        let url = "http://113.140.66.34:6099/Analyze.svc/GetAlarmInformation/1"
+        Alamofire.request(AlarmURL).responseJSON { (data) in
+            ToastView.instance.hide()
             if data.result.isSuccess{
                 self.alarmInfos = []
                 let json = JSON(data.result.value)
@@ -94,6 +95,8 @@ class AlarmViewController: UIViewController {
                 }
                 ToastView.instance.hide()
                 self.alarmTable.reloadData()
+            }else{
+                ToastView.instance.showToast(text: "暂无数据", pos: .Bottom)
             }
         }
     }
@@ -216,6 +219,7 @@ class AlarmViewController: UIViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        print("ala")
         // Dispose of any resources that can be recreated.
     }
     
@@ -248,6 +252,10 @@ extension AlarmViewController:UITableViewDelegate, UITableViewDataSource{
             
 //            return UIView.init(frame: CGRect.init(x: 0, y: 0, width: 0, height: 0))
         }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 40
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

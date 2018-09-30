@@ -29,9 +29,8 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     var delegate: refreshManager?
     var startUpdate: Int?
     var facModelArr:[HeatFactoryModel] = []
-    
-    
-//    var heatExchangeArr: [(heatFactory: HeatFactoryModel, heatExchangerList: [HeatExchangeModel])] = []
+
+//  var heatExchangeArr: [(heatFactory: HeatFactoryModel, heatExchangerList: [HeatExchangeModel])] = []
     
     var resultHeatExchangeArr: [(heatFactory: HeatFactoryModel, heatExchangerList:[HeatExchangeModel])] = []
     
@@ -44,14 +43,15 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     
     override func viewDidAppear(_ animated: Bool) {
         if needGroup{
-            
+            timer = Timer.scheduledTimer(timeInterval: 90, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
         }else{
-        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
         }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        
+        if needGroup {
+            timer.invalidate()
+        }
     }
     
     override func viewDidLoad() {
@@ -69,6 +69,8 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
         self.factoryTable.dataSource = self
         self.factoryTable.register(FactoryTableViewCell.self, forCellReuseIdentifier: "facCell")
         self.factoryTable.keyboardDismissMode = .onDrag
+//        self.factoryTable.separatorStyle = .singleLine
+        
         let tap = UITapGestureRecognizer.init(target: self, action: #selector(hideKeyboard))
         self.factoryTable.addGestureRecognizer(tap)
         if heatExchangeArr.isEmpty {
@@ -76,7 +78,6 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
         }
         tap.cancelsTouchesInView = false
         if needGroup{
-            
             getFactoryGroup()
         }else{
                     NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: NSNotification.Name(rawValue: "update"), object: nil)
@@ -103,8 +104,8 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     }
     
     func setUpNav() {
-        if groupList.count > 0 {
-            navigationItem.title = groupList[0].GroupingName
+        if let group = globalGrouping {
+            navigationItem.title = group.GroupingName
         }else{
             navigationItem.title = "热源厂"
         }
@@ -112,21 +113,9 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     }
     
     @objc func getFactoryGroup() {
-
+        ToastView.instance.showLoadingDlg()
+        //西安市热力分组
         let url = "http://124.114.131.38:6099/Analyze.svc/GetFactoryList"
-        
-//        Alamofire.request(url, method: .get).responseJSON { reponse in
-//            if reponse.result.isSuccess{
-//                if let value = reponse.result.value{
-//                    let json = JSON(value)
-//
-//
-//                }
-//            }else{
-//
-//            }
-//        }
-        
         Alamofire.request(url, method: .get).responseJSON { reponse in
             if reponse.result.isSuccess{
                 if let value = reponse.result.value{
@@ -182,8 +171,10 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
                     }
                 }
                 print("\(self.facModelArr)")
+              ToastView.instance.hide()
                 self.factoryTable.reloadData()
             }else{
+                ToastView.instance.showToast(text: "网络请求失败，请稍后再试", pos: .Mid)
             }
         }
     }
@@ -251,10 +242,9 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     }
     
     func searchBy(name:String) {
-        let url = "http://124.114.131.38:6099/Analyze.svc/SearchAllByName/水"
+        let url = "http://124.114.131.38:6099/Analyze.svc/SearchAllByName/\(name)"
         let encodeStr = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         let Url = URL.init(string: encodeStr!)
-        
         
         Alamofire.request(Url!, method: .get).responseJSON { (reponse) in
             if reponse.result.isSuccess{
@@ -271,7 +261,6 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
                     let result = story.instantiateViewController(withIdentifier: "result") as! ResultViewController
                     result.datas = resultArr
 //                    self.present(factor, animated: true, completion: nil)
-                    
 //                    let result = ResultViewController()
                     let nav = UINavigationController.init(rootViewController: result)
                     
@@ -290,6 +279,7 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     @objc func hidenThreadView(){
         Thread.sleep(forTimeInterval: 1.5)
         Toast.shareInstance().hideView()
+        
     }
     
     //跳转到首页
@@ -299,6 +289,7 @@ class WorkingViewController: UIViewController, UISearchBarDelegate, UITextFieldD
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        print("work")
         // Dispose of any resources that can be recreated.
     }
     
@@ -349,7 +340,6 @@ extension WorkingViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "facCell", for: indexPath) as! FactoryTableViewCell
-            
         for view in cell.contentView.subviews {
             view.removeFromSuperview()
         }
@@ -357,7 +347,7 @@ extension WorkingViewController: UITableViewDelegate, UITableViewDataSource {
             cell.factoryModel = facModelArr[indexPath.row]
         }else{
             
-                    cell.factoryModel = heatExchangeArr[indexPath.row].heatFactory
+            cell.factoryModel = heatExchangeArr[indexPath.row].heatFactory
         }
         cell.selectionStyle = .none
         return cell
@@ -370,10 +360,8 @@ extension WorkingViewController: UITableViewDelegate, UITableViewDataSource {
         let reveal = SWRevealViewController.init(rearViewController: nil, frontViewController: frontNav)
         let menu = MenuViewController()
         if needGroup {
-            
             exchanges.hfid = facModelArr[indexPath.row].ID
             exchanges.title = facModelArr[indexPath.row].Name
-            
             reveal?.rightViewController = menu
             reveal?.rightViewRevealWidth = UIScreen.main.bounds.width/1.5
             reveal?.rightViewRevealOverdraw = 0
@@ -381,11 +369,10 @@ extension WorkingViewController: UITableViewDelegate, UITableViewDataSource {
             self.present(reveal!, animated: true, completion: nil)
         }else{
             exchanges.datas = heatExchangeArr[indexPath.row]
-            exchanges.current = indexPath.row
+            exchanges.thisCurrent = indexPath.row
             let fac = heatExchangeArr[indexPath.row].heatFactory
             menu.fac = fac
             let menuNav = UINavigationController.init(rootViewController: menu)
-            
 //            let reveal = SWRevealViewController.init(rearViewController: nil, frontViewController: frontNav)
             reveal?.rightViewController = menuNav
             
@@ -393,7 +380,6 @@ extension WorkingViewController: UITableViewDelegate, UITableViewDataSource {
             reveal?.rightViewRevealOverdraw = 0
             reveal?.delegate = self
             //        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(getFactoryGroup), userInfo: nil, repeats: true)
-            
             self.present(reveal!, animated: true, completion: nil)
         }
     }

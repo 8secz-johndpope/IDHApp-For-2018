@@ -80,15 +80,15 @@ class HeatFactoryTabBarControllerViewController: UITabBarController {
     @objc func toTrans() {
         switch self.selectedIndex {
         case 0:
-            globalFromVC = .heatExchangerMonitor
+            globalFromVC = .heatFactoryMonitor
         case 1:
-            globalFromVC = .heatExchangerTrend
+            globalFromVC = .heatFactoryTrend
         case 2:
-            globalFromVC = .heatExchangerEnergy
+            globalFromVC = .heatFactoryEnergy
         case 3:
-            globalFromVC = .heatExchangerSurvey
+            globalFromVC = .heatFactorySurvey
         case 4:
-            globalFromVC = .heatExchangerQuality
+            globalFromVC = .heatFactoryQuality
         default:
             return
         }
